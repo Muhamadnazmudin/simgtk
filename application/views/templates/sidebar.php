@@ -62,7 +62,11 @@ $group_rapor = in_array($active, [
 $group_belajarid = in_array($active, [
     'akun_belajar'
 ]);
-
+$group_tutorial = in_array($active, [
+    'tutorial',
+    'tutorial_add',
+    'tutorial_edit'
+]);
 
 
 ?>
@@ -236,8 +240,28 @@ $group_belajarid = in_array($active, [
         </div>
     </div>
 </li>
+<!-- ==============================
+     TUTORIAL (ADMIN)
+================================= -->
+<li class="nav-item <?= $group_tutorial ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mTutorialAdmin">
+        <i class="fas fa-video"></i>
+        <span>Tutorial</span>
+    </a>
+    <div id="mTutorialAdmin" class="collapse <?= $group_tutorial ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item <?= $active=='tutorial'?'active':'' ?>"
+               href="<?= site_url('tutorial') ?>">
+               Daftar Tutorial
+            </a>
 
-
+            <a class="collapse-item <?= $active=='tutorial_add'?'active':'' ?>"
+               href="<?= site_url('tutorial/add') ?>">
+               Tambah Tutorial
+            </a>
+        </div>
+    </div>
+</li>
 
 <!-- Mutasi -->
 <li class="nav-item <?= $group_mutasi ? 'active' : '' ?>">
