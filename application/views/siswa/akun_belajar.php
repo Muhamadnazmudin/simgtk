@@ -45,7 +45,6 @@
 <h4 class="mb-4">
     <i class="fas fa-envelope-open-text"></i> Akun BelajarID
 </h4>
-
 <?php if (!$akun): ?>
 
     <div class="alert alert-warning">
@@ -160,7 +159,27 @@
     </div>
 
 <?php endif; ?>
+<!-- 🎨 AKSES CANVA EDU (UNTUK SEMUA SISWA) -->
+<div class="card shadow-sm mb-4 border-left-primary">
+    <div class="card-body d-flex align-items-center justify-content-between flex-wrap">
+        <div>
+            <h5 class="mb-1">
+                <i class="fas fa-palette text-primary"></i>
+                Akses Canva Education
+            </h5>
+            <small class="text-muted">
+                Gunakan Canva untuk gabung dengan kelas Siswa SMKN 1 Cili untuk musmembuat desain, poster, dan presentasi pembelajaran lebih banyak
+            </small>
+        </div>
 
+        <a href="https://www.canva.com/brand/join?token=kW2tFAj-1hr7Ysb0cP2HVw&brandingVariant=edu&referrer=team-invite"
+           target="_blank"
+           class="btn btn-primary mt-3 mt-md-0">
+            <i class="fas fa-external-link-alt"></i>
+            Buka Canva
+        </a>
+    </div>
+</div>
 </div>
 
 <script>
