@@ -225,6 +225,14 @@
         <span>Bacaan / E-Book</span>
     </a>
 </li>
+<hr class="sidebar-divider">
+
+<li class="nav-item <?= ($active=='tutorial'?'active':''); ?>">
+    <a class="nav-link" href="<?= site_url('SiswaTutorial'); ?>">
+        <i class="fas fa-video"></i>
+        <span>Kumpulan Tutorial</span>
+    </a>
+</li>
 
 <hr class="sidebar-divider">
     <!-- Biodata -->
