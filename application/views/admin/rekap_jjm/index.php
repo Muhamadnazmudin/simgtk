@@ -42,33 +42,40 @@
                         <?php endif; ?>
                     </td>
 
-                    <!-- AKSI -->
-                    <td class="text-center">
+                   <?php
+    // cache busting agar PDF selalu terbaru
+    $pdf_url = base_url('uploads/jjm/guru/'.$g->file_jjm).'?v='.time();
+?>
 
-                        <!-- Upload / Edit -->
-                        <button class="btn btn-sm btn-warning"
-                            data-toggle="modal"
-                            data-target="#uploadModal<?= $g->id ?>">
-                            <i class="fas fa-upload"></i>
-                        </button>
+<td class="text-center">
 
-                        <!-- Download -->
-                        <?php if ($g->file_jjm): ?>
-                            <a href="<?= base_url('uploads/jjm/guru/'.$g->file_jjm) ?>"
-                               class="btn btn-sm btn-primary"
-                               target="_blank">
-                                <i class="fas fa-download"></i>
-                            </a>
+    <!-- Upload / Edit -->
+    <button class="btn btn-sm btn-warning"
+        data-toggle="modal"
+        data-target="#uploadModal<?= $g->id ?>">
+        <i class="fas fa-upload"></i>
+    </button>
 
-                            <!-- Delete -->
-                            <a href="<?= site_url('rekap_jjm/delete/'.$g->id) ?>"
-                               class="btn btn-sm btn-danger"
-                               onclick="return confirm('Yakin hapus file JJM guru ini?')">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        <?php endif; ?>
+    <?php if ($g->file_jjm): ?>
 
-                    </td>
+        <!-- Download / Preview -->
+        <a href="<?= $pdf_url ?>"
+           class="btn btn-sm btn-primary"
+           target="_blank">
+            <i class="fas fa-download"></i>
+        </a>
+
+        <!-- Delete -->
+        <a href="<?= site_url('rekap_jjm/delete/'.$g->id) ?>"
+           class="btn btn-sm btn-danger"
+           onclick="return confirm('Yakin hapus file JJM guru ini?')">
+            <i class="fas fa-trash"></i>
+        </a>
+
+    <?php endif; ?>
+
+</td>
+
                 </tr>
                 <?php endforeach; ?>
             </tbody>
