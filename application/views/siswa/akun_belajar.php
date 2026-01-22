@@ -154,6 +154,13 @@
             Password ini hanya digunakan saat login pertama.<br>
             Silakan ganti password setelah berhasil login.
         </div>
+    <div class="mt-3">
+    <button class="btn btn-warning btn-sm"
+            onclick="resetBelajarID()">
+        <i class="fab fa-whatsapp"></i>
+        Reset Password BelajarID
+    </button>
+</div>
 
     </div>
     </div>
@@ -229,5 +236,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+</script>
+<script>
+function resetBelajarID() {
+    const nama  = "<?= addslashes($this->session->userdata('nama_siswa')); ?>";
+    const email = "<?= $akun->email_belajar ?>";
+
+    const pesan = `Assalamualaikum, saya ${nama} ingin mengajukan reset password email belajarID dengan alamat email ${email}`;
+
+    const nomorTujuan = "6285651414221"; // format internasional
+    const url = `https://wa.me/${nomorTujuan}?text=${encodeURIComponent(pesan)}`;
+
+    window.open(url, '_blank');
+}
 </script>
 

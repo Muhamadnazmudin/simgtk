@@ -96,51 +96,51 @@ function loadFilter() {
         });
 }
 
-function loadMonitoring() {
-    const guru  = document.getElementById('filterGuru').value;
-    const kelas = document.getElementById('filterKelas').value;
+// function loadMonitoring() {
+//     const guru  = document.getElementById('filterGuru').value;
+//     const kelas = document.getElementById('filterKelas').value;
 
-    fetch(`<?= site_url('monitoring_mengajar/load_data') ?>?guru_id=${guru}&kelas_id=${kelas}`)
-        .then(res => res.json())
-        .then(data => {
-            let tbody = '';
-            data.forEach(row => {
+//     fetch(`<?= site_url('monitoring_mengajar/load_data') ?>?guru_id=${guru}&kelas_id=${kelas}`)
+//         .then(res => res.json())
+//         .then(data => {
+//             let tbody = '';
+//             data.forEach(row => {
 
-                let badge = '';
-                if (row.status === 'sedang') {
-                    badge = '<span class="badge bg-success">Sedang Mengajar</span>';
-                } else if (row.status === 'selesai') {
-                    badge = '<span class="badge bg-primary">Selesai</span>';
-                } else {
-                    badge = '<span class="badge bg-warning text-dark">Belum Mulai</span>';
-                }
+//                 let badge = '';
+//                 if (row.status === 'sedang') {
+//                     badge = '<span class="badge bg-success">Sedang Mengajar</span>';
+//                 } else if (row.status === 'selesai') {
+//                     badge = '<span class="badge bg-primary">Selesai</span>';
+//                 } else {
+//                     badge = '<span class="badge bg-warning text-dark">Belum Mulai</span>';
+//                 }
 
-                tbody += `
-                    <tr>
-                        <td>${row.guru}</td>
-                        <td>${row.kelas}</td>
-                        <td>${row.mapel}</td>
-                        <td>${row.jam}</td>
-                        <td>${row.mulai}</td>
-                        <td>${row.selesai}</td>
-                        <td class="text-center">${badge}</td>
-                    </tr>
-                `;
-            });
+//                 tbody += `
+//                     <tr>
+//                         <td>${row.guru}</td>
+//                         <td>${row.kelas}</td>
+//                         <td>${row.mapel}</td>
+//                         <td>${row.jam}</td>
+//                         <td>${row.mulai}</td>
+//                         <td>${row.selesai}</td>
+//                         <td class="text-center">${badge}</td>
+//                     </tr>
+//                 `;
+//             });
 
-            document.querySelector('#tblMonitoring tbody').innerHTML = tbody;
-        });
-}
+//             document.querySelector('#tblMonitoring tbody').innerHTML = tbody;
+//         });
+// }
 
-// event filter
-document.getElementById('filterGuru').addEventListener('change', loadMonitoring);
-document.getElementById('filterKelas').addEventListener('change', loadMonitoring);
+// // event filter
+// document.getElementById('filterGuru').addEventListener('change', loadMonitoring);
+// document.getElementById('filterKelas').addEventListener('change', loadMonitoring);
 
-// init
-loadFilter();
-loadMonitoring();
+// // init
+// loadFilter();
+// loadMonitoring();
 
-// auto refresh tiap 30 detik
-setInterval(loadMonitoring, 30000);
+// // auto refresh tiap 30 detik
+// setInterval(loadMonitoring, 30000);
 </script>
 
