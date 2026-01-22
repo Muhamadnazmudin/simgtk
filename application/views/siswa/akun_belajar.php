@@ -155,11 +155,17 @@
             Silakan ganti password setelah berhasil login.
         </div>
     <div class="mt-3">
-    <button class="btn btn-warning btn-sm"
-            onclick="resetBelajarID()">
-        <i class="fab fa-whatsapp"></i>
-        Reset Password BelajarID
-    </button>
+    <button type="button"
+        class="btn btn-warning btn-sm"
+        onclick="resetBelajarID(this)"
+        data-nama="<?= htmlspecialchars($akun->nama, ENT_QUOTES) ?>"
+        data-kelas="<?= htmlspecialchars($akun->nama_kelas, ENT_QUOTES) ?>"
+        data-email="<?= htmlspecialchars($akun->email_belajar, ENT_QUOTES) ?>">
+    <i class="fab fa-whatsapp"></i>
+    Reset Password BelajarID
+</button>
+
+
 </div>
 
     </div>
@@ -238,16 +244,26 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <script>
-function resetBelajarID() {
-    const nama  = "<?= addslashes($this->session->userdata('nama_siswa')); ?>";
-    const email = "<?= $akun->email_belajar ?>";
+function resetBelajarID(btn) {
+    const nama  = btn.dataset.nama;
+    const kelas = btn.dataset.kelas;
+    const email = btn.dataset.email;
 
-    const pesan = `Assalamualaikum, saya ${nama} ingin mengajukan reset password email belajarID dengan alamat email ${email}`;
+    const pesan =
+        "Assalamualaikum, saya " + nama + "\n" +
+        "kelas " + kelas + "\n" +
+        "ingin mengajukan reset password email BelajarID\n" +
+        "dengan alamat email " + email;
 
-    const nomorTujuan = "6285651414221"; // format internasional
-    const url = `https://wa.me/${nomorTujuan}?text=${encodeURIComponent(pesan)}`;
+    const nomor = "6285651414221";
+    const url   = "https://wa.me/" + nomor + "?text=" + encodeURIComponent(pesan);
 
-    window.open(url, '_blank');
+    window.open(url, "_blank");
 }
 </script>
+
+
+
+
+
 

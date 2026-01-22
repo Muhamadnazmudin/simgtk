@@ -27,10 +27,20 @@ class SiswaAkunBelajar extends CI_Controller
     }
 
     // ambil data akun TERBARU
-    $akun = $this->db->get_where(
-        'akun_belajar_siswa',
-        ['nisn' => $nisn]
-    )->row();
+ $akun = $this->db
+    ->select('a.*, s.nama, k.nama AS nama_kelas')
+    ->from('akun_belajar_siswa a')
+    ->join(
+        'siswa s',
+        's.nisn COLLATE utf8mb4_unicode_ci = a.nisn COLLATE utf8mb4_unicode_ci',
+        'left',
+        false
+    )
+    ->join('kelas k', 'k.id = s.id_kelas', 'left')
+    ->where('a.nisn', $nisn)
+    ->get()
+    ->row();
+
 
     $data = [
         'title'  => 'Akun BelajarID',
