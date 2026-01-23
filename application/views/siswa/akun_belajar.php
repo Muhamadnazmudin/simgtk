@@ -181,7 +181,7 @@
                 Akses Canva Education
             </h5>
             <small class="text-muted">
-                Gunakan Canva untuk gabung dengan kelas Siswa SMKN 1 Cili untuk musmembuat desain, poster, dan presentasi pembelajaran lebih banyak
+                Gunakan Canva untuk gabung dengan kelas Siswa SMKN 1 Cilimus untuk membuat desain, poster, dan presentasi pembelajaran lebih banyak
             </small>
         </div>
 
