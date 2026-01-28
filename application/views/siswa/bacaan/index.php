@@ -24,120 +24,120 @@
 
     <!-- FILTER -->
     <div class="card shadow-sm mb-4 border-0">
-        <div class="card-body">
-            <div class="row">
+        <div class="card-body p-3">
 
-                <div class="col-md-4 mb-2">
-                    <select id="filterKelas" class="form-control form-control-sm">
+            <form method="get" class="row g-2">
+
+                <!-- FILTER KELAS -->
+                <div class="col-12 col-md-4">
+                    <select name="kelas"
+                            class="form-control form-control-sm"
+                            onchange="this.form.submit()">
                         <option value="">Semua Kelas</option>
-                        <option value="Umum">Umum</option>
-                        <option value="X">X</option>
-                        <option value="XI">XI</option>
-                        <option value="XII">XII</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4 mb-2">
-                    <select id="filterMapel" class="form-control form-control-sm">
-                        <option value="">Semua Mapel</option>
-                        <?php
-                        $mapel_unik = array_unique(array_column($buku, 'mapel'));
-                        foreach ($mapel_unik as $m):
-                            if (!$m) continue;
-                        ?>
-                            <option value="<?= $m ?>"><?= $m ?></option>
+                        <?php foreach (['Umum','X','XI','XII'] as $k): ?>
+                            <option value="<?= $k ?>"
+                                <?= ($filter_kelas == $k) ? 'selected' : '' ?>>
+                                <?= $k ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
 
-                <div class="col-md-4 mb-2">
-                    <button class="btn btn-secondary btn-sm w-100" onclick="resetFilter()">
-                        <i class="fas fa-sync"></i> Reset
-                    </button>
+                <!-- FILTER MAPEL -->
+                <div class="col-12 col-md-4">
+                    <select name="mapel"
+                            class="form-control form-control-sm"
+                            onchange="this.form.submit()">
+                        <option value="">Semua Mapel</option>
+                        <?php foreach ($mapel_list as $m): ?>
+                            <option value="<?= $m->mapel ?>"
+                                <?= ($filter_mapel == $m->mapel) ? 'selected' : '' ?>>
+                                <?= $m->mapel ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
 
-            </div>
+                <!-- RESET -->
+                <div class="col-12 col-md-4">
+                    <a href="<?= site_url('SiswaBacaan') ?>"
+                       class="btn btn-secondary btn-sm w-100">
+                        <i class="fas fa-sync"></i> Reset
+                    </a>
+                </div>
+
+            </form>
+
         </div>
     </div>
 
     <!-- LIST BUKU -->
     <?php if (empty($buku)) : ?>
-        <div class="alert alert-info">
+
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle"></i>
             Belum ada bacaan tersedia.
         </div>
+
     <?php else : ?>
-        <div class="row" id="listBuku">
+
+        <div class="row">
+
             <?php foreach ($buku as $b) : ?>
-                <div class="col-md-6 col-lg-3 mb-4 buku-item"
-                     data-kelas="<?= $b->kelas ?>"
-                     data-mapel="<?= $b->mapel ?>">
+
+                <div class="col-12 col-sm-6 col-lg-3 mb-4">
 
                     <div class="card shadow-sm h-100 border-0">
 
                         <!-- COVER -->
-                        <?php if (!empty($b->cover)): ?>
-                            <img src="<?= base_url('assets/uploads/cover_buku/'.$b->cover) ?>"
-                                 class="book-cover">
-                        <?php else: ?>
+                        <?php if (!empty($b->cover)) : ?>
+                            <img src="<?= base_url('assets/uploads/cover_buku/' . $b->cover) ?>"
+                                 class="book-cover"
+                                 alt="<?= htmlspecialchars($b->judul) ?>">
+                        <?php else : ?>
                             <div class="book-cover d-flex align-items-center justify-content-center text-muted">
                                 <i class="fas fa-book fa-2x"></i>
                             </div>
                         <?php endif; ?>
 
-                        <div class="card-body d-flex flex-column">
+                        <div class="card-body d-flex flex-column p-3">
 
                             <div class="book-title mb-2">
-                                <?= htmlspecialchars($b->judul); ?>
+                                <?= htmlspecialchars($b->judul) ?>
                             </div>
 
                             <small class="text-muted mb-1">
-                                <i class="fas fa-book"></i> <?= $b->mapel ?: '-' ?>
+                                <i class="fas fa-book"></i>
+                                <?= $b->mapel ?: '-' ?>
                             </small>
 
                             <small class="text-muted mb-3">
-                                <i class="fas fa-layer-group"></i> Kelas <?= $b->kelas ?>
+                                <i class="fas fa-layer-group"></i>
+                                Kelas <?= $b->kelas ?>
                             </small>
 
-                            <a href="<?= site_url('SiswaBacaan/baca/'.$b->id); ?>"
+                            <a href="<?= site_url('SiswaBacaan/baca/' . $b->id) ?>"
                                class="btn btn-primary btn-sm mt-auto">
                                 <i class="fas fa-eye"></i> Baca
                             </a>
 
                         </div>
+
                     </div>
 
                 </div>
+
             <?php endforeach; ?>
+
+        </div>
+
+    <?php endif; ?>
+
+    <!-- PAGINATION -->
+    <?php if (!empty($pagination)) : ?>
+        <div class="mt-3">
+            <?= $pagination ?>
         </div>
     <?php endif; ?>
-<?php if (!empty($pagination)) : ?>
-    <div class="mt-4">
-        <?= $pagination; ?>
-    </div>
-<?php endif; ?>
 
 </div>
-
-<script>
-function resetFilter() {
-    document.getElementById('filterKelas').value = '';
-    document.getElementById('filterMapel').value = '';
-    filterBuku();
-}
-
-function filterBuku() {
-    const kelas = document.getElementById('filterKelas').value;
-    const mapel = document.getElementById('filterMapel').value;
-
-    document.querySelectorAll('.buku-item').forEach(item => {
-        const show =
-            (!kelas || item.dataset.kelas === kelas) &&
-            (!mapel || item.dataset.mapel === mapel);
-
-        item.style.display = show ? 'block' : 'none';
-    });
-}
-
-document.getElementById('filterKelas').addEventListener('change', filterBuku);
-document.getElementById('filterMapel').addEventListener('change', filterBuku);
-</script>

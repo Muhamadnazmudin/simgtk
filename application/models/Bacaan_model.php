@@ -57,5 +57,47 @@ public function count_all_aktif()
         ->where('status', 'aktif')
         ->count_all_results($this->table);
 }
+public function get_filtered($limit, $offset, $kelas = null, $mapel = null)
+{
+    $this->db->where('status', 'aktif');
+
+    if ($kelas) {
+        $this->db->where('kelas', $kelas);
+    }
+
+    if ($mapel) {
+        $this->db->where('mapel', $mapel);
+    }
+
+    return $this->db
+        ->order_by('created_at', 'DESC')
+        ->limit($limit, $offset)
+        ->get($this->table)
+        ->result();
+}
+public function count_filtered($kelas = null, $mapel = null)
+{
+    $this->db->where('status', 'aktif');
+
+    if ($kelas) {
+        $this->db->where('kelas', $kelas);
+    }
+
+    if ($mapel) {
+        $this->db->where('mapel', $mapel);
+    }
+
+    return $this->db->count_all_results($this->table);
+}
+public function get_mapel_unik()
+{
+    return $this->db
+        ->select('mapel')
+        ->where('mapel IS NOT NULL')
+        ->group_by('mapel')
+        ->order_by('mapel', 'ASC')
+        ->get($this->table)
+        ->result();
+}
 
 }

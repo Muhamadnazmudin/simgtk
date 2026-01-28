@@ -20,19 +20,28 @@ class SiswaBacaan extends CI_Controller {
 {
     $this->load->library('pagination');
 
-    $limit = 10;
-    $offset = $this->uri->segment(3) ?? 0;
+    // ambil filter dari GET
+    $kelas = $this->input->get('kelas');
+    $mapel = $this->input->get('mapel');
 
-    // total data
-    $total = $this->Bacaan_model->count_all_aktif();
+    $limit  = 10;
+    $offset = $this->input->get('page') ?? 0;
 
-    // config pagination
-    $config['base_url'] = site_url('SiswaBacaan/index');
+    // total data sesuai filter
+    $total = $this->Bacaan_model->count_filtered($kelas, $mapel);
+
+    // pagination
+    $config['base_url'] = site_url('SiswaBacaan') . '?' . http_build_query([
+        'kelas' => $kelas,
+        'mapel' => $mapel
+    ]);
+
     $config['total_rows'] = $total;
-    $config['per_page'] = $limit;
-    $config['uri_segment'] = 3;
+    $config['per_page']   = $limit;
+    $config['page_query_string'] = TRUE;
+    $config['query_string_segment'] = 'page';
 
-    // styling bootstrap
+    // bootstrap
     $config['full_tag_open'] = '<nav><ul class="pagination pagination-sm justify-content-center">';
     $config['full_tag_close'] = '</ul></nav>';
     $config['num_tag_open'] = '<li class="page-item">';
@@ -49,8 +58,16 @@ class SiswaBacaan extends CI_Controller {
 
     $this->pagination->initialize($config);
 
-    $data['buku'] = $this->Bacaan_model->get_paginated($limit, $offset);
+    $data['buku'] = $this->Bacaan_model->get_filtered($limit, $offset, $kelas, $mapel);
     $data['pagination'] = $this->pagination->create_links();
+
+    // kirim filter ke view (biar selected)
+    $data['filter_kelas'] = $kelas;
+    $data['filter_mapel'] = $mapel;
+
+    // dropdown mapel
+    $data['mapel_list'] = $this->Bacaan_model->get_mapel_unik();
+
     $data['active'] = 'bacaan';
 
     $this->load->view('siswa/layout/header', $data);
@@ -58,6 +75,7 @@ class SiswaBacaan extends CI_Controller {
     $this->load->view('siswa/bacaan/index', $data);
     $this->load->view('siswa/layout/footer');
 }
+
 
 public function baca($id)
 {
