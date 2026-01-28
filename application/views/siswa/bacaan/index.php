@@ -14,6 +14,15 @@
     max-height: 40px;
     overflow: hidden;
 }
+.book-cover {
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.book-cover:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+}
+
 </style>
 
 <div class="container-fluid">
@@ -92,8 +101,11 @@
                         <!-- COVER -->
                         <?php if (!empty($b->cover)) : ?>
                             <img src="<?= base_url('assets/uploads/cover_buku/' . $b->cover) ?>"
-                                 class="book-cover"
-                                 alt="<?= htmlspecialchars($b->judul) ?>">
+     class="book-cover"
+     style="cursor:pointer"
+     onclick="previewCover(this.src)"
+     alt="<?= htmlspecialchars($b->judul) ?>">
+
                         <?php else : ?>
                             <div class="book-cover d-flex align-items-center justify-content-center text-muted">
                                 <i class="fas fa-book fa-2x"></i>
@@ -139,5 +151,45 @@
             <?= $pagination ?>
         </div>
     <?php endif; ?>
+<!-- MODAL PREVIEW COVER (SB ADMIN 2 - BOOTSTRAP 4) -->
+<div class="modal fade" id="modalCover" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content bg-transparent border-0 text-center">
+
+            <!-- CLOSE -->
+            <button type="button"
+                    class="close text-white position-absolute"
+                    style="right:20px; top:10px; font-size:32px; z-index:1051"
+                    data-dismiss="modal">
+                <span>&times;</span>
+            </button>
+
+            <!-- IMAGE -->
+            <img id="modalCoverImg"
+                 src=""
+                 style="
+                    max-width: 100%;
+                    max-height: 85vh;
+                    object-fit: contain;
+                 "
+                 class="rounded shadow">
+        </div>
+    </div>
+</div>
 
 </div>
+<script>
+$('#modalCover').on('click', function (e) {
+    if (e.target === this) {
+        $(this).modal('hide');
+    }
+});
+</script>
+
+<script>
+function previewCover(src) {
+    $('#modalCoverImg').attr('src', src);
+    $('#modalCover').modal('show');
+}
+</script>
+
