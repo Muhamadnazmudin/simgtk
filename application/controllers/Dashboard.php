@@ -100,6 +100,8 @@ $data['aktif']      = $this->get_siswa_aktif_by_tingkat();
 $data['masuk']      = $this->get_siswa_masuk_by_tingkat();
 $data['keluar']     = $this->get_siswa_keluar_by_tingkat();
 $data['per_rombel'] = $this->get_siswa_per_rombel();
+$data['gender_tingkat'] = $this->get_siswa_aktif_gender_by_tingkat();
+
 
 /* TAMBAHKAN INI */
 $q = $this->db
@@ -170,6 +172,51 @@ $this->load->view('dashboard/public', $data);
     return $out;
 }
 
+// ==========================================================
+// 🔹 SISWA AKTIF PER TINGKAT & JENIS KELAMIN (PUBLIK)
+// ==========================================================
+private function get_siswa_aktif_gender_by_tingkat()
+{
+    $out = [
+        'x' => ['l'=>0, 'p'=>0, 'total'=>0],
+        'xi' => ['l'=>0, 'p'=>0, 'total'=>0],
+        'xii' => ['l'=>0, 'p'=>0, 'total'=>0],
+        'total' => ['l'=>0, 'p'=>0, 'total'=>0]
+    ];
+
+    $regex = [
+        'x'   => "^X( |$)",
+        'xi'  => "^XI( |$)",
+        'xii' => "^XII( |$)"
+    ];
+
+    foreach ($regex as $tingkat => $r) {
+
+        $q = $this->db
+            ->select("
+                SUM(CASE WHEN siswa.jk = 'L' THEN 1 ELSE 0 END) AS laki,
+                SUM(CASE WHEN siswa.jk = 'P' THEN 1 ELSE 0 END) AS perempuan,
+                COUNT(siswa.id) AS total
+            ")
+            ->from('siswa')
+            ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
+            ->where('siswa.status', 'aktif')
+            ->where("kelas.nama REGEXP '$r'")
+            ->get()
+            ->row();
+
+        $out[$tingkat]['l'] = (int) ($q->laki ?? 0);
+        $out[$tingkat]['p'] = (int) ($q->perempuan ?? 0);
+        $out[$tingkat]['total'] = (int) ($q->total ?? 0);
+
+        // akumulasi total keseluruhan
+        $out['total']['l'] += $out[$tingkat]['l'];
+        $out['total']['p'] += $out[$tingkat]['p'];
+        $out['total']['total'] += $out[$tingkat]['total'];
+    }
+
+    return $out;
+}
 
     // ==========================================================
     // 🔹 SISWA KELUAR PER TINGKAT (mutasi)

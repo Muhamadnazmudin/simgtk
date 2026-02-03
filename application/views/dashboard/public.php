@@ -618,6 +618,49 @@ body.dark-mode .bot-anim {
       'keluar' => $keluar,
       'lulus' => $lulus
   ]); ?>
+<!-- ===============================
+ Siswa Aktif Berdasarkan Jenis Kelamin
+=============================== -->
+<div class="card shadow-sm mt-4">
+  <div class="card-body">
+    <h5>
+      <i class="fas fa-venus-mars"></i>
+      Siswa Aktif Berdasarkan Jenis Kelamin
+    </h5>
+
+    <div class="table-responsive mt-3">
+      <table class="table table-sm align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Tingkat</th>
+            <th>Laki-laki</th>
+            <th>Perempuan</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php 
+          $label = ['x'=>'X', 'xi'=>'XI', 'xii'=>'XII'];
+          foreach ($label as $k => $nama): ?>
+          <tr>
+            <td><strong>Kelas <?= $nama ?></strong></td>
+            <td><?= $gender_tingkat[$k]['l'] ?></td>
+            <td><?= $gender_tingkat[$k]['p'] ?></td>
+            <td class="fw-bold"><?= $gender_tingkat[$k]['total'] ?></td>
+          </tr>
+          <?php endforeach; ?>
+
+          <tr class="table-secondary">
+            <td class="text-end">Total</td>
+            <td><?= $gender_tingkat['total']['l'] ?></td>
+            <td><?= $gender_tingkat['total']['p'] ?></td>
+            <td><?= $gender_tingkat['total']['total'] ?></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
   <!-- Tabel Jumlah Siswa per Rombel -->
   <div class="card shadow-sm mt-5">
