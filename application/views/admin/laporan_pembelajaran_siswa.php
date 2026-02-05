@@ -1,0 +1,107 @@
+<div class="container-fluid">
+
+<h4 class="mb-4">
+    <i class="fas fa-file-alt"></i> Laporan Jam Kosong dari Ketua Kelas
+</h4>
+
+<!-- ================= FILTER ================= -->
+<form method="get" class="mb-3">
+<div class="form-row">
+    <div class="col-md-3">
+        <select name="kelas_id" class="form-control">
+            <option value="">-- Semua Kelas --</option>
+            <?php foreach($kelas as $k): ?>
+                <option value="<?= $k->id ?>"
+                    <?= $this->input->get('kelas_id')==$k->id?'selected':'' ?>>
+                    <?= $k->nama ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select name="guru_id" class="form-control">
+            <option value="">-- Semua Guru --</option>
+            <?php foreach($guru as $g): ?>
+                <option value="<?= $g->id ?>"
+                    <?= $this->input->get('guru_id')==$g->id?'selected':'' ?>>
+                    <?= $g->nama ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <input type="date" name="tanggal"
+               value="<?= $this->input->get('tanggal') ?>"
+               class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <button class="btn btn-primary btn-block">
+            <i class="fas fa-filter"></i> Filter
+        </button>
+    </div>
+</div>
+</form>
+<div class="mb-3 text-right">
+    <a href="<?= site_url('AdminLaporanPembelajaran/export_excel?'.$_SERVER['QUERY_STRING']) ?>"
+       class="btn btn-success btn-sm">
+        <i class="fas fa-file-excel"></i> Export Excel
+    </a>
+
+    <a href="<?= site_url('AdminLaporanPembelajaran/export_pdf?'.$_SERVER['QUERY_STRING']) ?>"
+       class="btn btn-danger btn-sm">
+        <i class="fas fa-file-pdf"></i> Export PDF
+    </a>
+</div>
+
+<!-- ================= TABEL ================= -->
+<div class="card shadow-sm">
+<div class="card-body table-responsive">
+
+<table class="table table-bordered table-striped">
+<thead class="thead-light">
+<tr>
+    <th>Tanggal</th>
+    <th>Kelas</th>
+    <th>Ketua Kelas</th>
+    <th>Hari</th>
+    <th>Jam</th>
+    <th>Mapel</th>
+    <th>Guru</th>
+    <th>Alasan</th>
+</tr>
+</thead>
+<tbody>
+
+<?php if (empty($laporan)): ?>
+<tr>
+    <td colspan="8" class="text-center text-muted">
+        Tidak ada laporan.
+    </td>
+</tr>
+<?php else: foreach($laporan as $l): ?>
+<tr>
+    <td><?= $l->tanggal ?></td>
+    <td><?= $l->nama_kelas ?></td>
+    <td><?= $l->nama_siswa ?></td>
+    <td><?= $l->hari ?></td>
+    <td>
+        <?= $l->jam_awal ?> (<?= substr($l->jam_mulai,0,5) ?>)
+        –
+        <?= $l->jam_akhir ?> (<?= substr($l->jam_selesai,0,5) ?>)
+    </td>
+    <td><?= $l->nama_mapel ?></td>
+    <td><?= $l->nama_guru ?></td>
+    <td><?= nl2br($l->alasan) ?></td>
+</tr>
+<?php endforeach; endif; ?>
+
+</tbody>
+</table>
+
+</div>
+</div>
+
+</div>

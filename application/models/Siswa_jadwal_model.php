@@ -38,25 +38,25 @@ class Siswa_jadwal_model extends CI_Model {
 
     /* ⚠️ OPSIONAL (PERLU DIUPDATE JUGA) */
     public function get_jadwal_hari_ini($kelas_id, $hari)
-    {
-        return $this->db
-            ->select('
-                js1.nama_jam AS jam_awal,
-                js2.nama_jam AS jam_akhir,
-                js1.jam_mulai,
-                js2.jam_selesai,
-                m.nama_mapel,
-                g.nama AS nama_guru
-            ')
-            ->from('jadwal_mengajar j')
-            ->join('jam_sekolah js1', 'js1.id_jam = j.jam_mulai_id')
-            ->join('jam_sekolah js2', 'js2.id_jam = j.jam_selesai_id')
-            ->join('mapel m', 'm.id_mapel = j.mapel_id')
-            ->join('guru g', 'g.id = j.guru_id')
-            ->where('j.rombel_id', $kelas_id)
-            ->where('j.hari', $hari)
-            ->order_by('js1.urutan', 'ASC')
-            ->get()
-            ->result();
-    }
+{
+    return $this->db
+        ->select('
+            jm.*,
+            js.nama_jam,
+            js.jam_mulai,
+            js.jam_selesai,
+            g.nama AS nama_guru,
+            m.nama_mapel
+        ')
+        ->from('jadwal_mengajar jm')
+        ->join('jam_sekolah js', 'js.id_jam = jm.jam_mulai_id', 'left')
+        ->join('guru g', 'g.id = jm.guru_id', 'left')
+        ->join('mapel m', 'm.id_mapel = jm.mapel_id', 'left')
+        ->where('jm.rombel_id', $kelas_id)
+        ->where('jm.hari', $hari)
+        ->order_by('js.urutan', 'ASC')
+        ->get()
+        ->result();
+}
+
 }

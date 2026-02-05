@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
+<!-- ================= JQUERY ================= -->
+<script src="<?= base_url('assets/sbadmin2/vendor/jquery/jquery.min.js'); ?>"></script>
+
+<!-- ================= SELECT2 ================= -->
+<link href="<?= base_url('assets/vendor/select2/css/select2.min.css'); ?>" rel="stylesheet">
+<script src="<?= base_url('assets/vendor/select2/js/select2.min.js'); ?>"></script>
 
 <head>
     <meta charset="utf-8">

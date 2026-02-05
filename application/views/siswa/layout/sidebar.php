@@ -180,6 +180,16 @@
     </style>
 
 <?php $active = isset($active) ? $active : ''; ?>
+<?php
+$siswa_id = $this->session->userdata('siswa_id');
+
+$ketua_kelas = $this->db
+    ->select('id, nama')
+    ->from('kelas')
+    ->where('ketua_kelas_id', $siswa_id)
+    ->get()
+    ->row();
+?>
 
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
@@ -209,6 +219,17 @@
         <span>Jadwal Pelajaran</span>
     </a>
 </li>
+<?php if (!empty($ketua_kelas)): ?>
+<hr class="sidebar-divider">
+
+<li class="nav-item <?= ($active=='laporan_pembelajaran'?'active':''); ?>">
+    <a class="nav-link" href="<?= site_url('SiswaLaporanPembelajaran'); ?>">
+        <i class="fas fa-file-alt"></i>
+        <span>Laporan Pembelajaran</span>
+    </a>
+</li>
+<?php endif; ?>
+
 <hr class="sidebar-divider">
 <li class="nav-item <?= ($active=='nilai_rapor'?'active':''); ?>">
     <a class="nav-link" href="<?= site_url('Nilairapor_siswa'); ?>">

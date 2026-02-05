@@ -49,6 +49,7 @@ $group_buku_tamu = in_array($active, ['buku_tamu']);
 $group_kurikulum = in_array($active, [
     'jadwal_mengajar',
     'laporan_mengajar',
+    'laporan_pembelajaran_siswa',
     'mapel',
     'jam_sekolah',
     'bacaan_import',
@@ -183,6 +184,10 @@ $group_tutorial = in_array($active, [
             <a class="collapse-item <?= $active=='laporan_mengajar'?'active':'' ?>"
                href="<?= site_url('laporan_mengajar') ?>">
                Laporan Mengajar Guru
+            </a>
+            <a class="collapse-item <?= $active=='laporan_pembelajaran_siswa'?'active':'' ?>"
+            href="<?= site_url('AdminLaporanPembelajaran') ?>">
+            Report Siswa
             </a>
             <a class="collapse-item <?= $active=='bacaan_import'?'active':'' ?>"
                href="<?= site_url('AdminBacaan/import') ?>">
