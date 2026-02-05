@@ -102,18 +102,38 @@ public function export_pdf()
 
     $data['laporan'] = $this->Laporan_pembelajaran_siswa_model->get_all($filter);
 
-    // ===== TCPDF CONFIG =====
+    // ===============================
+    // TCPDF CONFIG (WAJIB)
+    // ===============================
+    $this->pdf->SetCreator('Sistem Akademik');
+    $this->pdf->SetAuthor('Admin');
     $this->pdf->SetTitle('Laporan Jam Kosong Siswa');
-    $this->pdf->SetMargins(10, 10, 10);
-    $this->pdf->AddPage('P');
 
+    // FONT (lebih lebar & enak dibaca)
+    $this->pdf->SetFont('helvetica', '', 9);
+
+    // MARGIN
+    $this->pdf->SetMargins(15, 12, 15);
+    $this->pdf->SetHeaderMargin(0);
+    $this->pdf->SetFooterMargin(0);
+
+    // AUTO PAGE BREAK
+    $this->pdf->SetAutoPageBreak(TRUE, 12);
+
+    // 🔥 LANDSCAPE (INI KUNCI UTAMA)
+    $this->pdf->AddPage('L');
+
+    // LOAD VIEW
     $html = $this->load->view(
         'admin/laporan_pembelajaran_pdf',
         $data,
         true
     );
 
+    // RENDER HTML
     $this->pdf->writeHTML($html, true, false, true, false, '');
+
+    // OUTPUT
     $this->pdf->Output('Laporan_Jam_Kosong_Siswa.pdf', 'I');
 }
 

@@ -1,3 +1,30 @@
+<style>
+    /* scroll tabel mobile */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* paksa lebar tabel */
+.table-responsive table {
+    min-width: 800px;
+}
+
+/* biar kolom rapi */
+.table th,
+.table td {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* alasan boleh panjang */
+.td-alasan {
+    white-space: normal;
+    min-width: 220px;
+}
+
+    </style>
 <div class="container-fluid">
 
 <h4 class="mb-4">
@@ -88,33 +115,42 @@
         Belum ada laporan jam kosong.
     </div>
 <?php else: ?>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Tanggal</th>
-            <th>Hari</th>
-            <th>Jam</th>
-            <th>Mapel</th>
-            <th>Guru</th>
-            <th>Alasan</th>
-        </tr>
-    </thead>
-    <tbody>
-    <?php foreach ($laporan as $l): ?>
-        <tr>
-            <td><?= $l->tanggal ?></td>
-            <td><?= $l->hari ?></td>
-            <td>
-                <?= $l->jam_mulai ?> – <?= $l->jam_selesai ?>
-            </td>
-            <td><?= $l->nama_mapel ?></td>
-            <td><?= $l->nama_guru ?></td>
-            <td><?= $l->alasan ?></td>
-        </tr>
-    <?php endforeach; ?>
-    </tbody>
-</table>
+
+<small class="text-muted d-block d-md-none mb-2">
+    ← Geser tabel ke kanan →
+</small>
+
+<div class="table-responsive">
+    <table class="table table-bordered mb-0">
+        <thead class="thead-light">
+            <tr>
+                <th>Tanggal</th>
+                <th>Hari</th>
+                <th>Jam</th>
+                <th>Mapel</th>
+                <th>Guru</th>
+                <th>Alasan</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($laporan as $l): ?>
+            <tr>
+                <td><?= $l->tanggal ?></td>
+                <td><?= $l->hari ?></td>
+                <td>
+                    <?= $l->jam_mulai ?> – <?= $l->jam_selesai ?>
+                </td>
+                <td><?= $l->nama_mapel ?></td>
+                <td><?= $l->nama_guru ?></td>
+                <td class="td-alasan"><?= nl2br($l->alasan) ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
 <?php endif; ?>
+
 
 </div>
 </div>
