@@ -54,6 +54,24 @@
     <h1 class="h4 mb-4 text-gray-800">Selamat Datang, <?= $siswa->nama ?> 👋</h1>
 
     <div class="row">
+        <?php if (!empty($ketua_kelas)): ?>
+<div class="col-md-4 col-sm-6 mb-3">
+    <div class="card border-left-danger shadow h-100 py-2">
+        <div class="card-body">
+            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                Jabatan
+            </div>
+            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                🏅 Ketua Kelas
+            </div>
+            <small class="text-muted">
+                <?= $ketua_kelas->nama ?>
+            </small>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 
         <!-- Card NISN -->
         <div class="col-md-4 col-sm-6 mb-3">

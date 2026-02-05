@@ -1,17 +1,34 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h4>Data Kelas</h4>
   <div>
-    <a href="<?= site_url('kelas/export_excel') ?>" class="btn btn-success btn-sm"><i class="fas fa-file-excel"></i> Export</a>
-    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importModal"><i class="fas fa-upload"></i> Import</button>
-    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addModal"><i class="fas fa-plus"></i> Tambah</button>
+    <a href="<?= site_url('kelas/export_excel') ?>" class="btn btn-success btn-sm">
+      <i class="fas fa-file-excel"></i> Export
+    </a>
+    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importModal">
+      <i class="fas fa-upload"></i> Import
+    </button>
+    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addModal">
+      <i class="fas fa-plus"></i> Tambah
+    </button>
   </div>
 </div>
+
 <?php if ($this->session->flashdata('success')): ?>
   <div class="alert alert-success alert-dismissible fade show" role="alert">
     <i class="fas fa-check-circle"></i>
     <?= $this->session->flashdata('success'); ?>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
+    <button type="button" class="close" data-dismiss="alert">
+      <span>&times;</span>
+    </button>
+  </div>
+<?php endif; ?>
+
+<?php if ($this->session->flashdata('error')): ?>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-circle"></i>
+    <?= $this->session->flashdata('error'); ?>
+    <button type="button" class="close" data-dismiss="alert">
+      <span>&times;</span>
     </button>
   </div>
 <?php endif; ?>
@@ -19,11 +36,12 @@
 <table class="table table-bordered table-striped table-responsive-sm">
   <thead class="thead-light">
     <tr>
-      <th>No</th>
+      <th width="40">No</th>
       <th>Nama Kelas</th>
       <th>Wali Kelas</th>
-      <th>Kapasitas</th>
-      <th>Jumlah Siswa</th>
+      <th>Ketua Kelas</th>
+      <th width="90">Kapasitas</th>
+      <th width="120">Jumlah Siswa</th>
       <th width="120">Aksi</th>
     </tr>
   </thead>
@@ -32,12 +50,19 @@
       <tr>
         <td><?= $no++ ?></td>
         <td><?= $k->nama ?></td>
-        <td><?= $k->wali_nama ?></td>
+        <td><?= $k->wali_nama ?? '-' ?></td>
+        <td><?= $k->ketua_nama ?? '-' ?></td>
         <td><?= $k->kapasitas ?></td>
         <td><?= $k->jumlah_siswa ?></td>
         <td>
-          <a href="<?= site_url('kelas/edit/'.$k->id) ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-          <a href="<?= site_url('kelas/delete/'.$k->id) ?>" onclick="return confirm('Hapus data ini?')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+          <a href="<?= site_url('kelas/edit/'.$k->id) ?>" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit"></i>
+          </a>
+          <a href="<?= site_url('kelas/delete/'.$k->id) ?>"
+             onclick="return confirm('Hapus data ini?')"
+             class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i>
+          </a>
         </td>
       </tr>
     <?php endforeach; ?>
@@ -46,25 +71,50 @@
 
 <?= $pagination ?>
 
-<!-- Modal Tambah -->
+<!-- ========================= MODAL TAMBAH ========================= -->
 <div class="modal fade" id="addModal">
   <div class="modal-dialog">
     <div class="modal-content">
       <form method="post" action="<?= site_url('kelas/add') ?>">
-        <div class="modal-header"><h5>Tambah Kelas</h5></div>
+        <div class="modal-header">
+          <h5 class="modal-title">Tambah Kelas</h5>
+        </div>
         <div class="modal-body">
-          <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
-          <div class="form-group"><label>Nama Kelas</label><input type="text" name="nama" class="form-control" required></div>
+
+          <input type="hidden"
+                 name="<?= $this->security->get_csrf_token_name(); ?>"
+                 value="<?= $this->security->get_csrf_hash(); ?>">
+
+          <div class="form-group">
+            <label>Nama Kelas</label>
+            <input type="text" name="nama" class="form-control" required>
+          </div>
+
           <div class="form-group">
             <label>Wali Kelas</label>
             <select name="wali_kelas_id" class="form-control">
               <option value="">-- Pilih Guru --</option>
-              <?php foreach($guru as $g): ?>
+              <?php foreach ($guru as $g): ?>
                 <option value="<?= $g->id ?>"><?= $g->nama ?></option>
               <?php endforeach; ?>
             </select>
           </div>
-          <div class="form-group"><label>Kapasitas</label><input type="number" name="kapasitas" class="form-control" value="30"></div>
+
+          <div class="form-group">
+            <label>Ketua Kelas</label>
+            <select name="ketua_kelas_id" class="form-control">
+              <option value="">-- Pilih Siswa --</option>
+              <?php foreach ($siswa as $s): ?>
+                <option value="<?= $s->id ?>"><?= $s->nama ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Kapasitas</label>
+            <input type="number" name="kapasitas" class="form-control" value="30">
+          </div>
+
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Simpan</button>
@@ -75,58 +125,56 @@
   </div>
 </div>
 
-<!-- Modal Import -->
+<!-- ========================= MODAL IMPORT ========================= -->
 <div class="modal fade" id="importModal">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form method="post" action="<?= site_url('kelas/import_excel') ?>" enctype="multipart/form-data">
-        <div class="modal-header"><h5>Import Data Kelas</h5></div>
+      <form method="post"
+            action="<?= site_url('kelas/import_excel') ?>"
+            enctype="multipart/form-data">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Import Data Kelas</h5>
+        </div>
+
         <div class="modal-body">
-          <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+          <input type="hidden"
+                 name="<?= $this->security->get_csrf_token_name(); ?>"
+                 value="<?= $this->security->get_csrf_hash(); ?>">
+
           <div class="form-group">
             <label>Pilih File Excel</label>
-            <input type="file" name="file" accept=".xls,.xlsx" class="form-control" required>
+            <input type="file"
+                   name="file"
+                   accept=".xls,.xlsx"
+                   class="form-control"
+                   required>
           </div>
         </div>
+
         <div class="modal-footer">
           <button type="submit" class="btn btn-success">Import</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
         </div>
+
       </form>
     </div>
   </div>
-  <style>
-/* === Pagination Modern (Bootstrap 5 Style) === */
+</div>
+
+<style>
 .pagination .page-item .page-link {
   color: #007bff;
   border: 1px solid #dee2e6;
   margin: 0 2px;
   border-radius: 6px;
-  transition: all 0.2s ease-in-out;
 }
-
 .pagination .page-item.active .page-link {
   background-color: #007bff;
-  border-color: #007bff;
   color: #fff;
 }
-
 .pagination .page-item .page-link:hover {
   background-color: #007bff;
   color: #fff;
-  border-color: #007bff;
-}
-
-body.dark-mode .pagination .page-item .page-link {
-  background-color: #1f1f1f;
-  color: #ccc;
-  border-color: #333;
-}
-
-body.dark-mode .pagination .page-item.active .page-link {
-  background-color: #0d6efd;
-  color: #fff;
 }
 </style>
-
-</div>

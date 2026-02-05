@@ -40,6 +40,16 @@ class SiswaDashboard extends CI_Controller {
 
     // ambil data siswa
     $data['siswa'] = $this->getSiswa();
+    // ===============================
+// CEK APAKAH SISWA ADALAH KETUA KELAS
+// ===============================
+$data['ketua_kelas'] = $this->db
+    ->select('kelas.id, kelas.nama')
+    ->from('kelas')
+    ->where('kelas.ketua_kelas_id', $data['siswa']->id)
+    ->get()
+    ->row();
+
     if (!$data['siswa']) {
         redirect('SiswaAuth/logout');
     }
