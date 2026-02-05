@@ -23,7 +23,7 @@ th {
 </style>
 
 <h3>LAPORAN JAM KOSONG SISWA</h3>
-<div class="subtitle">Tahun Ajaran 2026/2027</div>
+<div class="subtitle">Tahun Ajaran 2025/2026</div>
 
 <table border="1" cellpadding="4" cellspacing="0" width="100%">
     <colgroup>
