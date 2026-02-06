@@ -21,7 +21,30 @@ function is_kesiswaan() {
 
 function only_admin() {
     if (!is_admin()) {
-        show_error('Akses ditolak. Hanya Admin yang dapat mengakses halaman ini.', 403, 'Forbidden');
+        show_error(
+            'Akses ditolak. Hanya Admin yang dapat mengakses halaman ini.',
+            403,
+            'Forbidden'
+        );
+        exit;
+    }
+}
+
+/**
+ * ✅ GURU & WAKAKUR
+ */
+function is_guru() {
+    $CI =& get_instance();
+
+    // wajib login
+    if (!$CI->session->userdata('user_id')) {
+        redirect('auth/login');
+        exit;
+    }
+
+    // guru ATAU wakakur
+    if (!in_array($CI->session->userdata('role_id'), [3, 4])) {
+        redirect('auth/login');
         exit;
     }
 }

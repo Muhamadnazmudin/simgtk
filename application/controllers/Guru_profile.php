@@ -7,12 +7,7 @@ class Guru_profile extends CI_Controller {
     {
         parent::__construct();
 
-        if (
-            !$this->session->userdata('logged_in') ||
-            $this->session->userdata('role_id') != 3
-        ) {
-            redirect('auth/login');
-        }
+        is_guru();
 
         // 🔥 TAMBAHKAN INI
         $this->load->model(['Guru_model','User_model']);

@@ -8,82 +8,106 @@ class Auth extends CI_Controller {
     $this->load->model(['User_model','Tahun_model']);
   }
 
-  public function login(){
-    if($this->input->post()){
-      
-      $username = $this->input->post('username');
-      $password = $this->input->post('password');
-      $tahun_id = $this->input->post('tahun_id');
+  public function login()
+{
+    if ($this->input->post()) {
 
-      $user = $this->User_model->get_by_username($username);
+        $username = $this->input->post('username');
+        $password = $this->input->post('password');
+        $tahun_id = $this->input->post('tahun_id');
 
-      if($user && password_verify($password, $user->password)){
+        $user = $this->User_model->get_by_username($username);
 
-        // === Simpan session standar ===
-        $this->session->set_userdata([
-          'logged_in' => TRUE,
-          'user_id'   => $user->id,
-          'username'  => $user->username,
-          'nama'      => $user->nama,
-          'role_id'   => $user->role_id,
-          'guru_id'   => $user->guru_id,   // penting untuk walikelas
-          'role_name' => $this->User_model->role_name($user->role_id),
-          'tahun_id'  => $tahun_id
-        ]);
+        if ($user && password_verify($password, $user->password)) {
 
-       // ======================================================
-// 🔵 ROLE GURU (role_id = 3)
-// ======================================================
-if ($user->role_id == 3) {
+            // ================= SESSION DASAR =================
+            $this->session->set_userdata([
+                'logged_in' => TRUE,
+                'user_id'   => $user->id,
+                'username'  => $user->username,
+                'nama'      => $user->nama,
+                'role_id'   => $user->role_id,
+                'guru_id'   => $user->guru_id,
+                'role_name' => $this->User_model->role_name($user->role_id),
+                'tahun_id'  => $tahun_id
+            ]);
 
-    // cek apakah guru ini wali kelas
-    $kelas = $this->db->get_where('kelas', [
-        'wali_kelas_id' => $user->guru_id
-    ])->row();
+            // ======================================================
+            // 🔵 GURU & GURU + WALIKELAS (role_id = 3)
+            // ======================================================
+            if ($user->role_id == 3) {
 
-    // simpan flag saja (BUKAN redirect)
-    if ($kelas) {
-        $this->session->set_userdata([
-            'is_walikelas' => true,
-            'kelas_id'     => $kelas->id,
-            'kelas_nama'   => $kelas->nama
-        ]);
+                $kelas = $this->db->get_where('kelas', [
+                    'wali_kelas_id' => $user->guru_id
+                ])->row();
+
+                if ($kelas) {
+                    $this->session->set_userdata([
+                        'is_walikelas' => true,
+                        'kelas_id'     => $kelas->id,
+                        'kelas_nama'   => $kelas->nama
+                    ]);
+                } else {
+                    $this->session->set_userdata([
+                        'is_walikelas' => false
+                    ]);
+                }
+
+                redirect('guru_dashboard');
+            }
+
+            // ======================================================
+            // 🟣 GURU + WAKAKUR (role_id = 4)
+            // ======================================================
+            if ($user->role_id == 4) {
+
+                // wakakur juga guru → cek wali kelas juga
+                $kelas = $this->db->get_where('kelas', [
+                    'wali_kelas_id' => $user->guru_id
+                ])->row();
+
+                if ($kelas) {
+                    $this->session->set_userdata([
+                        'is_walikelas' => true,
+                        'kelas_id'     => $kelas->id,
+                        'kelas_nama'   => $kelas->nama
+                    ]);
+                } else {
+                    $this->session->set_userdata([
+                        'is_walikelas' => false
+                    ]);
+                }
+
+                // 👉 tetap masuk dashboard guru
+                redirect('guru_dashboard');
+            }
+
+            // ======================================================
+            // 🔴 ADMIN
+            // ======================================================
+            if ($user->role_id == 1) {
+                redirect('dashboard');
+            }
+
+            // ======================================================
+            // 🟠 KESISWAAN
+            // ======================================================
+            if ($user->role_id == 2) {
+                redirect('dashboard');
+            }
+
+        } else {
+            $this->session->set_flashdata('error', 'Username atau password salah.');
+            redirect('auth/login');
+        }
+
     } else {
-        $this->session->set_userdata([
-            'is_walikelas' => false
-        ]);
+        $data['title'] = 'Login';
+        $data['tahun'] = $this->Tahun_model->get_all();
+        $this->load->view('auth/login', $data);
     }
-
-    // 👉 SEMUA GURU MASUK DASHBOARD GURU
-    redirect('guru_dashboard');
 }
 
-
-        // ======================================================
-        // 🔴 ADMIN → ke dashboard biasa
-        // ======================================================
-        if ($user->role_id == 1) {
-            redirect('dashboard');
-        }
-
-        // ======================================================
-        // 🟠 KESISWAAN → tetap ke dashboard
-        // ======================================================
-        if ($user->role_id == 2) {
-            redirect('dashboard');
-        }
-
-      } else {
-        $this->session->set_flashdata('error','Username atau password salah.');
-        redirect('auth/login');
-      }
-
-    } else {
-      $data['title'] = 'Login';
-      $data['tahun'] = $this->Tahun_model->get_all();
-      $this->load->view('auth/login', $data);
-    }
-  }
 
 
   public function logout(){

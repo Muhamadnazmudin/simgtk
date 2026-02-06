@@ -35,6 +35,17 @@
                 <td><?= $sekolah->nama_kepala_sekolah ?> (<?= $sekolah->nip_kepala_sekolah ?>)</td>
             </tr>
             <tr>
+    <th>Waka Kurikulum</th>
+    <td>
+        <?php if (!empty($sekolah->nama_waka_kurikulum)): ?>
+            <?= $sekolah->nama_waka_kurikulum ?>
+        <?php else: ?>
+            <span class="text-muted">-</span>
+        <?php endif; ?>
+    </td>
+</tr>
+
+            <tr>
                 <th>Logo</th>
                 <td>
                     <?php if ($sekolah->logo): ?>

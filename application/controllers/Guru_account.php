@@ -7,13 +7,7 @@ class Guru_account extends CI_Controller {
     {
         parent::__construct();
 
-        if (
-            !$this->session->userdata('logged_in') ||
-            $this->session->userdata('role_id') != 3
-        ) {
-            redirect('auth/login');
-        }
-
+        is_guru();
         $this->load->model('User_model');
         $this->load->library(['form_validation','upload']);
     }

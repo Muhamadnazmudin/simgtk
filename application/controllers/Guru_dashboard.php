@@ -8,11 +8,12 @@ class Guru_dashboard extends CI_Controller {
     parent::__construct();
     $this->load->helper('tanggal');
     if (
-      !$this->session->userdata('logged_in') ||
-      $this->session->userdata('role_id') != 3
-    ) {
-      redirect('auth/login');
-    }
+  !$this->session->userdata('logged_in') ||
+  !in_array($this->session->userdata('role_id'), [3, 4])
+) {
+  redirect('auth/login');
+}
+
   }
 
  public function index()

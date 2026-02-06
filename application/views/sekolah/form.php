@@ -61,18 +61,39 @@
             <input type="file" name="logo" class="form-control">
         </div>
 
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <label>Nama Kepala Sekolah</label>
-                <input type="text" name="nama_kepala_sekolah" class="form-control"
-                       value="<?= isset($row) ? $row->nama_kepala_sekolah : '' ?>">
-            </div>
-            <div class="col-md-6">
-                <label>NIP Kepala Sekolah</label>
-                <input type="text" name="nip_kepala_sekolah" class="form-control"
-                       value="<?= isset($row) ? $row->nip_kepala_sekolah : '' ?>">
-            </div>
-        </div>
+        <!-- ================= KEPALA SEKOLAH ================= -->
+<div class="row mt-3">
+    <div class="col-md-6">
+        <label>Nama Kepala Sekolah</label>
+        <input type="text" name="nama_kepala_sekolah" class="form-control"
+               value="<?= isset($row) ? $row->nama_kepala_sekolah : '' ?>">
+    </div>
+    <div class="col-md-6">
+        <label>NIP Kepala Sekolah</label>
+        <input type="text" name="nip_kepala_sekolah" class="form-control"
+               value="<?= isset($row) ? $row->nip_kepala_sekolah : '' ?>">
+    </div>
+</div>
+
+<!-- ================= WAKA KURIKULUM ================= -->
+<div class="mt-3">
+    <label>Waka Kurikulum</label>
+    <select name="waka_kurikulum_id" class="form-control">
+        <option value="">- Pilih Guru -</option>
+        <?php if (!empty($guru)): ?>
+            <?php foreach ($guru as $g): ?>
+                <option value="<?= $g->id ?>"
+                    <?= isset($row) && $row->waka_kurikulum_id == $g->id ? 'selected' : '' ?>>
+                    <?= $g->nama ?>
+                </option>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </select>
+    <small class="text-muted">
+        Guru yang dipilih akan menjadi Waka Kurikulum
+    </small>
+</div>
+
 
         <button class="btn btn-success mt-4">
             <i class="fas fa-save"></i> Simpan

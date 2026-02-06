@@ -1,3 +1,4 @@
+
 <!-- ================= SIDEBAR GURU ================= -->
 <style> 
 html, body {
@@ -391,7 +392,25 @@ html, body {
         <span>Menu Wali Kelas</span>
       </a>
     </li>
-  <?php endif; ?>
+<?php endif; ?>
+
+
+<?php if ($this->session->userdata('role_id') == 4): ?>
+    <hr class="sidebar-divider">
+    <div class="sidebar-heading">
+        Akses Wakakur
+    </div>
+
+    <li class="nav-item <?= ($active=='wakakur_report_siswa')?'active':'' ?>">
+    <a class="nav-link text-info"
+       href="<?= site_url('WakakurLaporanPembelajaran') ?>">
+        <i class="fas fa-chart-line"></i>
+        <span>Report Siswa</span>
+    </a>
+</li>
+
+<?php endif; ?>
+
 
   <hr class="sidebar-divider d-none d-md-block">
 
