@@ -1,33 +1,30 @@
 <style>
-    /* scroll tabel mobile */
+/* ===== RESPONSIVE TABLE ===== */
 .table-responsive {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-/* paksa lebar tabel */
 .table-responsive table {
     min-width: 800px;
 }
 
-/* biar kolom rapi */
 .table th,
 .table td {
     white-space: nowrap;
     vertical-align: middle;
 }
 
-/* alasan boleh panjang */
 .td-alasan {
     white-space: normal;
     min-width: 220px;
 }
+</style>
 
-    </style>
 <div class="container-fluid">
 
-<h4 class="mb-4">
+<h4 class="mb-3">
     <i class="fas fa-file-alt"></i> Laporan Jam Kosong (Ketua Kelas)
 </h4>
 
@@ -37,79 +34,109 @@
 </div>
 <?php endif; ?>
 
-<div class="card mb-4">
-<div class="card-body">
-
-<form method="post" action="<?= site_url('SiswaLaporanPembelajaran/simpan') ?>">
-    <input type="hidden"
-       name="<?= $this->security->get_csrf_token_name(); ?>"
-       value="<?= $this->security->get_csrf_hash(); ?>">
-
-<div class="form-row">
-    <div class="col-md-3">
-        <label>Hari</label>
-        <select name="hari" id="hari" class="form-control" required>
-            <option value="">-- Pilih Hari --</option>
-            <option>Senin</option>
-            <option>Selasa</option>
-            <option>Rabu</option>
-            <option>Kamis</option>
-            <option>Jumat</option>
-            <option>Sabtu</option>
-        </select>
-    </div>
-
-    <div class="col-md-3">
-        <label>Jam Awal</label>
-        <select name="jam_mulai_id" id="jamMulai" class="form-control" required>
-            <option value="">-- Jam Awal --</option>
-        </select>
-    </div>
-
-    <div class="col-md-3">
-        <label>Jam Akhir</label>
-        <select name="jam_selesai_id" id="jamSelesai" class="form-control" required>
-            <option value="">-- Jam Akhir --</option>
-        </select>
-    </div>
-</div>
-
-<div class="form-row mt-3">
-    <div class="col-md-6">
-        <label>Mapel</label>
-        <select name="mapel_id" class="form-control select2" required>
-            <option value="">-- Pilih Mapel --</option>
-            <?php foreach($mapel as $m): ?>
-                <option value="<?= $m->id_mapel ?>">
-                    <?= $m->nama_mapel ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-
-    <div class="col-md-6">
-        <label>Guru</label>
-        <select name="guru_id" class="form-control select2" required>
-            <option value="">-- Pilih Guru --</option>
-            <?php foreach($guru as $g): ?>
-                <option value="<?= $g->id ?>">
-                    <?= $g->nama ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-</div>
-
-<div class="form-group mt-3">
-    <label>Alasan</label>
-    <textarea name="alasan" class="form-control" rows="3" required></textarea>
-</div>
-
-<button class="btn btn-danger">
-    <i class="fas fa-paper-plane"></i> Kirim Laporan
+<!-- ================= BUTTON MODAL ================= -->
+<button class="btn btn-danger mb-3" data-toggle="modal" data-target="#modalLaporan">
+    <i class="fas fa-plus"></i> Tambah Laporan
 </button>
 
-</form>
+<!-- ================= MODAL FORM ================= -->
+<div class="modal fade" id="modalLaporan" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+            <i class="fas fa-file-alt"></i> Tambah Laporan Jam Kosong
+        </h5>
+        <button type="button" class="close" data-dismiss="modal">
+            <span>&times;</span>
+        </button>
+      </div>
+
+      <form method="post" action="<?= site_url('SiswaLaporanPembelajaran/simpan') ?>">
+        <div class="modal-body">
+
+            <input type="hidden"
+                name="<?= $this->security->get_csrf_token_name(); ?>"
+                value="<?= $this->security->get_csrf_hash(); ?>">
+
+            <div class="form-row">
+                <div class="col-md-4">
+                    <label>Hari</label>
+                    <select name="hari" id="hari" class="form-control" required>
+                        <option value="">-- Pilih Hari --</option>
+                        <option>Senin</option>
+                        <option>Selasa</option>
+                        <option>Rabu</option>
+                        <option>Kamis</option>
+                        <option>Jumat</option>
+                        <option>Sabtu</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label>Jam Awal</label>
+                    <select name="jam_mulai_id" id="jamMulai" class="form-control" required>
+                        <option value="">-- Jam Awal --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label>Jam Akhir</label>
+                    <select name="jam_selesai_id" id="jamSelesai" class="form-control" required>
+                        <option value="">-- Jam Akhir --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row mt-3">
+                <div class="col-md-6">
+                    <label>Mapel</label>
+                    <select name="mapel_id" class="form-control select2" required>
+                        <option value="">-- Pilih Mapel --</option>
+                        <?php foreach($mapel as $m): ?>
+                            <option value="<?= $m->id_mapel ?>">
+                                <?= $m->nama_mapel ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Guru</label>
+                    <select name="guru_id" class="form-control select2" required>
+                        <option value="">-- Pilih Guru --</option>
+                        <?php foreach($guru as $g): ?>
+                            <option value="<?= $g->id ?>">
+                                <?= $g->nama ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group mt-3">
+                <label>Alasan</label>
+                <textarea name="alasan" class="form-control" rows="3" required></textarea>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                Batal
+            </button>
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-paper-plane"></i> Kirim Laporan
+            </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================= TABLE ================= -->
 <?php if (empty($laporan)): ?>
     <div class="alert alert-info">
         Belum ada laporan jam kosong.
@@ -121,7 +148,7 @@
 </small>
 
 <div class="table-responsive">
-    <table class="table table-bordered mb-0">
+    <table class="table table-bordered">
         <thead class="thead-light">
             <tr>
                 <th>Tanggal</th>
@@ -137,9 +164,7 @@
             <tr>
                 <td><?= $l->tanggal ?></td>
                 <td><?= $l->hari ?></td>
-                <td>
-                    <?= $l->jam_mulai ?> – <?= $l->jam_selesai ?>
-                </td>
+                <td><?= $l->jam_mulai ?> – <?= $l->jam_selesai ?></td>
                 <td><?= $l->nama_mapel ?></td>
                 <td><?= $l->nama_guru ?></td>
                 <td class="td-alasan"><?= nl2br($l->alasan) ?></td>
@@ -151,25 +176,23 @@
 
 <?php endif; ?>
 
-
-</div>
 </div>
 
-</div>
+<!-- ================= SCRIPT ================= -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // INIT SELECT2
-    if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
+    // SELECT2 (WAJIB dropdownParent)
+    if (typeof $ !== 'undefined' && $.fn.select2) {
         $('.select2').select2({
-            width: '100%'
+            width: '100%',
+            dropdownParent: $('#modalLaporan')
         });
     }
 
     const hari       = document.getElementById('hari');
     const jamMulai   = document.getElementById('jamMulai');
     const jamSelesai = document.getElementById('jamSelesai');
-
     let jamData = [];
 
     function resetJam() {
@@ -177,32 +200,26 @@ document.addEventListener('DOMContentLoaded', function () {
         jamSelesai.innerHTML = '<option value="">-- Jam Akhir --</option>';
     }
 
-    // LOAD JAM BY HARI
     hari.addEventListener('change', function () {
         resetJam();
-
         if (!this.value) return;
 
         fetch(`<?= site_url('SiswaLaporanPembelajaran/ajax_jam_by_hari') ?>?hari=${this.value}`)
             .then(res => res.json())
             .then(data => {
                 jamData = data;
-
                 data.forEach(jam => {
                     const opt = document.createElement('option');
                     opt.value = jam.id_jam;
                     opt.textContent =
-                        `${jam.nama_jam} (${jam.jam_mulai.substring(0,5)}–${jam.jam_selesai.substring(0,5)})`;
+                        `${jam.nama_jam} (${jam.jam_mulai.substr(0,5)}–${jam.jam_selesai.substr(0,5)})`;
                     jamMulai.appendChild(opt);
                 });
-            })
-            .catch(err => console.error(err));
+            });
     });
 
-    // JAM AKHIR FILTER
     jamMulai.addEventListener('change', function () {
         jamSelesai.innerHTML = '<option value="">-- Jam Akhir --</option>';
-
         const mulaiId = parseInt(this.value);
         if (!mulaiId) return;
 
@@ -212,9 +229,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 const opt = document.createElement('option');
                 opt.value = jam.id_jam;
                 opt.textContent =
-                    `${jam.nama_jam} (${jam.jam_mulai.substring(0,5)}–${jam.jam_selesai.substring(0,5)})`;
+                    `${jam.nama_jam} (${jam.jam_mulai.substr(0,5)}–${jam.jam_selesai.substr(0,5)})`;
                 jamSelesai.appendChild(opt);
             });
+    });
+
+    // RESET FORM SAAT MODAL DITUTUP
+    $('#modalLaporan').on('hidden.bs.modal', function () {
+        this.querySelector('form').reset();
+        resetJam();
+        $('.select2').val(null).trigger('change');
     });
 
 });
