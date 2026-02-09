@@ -223,46 +223,54 @@ elseif ($this->session->userdata('chat_state') === 'tunggu_nama') {
     ====================== */
     elseif ($this->session->userdata('chat_state') === 'tunggu_tgl') {
 
-      $tries = $this->session->userdata('nisn_try') ?? 0;
+  $tries = $this->session->userdata('nisn_try') ?? 0;
 
-      if ($tries >= 3) {
-        $reply = "🔒 Percobaan dibatasi.\nCoba lagi nanti.";
-      }
-      elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $text)) {
-        $reply = "⚠️ Format tanggal salah.\nGunakan YYYY-MM-DD.";
-      }
-      else {
+  if ($tries >= 3) {
+    $reply = "🔒 Percobaan dibatasi.\nCoba lagi nanti.";
+  }
+  elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $text)) {
+    $reply = "⚠️ Format tanggal salah.\nGunakan YYYY-MM-DD.";
+  }
+  else {
 
-        $this->session->set_userdata('nisn_try', $tries + 1);
-        $nama = $this->session->userdata('tmp_nama');
+    $this->session->set_userdata('nisn_try', $tries + 1);
 
-        $this->db
-          ->select('s.nama, s.nisn, s.tgl_lahir, k.nama as kelas')
-          ->from('siswa s')
-          ->join('kelas k', 'k.id = s.id_kelas', 'left')
-          ->where('s.tahun_id', $tahun_id)
-          ->where('DATE(s.tgl_lahir)', $text)
-          ->like('LOWER(s.nama)', $nama)
-          ->limit(1);
+    // 🔑 ambil ID siswa yang SUDAH dikunci
+    $siswa_id = $this->session->userdata('tmp_siswa_id');
 
-        $siswa = $this->db->get()->row();
+    $this->db
+      ->select('s.nama, s.nisn, s.tgl_lahir, k.nama as kelas')
+      ->from('siswa s')
+      ->join('kelas k', 'k.id = s.id_kelas', 'left')
+      ->where('s.id', $siswa_id)
+      ->where('s.tahun_id', $tahun_id)
+      ->where('DATE(s.tgl_lahir)', $text)
+      ->limit(1);
 
-        $this->session->unset_userdata(['chat_state','tmp_nama','nisn_try']);
+    $siswa = $this->db->get()->row();
 
-        if ($siswa) {
-          $reply =
-            "✅ *DATA VALID*\n" .
-            "👤 Nama : *{$siswa->nama}*\n" .
-            "📅 Lahir: *{$siswa->tgl_lahir}*\n" .
-            "🆔 NISN : *{$siswa->nisn}*\n" .
-            "🏫 Kelas: *{$siswa->kelas}*";
-        } else {
-          $reply =
-            "❌ Data tidak cocok.\n" .
-            "Periksa *nama & tanggal lahir*.";
-        }
-      }
+    // 🧹 RESET STATE CHAT (WAJIB)
+    $this->session->unset_userdata([
+      'chat_state',
+      'tmp_siswa_id',
+      'nisn_try'
+    ]);
+
+    if ($siswa) {
+      $reply =
+        "✅ *DATA VALID*\n" .
+        "👤 Nama : *{$siswa->nama}*\n" .
+        "📅 Lahir: *{$siswa->tgl_lahir}*\n" .
+        "🆔 NISN : *{$siswa->nisn}*\n" .
+        "🏫 Kelas: *{$siswa->kelas}*";
+    } else {
+      $reply =
+        "❌ Data tidak cocok.\n" .
+        "Periksa *tanggal lahir*.";
     }
+  }
+}
+
 
     /* ======================
        DEFAULT
