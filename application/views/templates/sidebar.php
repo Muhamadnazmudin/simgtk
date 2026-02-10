@@ -383,6 +383,14 @@ $group_tutorial = in_array($active, [
      ROLE: KESISWAAN (FLAT MENU)
 ================================= -->
 <?php if ($role == 'kesiswaan'): ?>
+<div class="sidebar-heading">Manajemen Data</div>
+
+<li class="nav-item <?= $active=='siswa'?'active':'' ?>">
+    <a class="nav-link" href="<?= site_url('siswa') ?>">
+        <i class="fas fa-user-graduate"></i>
+        <span>Data Siswa</span>
+    </a>
+</li>
 
 <div class="sidebar-heading">Mutasi</div>
 

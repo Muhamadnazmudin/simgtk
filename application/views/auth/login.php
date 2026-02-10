@@ -12,14 +12,56 @@
   
   <style>
     body {
-      background: radial-gradient(circle at top left, #1f1f2e, #111121);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Poppins', sans-serif;
-      color: #eee;
-    }
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #06f41d;
+
+  background: linear-gradient(135deg, #ceeed1, #c8e6c9, #ffffff);
+  overflow: hidden;
+  position: relative;
+}
+/* container partikel */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* butiran */
+.particles span {
+  position: absolute;
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  animation: floatUp linear infinite;
+}
+
+/* animasi naik pelan */
+@keyframes floatUp {
+  from {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(-10vh);
+    opacity: 0;
+  }
+}
+
 
     .login-card {
       background: #1e1e2f;
@@ -30,6 +72,11 @@
       transition: transform 0.3s ease-in-out, box-shadow 0.3s;
       animation: fadeIn 0.8s ease-out;
     }
+    .login-card {
+  position: relative;
+  z-index: 2;
+}
+
 
     .login-card:hover {
       transform: translateY(-5px);
@@ -122,6 +169,18 @@
 </head>
 
 <body>
+  <div class="particles">
+  <?php for($i=1;$i<=30;$i++): ?>
+    <span style="
+      left: <?= rand(1,100) ?>%;
+      animation-duration: <?= rand(12,25) ?>s;
+      animation-delay: <?= rand(0,10) ?>s;
+      width: <?= rand(4,8) ?>px;
+      height: <?= rand(4,8) ?>px;
+    "></span>
+  <?php endfor; ?>
+</div>
+
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-5 col-lg-4">
