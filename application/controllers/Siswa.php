@@ -134,69 +134,80 @@ $config['reuse_query_string'] = true;
   // ========================================
   // TAMBAH SISWA
   // ========================================
-  public function add() {
-  if ($this->input->post()) {
-    $nisn = $this->input->post('nisn', TRUE);
-
-    // 🔹 Cek apakah NISN sudah ada
-    $cek = $this->db->get_where('siswa', ['nisn' => $nisn])->row();
-
-    if ($cek) {
-      $this->session->set_flashdata('error', 
-        'NISN <strong>' . $nisn . '</strong> sudah terdaftar atas nama <strong>' . $cek->nama . '</strong>.');
-      redirect('siswa');
-      return;
+  public function add()
+{
+    if (!$this->input->post()) {
+        redirect('siswa');
+        return;
     }
 
-    // 🔹 Data baru
+    $nisn = $this->input->post('nisn', TRUE);
+
+    // =========================
+    // CEK NISN DUPLIKAT
+    // =========================
+    $cek = $this->db->get_where('siswa', ['nisn' => $nisn])->row();
+    if ($cek) {
+        $this->session->set_flashdata(
+            'error',
+            'NISN <b>' . $nisn . '</b> sudah terdaftar atas nama <b>' . $cek->nama . '</b>'
+        );
+        redirect('siswa');
+        return;
+    }
+
+    // =========================
+    // INSERT SISWA
+    // =========================
     $data = [
-      'nis'          => $this->input->post('nis', TRUE),
-      'nisn'         => $nisn,
-      'nama'         => $this->input->post('nama', TRUE),
-      'jk'           => $this->input->post('jk', TRUE),
-      'agama'        => $this->input->post('agama', TRUE),
-      'tempat_lahir' => $this->input->post('tempat_lahir', TRUE),
-      'tgl_lahir'    => $this->input->post('tgl_lahir', TRUE),
-      'alamat'       => $this->input->post('alamat', TRUE),
-      'id_kelas'     => $this->input->post('id_kelas', TRUE),
-      'tahun_id'     => $this->input->post('tahun_id', TRUE),
-      'status'       => 'aktif'
+        'nis'          => $this->input->post('nis', TRUE),
+        'nisn'         => $nisn,
+        'nama'         => $this->input->post('nama', TRUE),
+        'jk'           => $this->input->post('jk', TRUE),
+        'agama'        => $this->input->post('agama', TRUE),
+        'tempat_lahir' => $this->input->post('tempat_lahir', TRUE),
+        'tgl_lahir'    => $this->input->post('tgl_lahir', TRUE),
+        'alamat'       => $this->input->post('alamat', TRUE),
+        'id_kelas'     => $this->input->post('id_kelas', TRUE),
+        'tahun_id'     => $this->input->post('tahun_id', TRUE),
+        'status'       => 'aktif',
+        'created_at'   => date('Y-m-d H:i:s')
     ];
 
-    $this->Siswa_model->insert($data);
-    // ================== GENERATE QR OFFLINE OTOMATIS ==================
-require_once APPPATH . 'libraries/phpqrcode/qrlib.php';
+    $this->db->insert('siswa', $data);
+    $id_siswa = $this->db->insert_id();
 
+    // =========================
+    // GENERATE QR (ISI = NISN)
+    // =========================
+    require_once APPPATH . 'libraries/phpqrcode/qrlib.php';
 
-$qr_folder = FCPATH . 'uploads/qr/';
-if (!file_exists($qr_folder)) {
-    mkdir($qr_folder, 0777, true);
-}
+    $qr_folder = FCPATH . 'uploads/qr/';
+    if (!file_exists($qr_folder)) {
+        mkdir($qr_folder, 0777, true);
+    }
 
-// $token = uniqid('qr_');
-// $qr_file = $qr_folder . $token . '.png';
-// QRcode::png($token, $qr_file, QR_ECLEVEL_M, 6);
+    $qr_file = $qr_folder . $nisn . '.png';
 
-$token = 'qr_' . $id_siswa;   // QR tetap seumur hidup
-$qr_file = $qr_folder . $token . '.png';
+    if (!file_exists($qr_file)) {
+        QRcode::png(
+            $nisn,
+            $qr_file,
+            QR_ECLEVEL_H,
+            10,
+            2
+        );
+    }
 
-if (!file_exists($qr_file)) {
-    QRcode::png(
-        $token,
-        $qr_file,
-        QR_ECLEVEL_H,   // 🔥 Tingkat akurasi tinggi → scan super cepat
-        10,             // 🔥 Size besar → gampang dibaca kamera
-        2               // 🔥 Margin minimal aman
-    );
-}
-// update token siswa
-$id_siswa = $this->db->insert_id();
-$this->db->where('id', $id_siswa)->update('siswa', ['token_qr' => $token]);
+    // Simpan token_qr = nisn (opsional, biar backward compatible)
+    $this->db->where('id', $id_siswa)->update('siswa', [
+        'token_qr' => $nisn
+    ]);
 
     $this->session->set_flashdata('success', 'Data siswa berhasil ditambahkan.');
     redirect('siswa');
-  }
 }
+
 
   // ========================================
   // EDIT SISWA
@@ -304,8 +315,19 @@ public function export_excel()
 
     error_reporting(0);
 
-    $data   = $this->db->get('siswa')->result();
-    $fields = $this->db->list_fields('siswa');
+    $data = $this->db
+    ->select('siswa.*, kelas.nama AS nama_kelas')
+    ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
+    ->get('siswa')
+    ->result();
+
+// ambil field manual (id_kelas diganti nama_kelas)
+$fields = array_diff(
+    $this->db->list_fields('siswa'),
+    ['id_kelas']
+);
+$fields[] = 'nama_kelas';
+
 
     $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
     $sheet = $spreadsheet->setActiveSheetIndex(0);
@@ -799,22 +821,34 @@ $norm = preg_replace('/[^a-z0-9]/', '', $norm); // keep alnum only
             $insert++;
         }
 
-        // QR Generator
-        if (!$exist || empty($exist->token_qr)) {
-            require_once APPPATH . 'libraries/phpqrcode/qrlib.php';
+        // QR Generator (PAKAI NISN)
+if (!$exist || empty($exist->token_qr)) {
+    require_once APPPATH . 'libraries/phpqrcode/qrlib.php';
 
-            $qr_folder = FCPATH . 'uploads/qr/';
-            if (!file_exists($qr_folder)) mkdir($qr_folder, 0777, true);
+    $qr_folder = FCPATH . 'uploads/qr/';
+    if (!file_exists($qr_folder)) {
+        mkdir($qr_folder, 0777, true);
+    }
 
-            $token = 'qr_' . $siswa_id;
-            $qr_file = $qr_folder . $token . '.png';
+    $nisn = $nisnVal; // sudah divalidasi di atas
+    $qr_file = $qr_folder . $nisn . '.png';
 
-            if (!file_exists($qr_file)) {
-                QRcode::png($token, $qr_file, QR_ECLEVEL_H, 10, 2);
-            }
+    if (!file_exists($qr_file)) {
+        QRcode::png(
+            $nisn,          // 🔥 ISI QR = NISN
+            $qr_file,
+            QR_ECLEVEL_H,
+            10,
+            2
+        );
+    }
 
-            $this->db->where('id', $siswa_id)->update('siswa', ['token_qr' => $token]);
-        }
+    // simpan token_qr = NISN (biar backward compatible)
+    $this->db->where('id', $siswa_id)->update('siswa', [
+        'token_qr' => $nisn
+    ]);
+}
+
 
         // siswa_tahun update
         $kelas_id = $save['id_kelas'];

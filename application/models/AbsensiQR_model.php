@@ -3,9 +3,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class AbsensiQR_model extends CI_Model {
 
-    public function get_siswa_by_token($token) {
-        return $this->db->get_where('siswa', ['token_qr' => $token])->row();
-    }
+    public function get_siswa_by_token($token)
+{
+    $token = preg_replace('/[^0-9]/', '', trim($token));
+
+    return $this->db
+        ->get_where('siswa', ['nisn' => $token])
+        ->row();
+}
+
 
     public function get_absen_hari_ini($nis, $tanggal) {
         return $this->db->get_where('absensi_qr', [

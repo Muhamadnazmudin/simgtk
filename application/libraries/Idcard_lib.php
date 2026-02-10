@@ -119,14 +119,26 @@ class Idcard_lib {
         $qrF = FCPATH."assets/qrcodes/";
         if (!is_dir($qrF)) mkdir($qrF);
 
-        if (!$s->token_qr){
-            $t = uniqid('qr_');
-            $this->CI->db->where("id",$id)->update("siswa",["token_qr"=>$t]);
-            $s->token_qr = $t;
-        }
+        // if (!$s->token_qr){
+        //     $t = uniqid('qr_');
+        //     $this->CI->db->where("id",$id)->update("siswa",["token_qr"=>$t]);
+        //     $s->token_qr = $t;
+        // }
 
-        $qrFile = $qrF.$s->token_qr.".png";
-        if (!file_exists($qrFile)) QRcode::png($s->token_qr,$qrFile,QR_ECLEVEL_M,6);
+        $nisn = trim($s->nisn);
+if ($nisn === '') return null;
+
+$qrFile = $qrF.$nisn.".png";
+if (!file_exists($qrFile)) {
+    QRcode::png(
+        $nisn,          // 🔥 ISI QR = NISN
+        $qrFile,
+        QR_ECLEVEL_H,
+        6,
+        2
+    );
+}
+
 
         /* CANVAS TRANSPARAN */
         $W=700; $H=1100;
@@ -246,4 +258,5 @@ class Idcard_lib {
         imagedestroy($img);
         return $binary;
     }
+    
 }

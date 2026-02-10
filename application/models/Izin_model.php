@@ -6,9 +6,13 @@ class Izin_model extends CI_Model {
     $this->db->select('siswa.*, kelas.nama AS kelas_nama, kelas.id AS kelas_id');
     $this->db->from('siswa');
     $this->db->join('kelas', 'kelas.id = siswa.id_kelas', 'left');
-    $this->db->where('siswa.token_qr', $token);
+
+    // 🔥 QR sekarang berisi NIS (NISN)
+    $this->db->where('siswa.nisn', $token);
+
     return $this->db->get()->row();
 }
+
 
 
     public function izin_aktif($siswa_id)
