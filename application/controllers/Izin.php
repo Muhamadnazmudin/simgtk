@@ -4,17 +4,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Izin extends CI_Controller {
 
     public function __construct()
-    {
-        parent::__construct();
-        $this->load->model('Izin_model');
-        $this->load->model('Guru_model');
-        require_once APPPATH . 'libraries/phpqrcode/qrlib.php';
-        $this->load->database();
-        if (!$this->session->userdata('logged_in')) {
-            redirect('dashboard');
+{
+    parent::__construct();
+    $this->load->model('Izin_model');
+    $this->load->model('Guru_model');
+    require_once APPPATH . 'libraries/phpqrcode/qrlib.php';
+    $this->load->database();
+
+    // method yang sedang diakses
+    $method = $this->router->fetch_method();
+
+    // cek login (tetap pakai logged_in seperti awal)
+    if (!$this->session->userdata('logged_in')) {
+
+        // KHUSUS AJAX RFID → JANGAN REDIRECT
+        if ($method === 'rfid_process') {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'error',
+                'msg' => 'Session expired'
+            ]);
             exit;
+        }
+
+        // selain AJAX → BEHAVIOR LAMA (AMAN)
+        redirect('dashboard');
+        exit;
     }
-    }
+}
+
 
     // =======================================================================
     // 1. SCAN KARTU SISWA
@@ -72,8 +90,40 @@ class Izin extends CI_Controller {
 
     $this->load->view('izin/scan_form', $data);
 }
+// =======================================================================
+// RFID SCAN (KHUSUS PETUGAS)
+// =======================================================================
+public function rfid()
+{
+    $data['active'] = 'izin';
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar', $data);
+    $this->load->view('izin/rfid_scan', $data);
+    $this->load->view('templates/footer');
+}
+public function rfid_process()
+{
+    header('Content-Type: application/json');
 
+    $rfid = trim($this->input->post('rfid'));
 
+    if ($rfid === '') {
+        echo json_encode(['status' => 'error', 'msg' => 'RFID kosong']);
+        return;
+    }
+
+    $siswa = $this->db->get_where('siswa', ['rfid_uid' => $rfid])->row();
+
+    if (!$siswa || empty($siswa->token_qr)) {
+        echo json_encode(['status' => 'error', 'msg' => 'RFID tidak terdaftar']);
+        return;
+    }
+
+    echo json_encode([
+        'status'   => 'success',
+        'redirect' => base_url('index.php/izin/scan/' . $siswa->token_qr)
+    ]);
+}
 
     // =======================================================================
     // 2. AJUKAN IZIN KELUAR

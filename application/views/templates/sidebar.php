@@ -321,12 +321,14 @@ $group_tutorial = in_array($active, [
     </a>
     <div id="mIzinAdmin" class="collapse <?= $group_izin ? 'show' : '' ?>">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="<?= site_url('izin/scan') ?>">Scan Izin</a>
+            <a class="collapse-item" href="<?= site_url('izin/scan') ?>">Scan Manual</a>
+            <a class="collapse-item" href="<?= site_url('izin/rfid') ?>">Scan RFID</a>
             <a class="collapse-item" href="<?= site_url('izin') ?>">Izin Keluar Siswa</a>
             <a class="collapse-item" href="<?= site_url('izin/laporan') ?>">Laporan Izin</a>
         </div>
     </div>
 </li>
+
 <!-- ==============================
      VERVAl DATA (ADMIN)
 ================================= -->

@@ -491,7 +491,8 @@ $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array(
     'izin/ajukan/.*',
     'izin/kembali/.*',
-    'RfidAbsensi/scan'
+    'RfidAbsensi/scan',
+    'izin/rfid_process'
 );
 $config['sess_save_path'] = sys_get_temp_dir(); // penting!
 
