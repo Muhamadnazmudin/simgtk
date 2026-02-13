@@ -74,6 +74,9 @@ $route['backup/do_restore'] = 'backup/do_restore';
 $route['install'] = 'install/index';
 $route['install/run'] = 'install/run';
 $route['chatbot/reply'] = 'chatbot/reply';
+$route['id_card_premium'] = 'idcard_premium';
+$route['id_card_premium/cetak/(:num)'] = 'idcard_premium/cetak/$1';
+
 
 
 

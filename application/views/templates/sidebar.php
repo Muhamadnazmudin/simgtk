@@ -89,13 +89,28 @@ $group_tutorial = in_array($active, [
     </a>
     <div id="mDataAdmin" class="collapse <?= $group_data ? 'show' : '' ?>">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item <?= $active=='guru'?'active':'' ?>" href="<?= site_url('guru') ?>">Data Guru</a>
-            <a class="collapse-item <?= $active=='kelas'?'active':'' ?>" href="<?= site_url('kelas') ?>">Data Kelas</a>
-            <a class="collapse-item <?= $active=='siswa'?'active':'' ?>" href="<?= site_url('siswa') ?>">Data Siswa</a>
-            <a class="collapse-item <?= $active=='kartu_osis'?'active':'' ?>" href="<?= site_url('kartu_osis') ?>">Kartu OSIS</a>
+            
+            <a class="collapse-item <?= $active=='guru'?'active':'' ?>" 
+               href="<?= site_url('guru') ?>">Data Guru</a>
+
+            <a class="collapse-item <?= $active=='kelas'?'active':'' ?>" 
+               href="<?= site_url('kelas') ?>">Data Kelas</a>
+
+            <a class="collapse-item <?= $active=='siswa'?'active':'' ?>" 
+               href="<?= site_url('siswa') ?>">Data Siswa</a>
+
+            <a class="collapse-item <?= $active=='kartu_osis'?'active':'' ?>" 
+               href="<?= site_url('kartu_osis') ?>">Kartu OSIS</a>
+
+            <!-- MENU BARU ID CARD PREMIUM -->
+                <a class="collapse-item <?= $active=='idcard_premium'?'active':'' ?>" 
+                href="<?= site_url('idcard_premium') ?>">
+                ID Card Premium
+            </a>
         </div>
     </div>
 </li>
+
 <!-- ==============================
      GURU (ADMIN)
 ================================= -->
