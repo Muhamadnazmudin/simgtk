@@ -121,10 +121,10 @@ $group_tutorial = in_array($active, [
     </a>
     <div id="mGuruAdmin" class="collapse <?= $group_guru ? 'show' : '' ?>">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item <?= $active=='guru'?'active':'' ?>"
+            <!-- <a class="collapse-item <?= $active=='guru'?'active':'' ?>"
                href="<?= site_url('guru') ?>">
                Data Guru
-            </a>
+            </a> -->
 
             <a class="collapse-item <?= $active=='monitoring_mengajar'?'active':'' ?>"
                href="<?= site_url('monitoring_mengajar') ?>">

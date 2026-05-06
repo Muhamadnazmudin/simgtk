@@ -23,10 +23,18 @@ html, body {
     margin-left: 224px;
     min-height: 100vh;
     padding-top: 70px;
-    background-color: #e7f9e7;
     transition: all .3s ease;
 }
 
+/* LIGHT MODE */
+body:not(.dark-mode) #content-wrapper {
+    background-color: #f8f9fc;
+}
+
+/* DARK MODE */
+body.dark-mode #content-wrapper {
+    background-color: #1e1e2f !important;
+}
 /* ================= TOPBAR ================= */
 .topbar {
     position: fixed;
@@ -206,56 +214,101 @@ html, body {
    ========================================================= */
 
 /* Background sidebar */
-#accordionSidebar {
-    background: linear-gradient(180deg, #1f2d27, #16201c) !important;
+/* =========================================================
+   SIDEBAR GURU — LIGHT MODE
+========================================================= */
+
+body:not(.dark-mode) #accordionSidebar {
+    background: linear-gradient(
+        180deg,
+        #28a745,
+        #1e7e34
+    ) !important;
 }
 
 /* Brand */
-#accordionSidebar .sidebar-brand {
-    background: transparent !important;
+body:not(.dark-mode) #accordionSidebar .sidebar-brand-text,
+body:not(.dark-mode) #accordionSidebar .sidebar-brand-icon i {
+    color: #ffffff !important;
 }
 
-#accordionSidebar .sidebar-brand-text,
-#accordionSidebar .sidebar-brand-icon i {
+/* Menu */
+body:not(.dark-mode) #accordionSidebar .nav-link {
+    color: #f8fff8 !important;
+}
+
+body:not(.dark-mode) #accordionSidebar .nav-link i {
+    color: #d8ffe3 !important;
+}
+
+/* Hover */
+body:not(.dark-mode) #accordionSidebar .nav-link:hover {
+    background: rgba(255,255,255,.12) !important;
+}
+
+/* Active */
+body:not(.dark-mode) #accordionSidebar .nav-item.active .nav-link {
+    background: rgba(255,255,255,.18) !important;
+    box-shadow: inset 3px 0 0 #ffffff;
+}
+
+/* Heading */
+body:not(.dark-mode) #accordionSidebar .sidebar-heading {
+    color: rgba(255,255,255,.7) !important;
+}
+
+/* Divider */
+body:not(.dark-mode) #accordionSidebar .sidebar-divider {
+    border-top: 1px solid rgba(255,255,255,.1) !important;
+}
+
+/* =========================================================
+   SIDEBAR GURU — DARK MODE
+========================================================= */
+
+body.dark-mode #accordionSidebar {
+    background: linear-gradient(
+        180deg,
+        #1f2d27,
+        #121a17
+    ) !important;
+}
+
+/* Brand */
+body.dark-mode #accordionSidebar .sidebar-brand-text,
+body.dark-mode #accordionSidebar .sidebar-brand-icon i {
     color: #e6f4ec !important;
 }
 
-/* Menu text */
-#accordionSidebar .nav-link {
+/* Menu */
+body.dark-mode #accordionSidebar .nav-link {
     color: #d9efe4 !important;
 }
 
-/* Icon menu */
-#accordionSidebar .nav-link i {
+body.dark-mode #accordionSidebar .nav-link i {
     color: #9fd5bb !important;
 }
 
 /* Hover */
-#accordionSidebar .nav-link:hover {
+body.dark-mode #accordionSidebar .nav-link:hover {
     background: rgba(255,255,255,.08) !important;
 }
 
-/* Active menu */
-#accordionSidebar .nav-item.active .nav-link {
+/* Active */
+body.dark-mode #accordionSidebar .nav-item.active .nav-link {
     background: rgba(255,255,255,.12) !important;
     box-shadow: inset 3px 0 0 #5fd19f;
     font-weight: 600;
 }
 
 /* Heading */
-#accordionSidebar .sidebar-heading {
+body.dark-mode #accordionSidebar .sidebar-heading {
     color: rgba(217,239,228,.7) !important;
 }
 
 /* Divider */
-#accordionSidebar .sidebar-divider {
+body.dark-mode #accordionSidebar .sidebar-divider {
     border-top: 1px solid rgba(255,255,255,.08) !important;
-}
-
-/* Logout button tetap merah tapi lebih soft */
-#accordionSidebar .btn-danger {
-    background: #c0392b;
-    border: none;
 }
 
 /* ================= MOBILE ================= */

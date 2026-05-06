@@ -33,36 +33,56 @@
 <script src="<?= base_url('assets/sbadmin2/vendor/datatables/dataTables.bootstrap4.min.js') ?>"></script>
 <script src="<?= base_url('assets/sbadmin2/vendor/sweetalert/sweetalert.min.js') ?>"></script>
 <script>
- 
-  const toggleBtn = document.getElementById('toggleMode');
-  const currentMode = localStorage.getItem('mode') || 'dark';
-  const body = document.body;
+document.addEventListener('DOMContentLoaded', function () {
 
-  // ubah mode didieu
-  function setMode(mode) {
-    if (mode === 'dark') {
-        body.classList.add('dark-mode');
-        body.classList.remove('light-mode');
-        localStorage.setItem('mode', 'dark');
-        toggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
-        document.documentElement.style.setProperty('--bg', '#1e1e2f');
-    } else {
-        body.classList.remove('dark-mode');
-        body.classList.add('light-mode');
-        localStorage.setItem('mode', 'light');
-        toggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
-        document.documentElement.style.setProperty('--bg', '#f8f9fc');
+    const toggleBtn = document.getElementById('toggleMode');
+    const body = document.body;
+
+    // default mode
+    const savedMode = localStorage.getItem('mode') || 'light';
+
+    function applyMode(mode) {
+
+        if (mode === 'dark') {
+
+            body.classList.add('dark-mode');
+
+            localStorage.setItem('mode', 'dark');
+
+            if (toggleBtn) {
+                toggleBtn.innerHTML =
+                    '<i class="fas fa-sun"></i>';
+            }
+
+        } else {
+
+            body.classList.remove('dark-mode');
+
+            localStorage.setItem('mode', 'light');
+
+            if (toggleBtn) {
+                toggleBtn.innerHTML =
+                    '<i class="fas fa-moon"></i>';
+            }
+        }
     }
-}
 
-  // Set mode awal sesuai localStorage
-  setMode(currentMode);
+    // apply awal
+    applyMode(savedMode);
 
-  // Saat tombol diklik
-  toggleBtn.addEventListener('click', () => {
-    const newMode = body.classList.contains('dark-mode') ? 'light' : 'dark';
-    setMode(newMode);
-  });
+    // toggle
+    if (toggleBtn) {
+
+        toggleBtn.addEventListener('click', function () {
+
+            const isDark =
+                body.classList.contains('dark-mode');
+
+            applyMode(isDark ? 'light' : 'dark');
+        });
+    }
+
+});
 </script>
 <script>
 $(document).on('click', '.btn-edit', function () {

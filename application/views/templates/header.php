@@ -17,60 +17,27 @@
   <link href="<?= base_url('assets/css/custom-style.css') ?>" rel="stylesheet">
   <style>
 /* =====================================================
-   FINAL CSS HEADER — SAFE MOBILE & DESKTOP
-   FIX MODAL, SIDEBAR, TOPBAR (SB ADMIN 2)
-   ===================================================== */
+   HEADER FIX — SB ADMIN 2 CLEAN
+   LIGHT = DEFAULT
+   DARK = CUSTOM CSS
+===================================================== */
 
-/* ===============================
-   BASE
-   =============================== */
-html, body {
+html,
+body {
 	margin: 0;
 	padding: 0;
 	width: 100%;
 	font-family: "Nunito", sans-serif;
 }
 
-/* ===============================
-   LIGHT MODE
-   =============================== */
-body.light-mode {
-	background-color: #f0f4ff;
-	color: #1a1a1a;
-}
+/* =====================================================
+   DESKTOP LAYOUT
+===================================================== */
 
-body.light-mode #wrapper,
-body.light-mode #content-wrapper,
-body.light-mode #content,
-body.light-mode .container-fluid {
-	background-color: #fafcff;
-	color: #000;
-}
-
-body.light-mode .card,
-body.light-mode .card-body,
-body.light-mode .card-header {
-	background-color: #ffffff;
-	border: 1px solid #e3e7ff;
-	color: #000;
-}
-
-body.light-mode .table thead th {
-	background-color: #e4ebff;
-	color: #000;
-}
-
-body.light-mode .topbar {
-	background-color: #f9fbff;
-	border-bottom: 1px solid #dce4ff;
-}
-
-/* ===============================
-   SIDEBAR & TOPBAR — DESKTOP
-   =============================== */
 @media (min-width: 768px) {
 
-	html, body {
+	html,
+	body {
 		height: 100%;
 		overflow: hidden;
 	}
@@ -90,13 +57,13 @@ body.light-mode .topbar {
 		top: 0;
 		left: 224px;
 		right: 0;
-		height: 72px;
+		height: 70px;
 		z-index: 1040;
 	}
 
 	#content-wrapper {
 		margin-left: 224px;
-		padding-top: 72px;
+		padding-top: 70px;
 		height: 100vh;
 		overflow-y: auto;
 	}
@@ -109,24 +76,20 @@ body.light-mode .topbar {
 	.sidebar.toggled ~ #content-wrapper {
 		margin-left: 80px !important;
 	}
-
-	.sidebar.toggled ~ .topbar {
-		left: 80px !important;
-	}
 }
 
-/* ===============================
-   MOBILE — SAFE MODE (PORTRAIT & LANDSCAPE)
-   =============================== */
+/* =====================================================
+   MOBILE
+===================================================== */
+
 @media (max-width: 767px) {
 
-	/* MOBILE HARUS BOLEH SCROLL */
-	html, body {
+	html,
+	body {
 		height: auto !important;
 		overflow: auto !important;
 	}
 
-	/* Sidebar overlay */
 	.sidebar {
 		position: fixed !important;
 		top: 0;
@@ -142,7 +105,6 @@ body.light-mode .topbar {
 		left: 0;
 	}
 
-	/* Topbar */
 	.topbar {
 		position: fixed;
 		top: 0;
@@ -152,65 +114,39 @@ body.light-mode .topbar {
 		z-index: 3500;
 	}
 
-	/* Content */
 	#content-wrapper {
 		margin-left: 0 !important;
 		padding-top: 70px;
 		height: auto !important;
 		overflow: visible !important;
 	}
-
-	/* Modal FIX TOTAL */
-	.modal {
-		position: fixed !important;
-		z-index: 5000 !important;
-	}
-
-	.modal-backdrop {
-		z-index: 4900 !important;
-	}
-
-	.modal,
-	.modal * {
-		pointer-events: auto !important;
-		touch-action: manipulation !important;
-	}
-
-	/* Sidebar & topbar jangan blok modal */
-	body.modal-open .sidebar,
-	body.modal-open .topbar {
-		pointer-events: none !important;
-	}
 }
 
-/* ===============================
-   SUBMENU FIX
-   =============================== */
-.sidebar .collapse-inner {
-	background-color: #2c2f48;
+/* =====================================================
+   MODAL FIX
+===================================================== */
+
+.modal {
+	-webkit-overflow-scrolling: touch;
 }
 
-.sidebar .collapse-inner .collapse-item {
-	color: #d1d1d1;
+.modal-dialog {
+	margin: 1rem auto !important;
 }
 
-.sidebar .collapse-inner .collapse-item:hover {
-	background-color: #3a3d5c;
-	color: #fff;
+body.modal-open .sidebar,
+body.modal-open .topbar {
+	pointer-events: none !important;
 }
 
-.sidebar .collapse-inner .collapse-item.active {
-	background-color: #4c5177;
-	color: #fff;
+body.modal-open .modal,
+body.modal-open .modal * {
+	pointer-events: auto !important;
 }
 
-/* ===============================
-   SAFETY — NO BODY LOCK
-   =============================== */
 body.modal-open {
 	overflow: visible !important;
 }
-
 </style>
 
 </head>
