@@ -124,7 +124,7 @@
             <div class="table-responsive">
     <table class="table table-bordered bio-table">
                 <tr><td class="bio-label">Sekolah Asal</td><td class="bio-value"><?= $siswa->sekolah_asal ?></td></tr>
-                <tr><td class="bio-label">Nomor SKHUN</td><td class="bio-value"><?= $siswa->skhun ?></td></tr>
+                <tr><td class="bio-label">Nomor Ijazah SMP/MTs</td><td class="bio-value"><?= $siswa->skhun ?></td></tr>
             </table>
         </div>
             <!-- =================== E. AYAH =================== -->
