@@ -90,7 +90,7 @@
                 <tr><td class="bio-label">RT</td><td class="bio-value"><?= $siswa->rt ?></td></tr>
                 <tr><td class="bio-label">RW</td><td class="bio-value"><?= $siswa->rw ?></td></tr>
                 <tr><td class="bio-label">Dusun</td><td class="bio-value"><?= $siswa->dusun ?></td></tr>
-                <tr><td class="bio-label">Kelurahan/Desa</td><td class="bio-value"><?= $siswa->dusun ?></td></tr>
+                <tr><td class="bio-label">Kelurahan/Desa</td><td class="bio-value"><?= $siswa->alamat ?></td></tr>
                 <tr><td class="bio-label">Kecamatan</td><td class="bio-value"><?= $siswa->kecamatan ?></td></tr>
                 <tr><td class="bio-label">Kode POS</td><td class="bio-value"><?= $siswa->kode_pos ?></td></tr>
                 <tr><td class="bio-label">Jenis Tinggal</td><td class="bio-value"><?= $siswa->jenis_tinggal ?></td></tr>

@@ -88,6 +88,7 @@
       <th>Tanggal Lahir</th>
       <th>Kelas</th>
       <th>Tahun Ajaran</th>
+      <th>Nomor Ijazah</th>
       <th>Status</th>
       <th width="120">Aksi</th>
     </tr>
@@ -105,6 +106,7 @@
         <td><?= $s->tgl_lahir ?></td>
         <td><?= $s->nama_kelas ?></td>
         <td><?= $s->tahun_ajaran ?></td>
+        <td><?= $s->skhun ?></td>
         <td>
           <?php if ($s->status == 'aktif'): ?>
             <span class="badge badge-success">Aktif</span>

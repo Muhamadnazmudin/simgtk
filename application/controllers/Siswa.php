@@ -315,35 +315,53 @@ public function export_excel()
 
     error_reporting(0);
 
+    // ======================== QUERY DATA ========================
     $data = $this->db
-    ->select('siswa.*, kelas.nama AS nama_kelas')
-    ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
-    ->get('siswa')
-    ->result();
+        ->select('siswa.*, kelas.nama AS nama_kelas')
+        ->from('siswa')
+        ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
+        ->get()
+        ->result();
 
-// ambil field manual (id_kelas diganti nama_kelas)
-$fields = array_diff(
-    $this->db->list_fields('siswa'),
-    ['id_kelas']
-);
-$fields[] = 'nama_kelas';
+    // ======================== FIELD EXPORT ========================
+    // ambil semua field siswa
+    $fields = $this->db->list_fields('siswa');
 
+    // hapus id_kelas
+    $fields = array_filter($fields, function ($f) {
+        return $f != 'id_kelas';
+    });
 
+    // reset index array
+    $fields = array_values($fields);
+
+    // tambahkan nama_kelas
+    $fields[] = 'nama_kelas';
+
+    // ======================== SPREADSHEET ========================
     $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
     $sheet = $spreadsheet->setActiveSheetIndex(0);
     $sheet->setTitle('Data Siswa');
 
     // ======================== HEADER ========================
     $colIndex = 1;
+
     foreach ($fields as $f) {
-        $sheet->setCellValueByColumnAndRow($colIndex, 1, strtoupper($f));
+        $sheet->setCellValueByColumnAndRow(
+            $colIndex,
+            1,
+            strtoupper($f)
+        );
         $colIndex++;
     }
 
     // Style header
     $lastCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($fields));
+
     $sheet->getStyle("A1:{$lastCol}1")->applyFromArray([
-        'font' => ['bold' => true],
+        'font' => [
+            'bold' => true
+        ],
         'alignment' => [
             'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
         ],
@@ -354,54 +372,87 @@ $fields[] = 'nama_kelas';
         ]
     ]);
 
-    // ======================== DEFINISI FIELD TEXT ========================
-    // semua nomor identitas HARUS dipaksa jadi TEXT
+    // ======================== FIELD TEXT ========================
+    // nomor identitas dipaksa TEXT
     $textFields = [
-        'nis', 'nisn', 'nomor_kk', 'nik',
-        'nik_ayah', 'nik_ibu', 'nik_wali',
-        'no_hp_ortu', 'hp', 'telp'
+        'nis',
+        'nisn',
+        'nomor_kk',
+        'nik',
+        'nik_ayah',
+        'nik_ibu',
+        'nik_wali',
+        'no_hp_ortu',
+        'hp',
+        'telp'
     ];
 
-    // ======================== DATA ROWS ========================
+    // ======================== DATA ========================
     $row = 2;
+
     foreach ($data as $d) {
+
         $colIndex = 1;
+
         foreach ($fields as $f) {
 
-            $value = $d->$f;
-            $cell  = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex) . $row;
+            $value = isset($d->$f) ? $d->$f : '';
 
-            // detect otomatis jika angka panjang
+            $cell = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex) . $row;
+
+            // detect angka panjang
             $isLongNumber = is_numeric($value) && strlen((string)$value) >= 12;
 
             if (in_array($f, $textFields) || $isLongNumber) {
 
-                // Set sebagai string explicit
+                // paksa jadi string
                 $sheet->setCellValueExplicit(
                     $cell,
                     (string)$value,
                     \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
                 );
 
-                // Paksa Excel tidak mengubah format
-                $sheet->getStyle($cell)->getNumberFormat()
-                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+                // format text
+                $sheet->getStyle($cell)
+                    ->getNumberFormat()
+                    ->setFormatCode(
+                        \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT
+                    );
 
             } else {
-                // Normal data
-                $sheet->setCellValueByColumnAndRow($colIndex, $row, $value);
+
+                // normal
+                $sheet->setCellValueByColumnAndRow(
+                    $colIndex,
+                    $row,
+                    $value
+                );
             }
 
             $colIndex++;
         }
+
         $row++;
     }
 
     // ======================== AUTOSIZE ========================
     for ($i = 1; $i <= count($fields); $i++) {
+
         $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
-        $sheet->getColumnDimension($colLetter)->setAutoSize(true);
+
+        $sheet->getColumnDimension($colLetter)
+            ->setAutoSize(true);
     }
+
+    // ======================== BORDER DATA ========================
+    $lastRow = $row - 1;
+
+    $sheet->getStyle("A1:{$lastCol}{$lastRow}")
+        ->getBorders()
+        ->getAllBorders()
+        ->setBorderStyle(
+            \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+        );
 
     // ======================== OUTPUT ========================
     header('Content-Type: application/vnd.ms-excel');
