@@ -35,6 +35,72 @@ body:not(.dark-mode) #content-wrapper {
 body.dark-mode #content-wrapper {
     background-color: #1e1e2f !important;
 }
+/* =========================================================
+   DARK MODE CONTENT GURU
+========================================================= */
+
+body.dark-mode {
+    background-color: #1e1e2f !important;
+    color: #e0e0e0 !important;
+}
+
+/* Wrapper */
+body.dark-mode #wrapper,
+body.dark-mode #content,
+body.dark-mode .container-fluid {
+    background-color: #1e1e2f !important;
+}
+
+/* Card */
+body.dark-mode .card {
+    background-color: #2b2b3c !important;
+    border: 1px solid #38384a !important;
+    color: #e0e0e0 !important;
+}
+
+/* Card header */
+body.dark-mode .card-header {
+    background-color: #34344a !important;
+    color: #fff !important;
+}
+
+/* Table */
+body.dark-mode .table {
+    color: #ddd !important;
+}
+
+body.dark-mode .table thead th {
+    background-color: #34344a !important;
+    color: #fff !important;
+}
+
+/* Text */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode label,
+body.dark-mode small,
+body.dark-mode div {
+    color: #e0e0e0 !important;
+}
+
+/* Form */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+    background-color: #2b2b3c !important;
+    border: 1px solid #444 !important;
+    color: #fff !important;
+}
+
+/* Topbar */
+body.dark-mode .topbar {
+    background: #23232e !important;
+}
 /* ================= TOPBAR ================= */
 .topbar {
     position: fixed;
