@@ -51,6 +51,7 @@
                 <th>Tempat Lahir</th>
                 <th>Tgl Lahir</th>
                 <th>Agama</th>
+                <th>No. Ijazah SMP/MTs</th>
                 <th>Status</th>
                 <th>ID Card</th>
             </tr>
@@ -67,6 +68,7 @@
                 <td><?= $s->tempat_lahir ?></td>
                 <td><?= $s->tgl_lahir ?></td>
                 <td><?= $s->agama ?></td>
+                <td><?= $s->skhun ?></td>
                 <td>
                     <span class="badge badge-success">Aktif</span>
                 </td>
