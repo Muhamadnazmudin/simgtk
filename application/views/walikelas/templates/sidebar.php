@@ -1,86 +1,216 @@
 <!-- ================= SIDEBAR WALIKELAS ================= -->
-<style> 
-html, body {
-    height: 100%;
-    margin: 0;
+<style>
+
+/* ================= SIDEBAR WALIKELAS ================= */
+
+html, body{
+    height:100%;
+    margin:0;
+    overflow-x:hidden;
 }
 
 /* ================= SIDEBAR ================= */
-#accordionSidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 224px;
-    overflow-y: auto;
-    z-index: 1032;
-    transition: all .3s ease;
+
+#accordionSidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:190px;
+    height:100vh;
+    z-index:9999;
+    overflow-y:auto;
+    overflow-x:hidden;
+    transition:all .3s ease;
+    background:linear-gradient(180deg,#28a745,#1e7e34);
+}
+
+/* Scroll */
+#accordionSidebar::-webkit-scrollbar{
+    width:5px;
+}
+
+#accordionSidebar::-webkit-scrollbar-thumb{
+    background:rgba(255,255,255,.2);
+    border-radius:10px;
 }
 
 /* ================= CONTENT ================= */
-#content-wrapper {
-    margin-left: 224px;
-    min-height: 100vh;
-    padding-top: 70px;
-    background-color: #e7f9e7;
-    transition: all .3s ease;
+
+#content-wrapper{
+    margin-left:190px;
+    min-height:100vh;
+    padding-top:70px;
+    transition:all .3s ease;
+    background:#f8f9fc;
 }
 
 /* ================= TOPBAR ================= */
-.topbar {
-    position: fixed;
-    top: 0;
-    left: 224px;
-    right: 0;
-    z-index: 1031;
-    background-color: #28a745 !important;
-    transition: all .3s ease;
+
+.topbar{
+    position:fixed;
+    top:0;
+    left:190px;
+    right:0;
+    z-index:1031;
+    background:#28a745 !important;
+    transition:all .3s ease;
 }
 
-/* ===== DESKTOP TOGGLE ===== */
-.sidebar-toggled #accordionSidebar {
-    width: 80px;
+/* ================= BRAND ================= */
+
+.sidebar-brand{
+    height:60px;
 }
 
-.sidebar-toggled #content-wrapper {
-    margin-left: 80px;
+.sidebar-brand-text{
+    font-size:.95rem;
+    font-weight:700;
 }
 
-.sidebar-toggled .topbar {
-    left: 80px;
+/* ================= MENU ================= */
+
+#accordionSidebar .nav-item{
+    margin:3px 10px;
+}
+
+#accordionSidebar .nav-link{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:.86rem;
+    font-weight:500;
+    color:#f1fff1;
+    line-height:1.3;
+    transition:all .2s ease;
+}
+
+#accordionSidebar .nav-link i{
+    width:18px;
+    min-width:18px;
+    text-align:center;
+    font-size:.9rem;
+}
+
+/* Hover */
+
+#accordionSidebar .nav-link:hover{
+    background:rgba(255,255,255,.12);
+}
+
+/* Active */
+
+#accordionSidebar .nav-item.active .nav-link{
+    background:rgba(255,255,255,.18);
+    box-shadow:inset 3px 0 0 #ffffff;
+    font-weight:600;
+}
+
+/* Heading */
+
+#accordionSidebar .sidebar-heading{
+    margin-top:10px;
+    margin-bottom:6px;
+    padding-left:16px;
+    font-size:.72rem;
+    font-weight:600;
+    letter-spacing:.08em;
+    color:rgba(255,255,255,.75);
+}
+
+/* Divider */
+
+#accordionSidebar .sidebar-divider{
+    margin:10px 14px;
+    border-top:1px solid rgba(255,255,255,.12);
+}
+
+/* Text menu */
+
+#accordionSidebar .nav-link span{
+    line-height:1.25;
+    white-space:normal;
+}
+
+/* Logout */
+
+#accordionSidebar .btn-danger{
+    border-radius:10px;
+    font-size:.83rem;
+}
+
+/* ================= DESKTOP TOGGLE ================= */
+
+.sidebar-toggled #accordionSidebar{
+    width:78px;
+}
+
+.sidebar-toggled #content-wrapper{
+    margin-left:78px;
+}
+
+.sidebar-toggled .topbar{
+    left:78px;
+}
+
+.sidebar-toggled .sidebar-brand-text,
+.sidebar-toggled .nav-link span,
+.sidebar-toggled .sidebar-heading{
+    display:none;
+}
+
+.sidebar-toggled .nav-link{
+    justify-content:center;
 }
 
 /* ================= MOBILE ================= */
-@media (max-width: 768px) {
 
-    #accordionSidebar {
-        left: -224px;
+@media (max-width:768px){
+
+    #accordionSidebar{
+        transform:translateX(-100%);
+        width:190px;
     }
 
-    #accordionSidebar.show {
-        left: 0;
+    #accordionSidebar.show{
+        transform:translateX(0);
     }
 
-    #content-wrapper {
-        margin-left: 0 !important;
-        padding-top: 60px;
+    #content-wrapper{
+        margin-left:0 !important;
+        padding-top:70px;
     }
 
-    .topbar {
-        left: 0 !important;
+    .topbar{
+        left:0 !important;
     }
 
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,.5);
-        z-index: 1030;
+    .sidebar-overlay{
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.45);
+        z-index:9000;
     }
 
-    .sidebar-overlay.show {
-        display: block;
+    .sidebar-overlay.show{
+        display:block;
     }
+}
+
+/* ================= DARK MODE ================= */
+
+body.dark-mode #accordionSidebar{
+    background:linear-gradient(180deg,#1f2d27,#121a17);
+}
+
+body.dark-mode #content-wrapper{
+    background:#1e1e2f;
+}
+
+body.dark-mode .topbar{
+    background:#23232e !important;
 }
 
 </style>
@@ -223,5 +353,35 @@ if (overlay) {
 }
 </script>
 
+<script>
 
+/* ===== Desktop Toggle ===== */
+const sidebarToggle = document.getElementById('sidebarToggle');
+
+if(sidebarToggle){
+    sidebarToggle.addEventListener('click', function(){
+        document.body.classList.toggle('sidebar-toggled');
+    });
+}
+
+/* ===== Mobile Sidebar ===== */
+const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+const sidebar = document.getElementById('accordionSidebar');
+const overlay = document.getElementById('sidebarOverlay');
+
+if (btnToggleSidebar) {
+    btnToggleSidebar.addEventListener('click', () => {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+    });
+}
+
+if (overlay) {
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+    });
+}
+
+</script>
 
