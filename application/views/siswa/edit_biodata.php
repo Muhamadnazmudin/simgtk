@@ -495,8 +495,19 @@ input[readonly] {
 
         // helper pretty field name
         function prettyName(field) {
-            return field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        }
+
+    const customNames = {
+        skhun: 'No. Ijazah SMP/MTs'
+    };
+
+    // kalau ada custom label
+    if (customNames[field]) {
+        return customNames[field];
+    }
+
+    // default
+    return field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
 
         function getFormValues() {
             const obj = {};
