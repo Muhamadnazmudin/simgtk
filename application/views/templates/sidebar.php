@@ -34,7 +34,7 @@ $group_setting = in_array($active, ['hari_libur','tahun','jadwal_absensi']);
 $group_qr      = in_array($active, ['absensiqr_siswa','laporan_absensiqr']);
 $group_verval = in_array($active, ['verval_siswa','laporan_verval']);
 $group_guru = in_array($active, [
-    'guru',
+    'data_guru',
     'monitoring_mengajar',
     'rekap_jjm',
     'guru_sertifikasi',
