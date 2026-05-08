@@ -317,11 +317,16 @@ public function export_excel()
 
     // ======================== QUERY DATA ========================
     $data = $this->db
-        ->select('siswa.*, kelas.nama AS nama_kelas')
-        ->from('siswa')
-        ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
-        ->get()
-        ->result();
+    ->select('
+        siswa.*,
+        kelas.nama AS nama_kelas,
+        jurusan.nama AS nama_jurusan
+    ')
+    ->from('siswa')
+    ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
+    ->join('jurusan', 'jurusan.id = kelas.id_jurusan', 'left')
+    ->get()
+    ->result();
 
     // ======================== FIELD EXPORT ========================
     // ambil semua field siswa
@@ -337,6 +342,7 @@ public function export_excel()
 
     // tambahkan nama_kelas
     $fields[] = 'nama_kelas';
+    $field[] = 'nama_jurusan';
 
     // ======================== SPREADSHEET ========================
     $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
