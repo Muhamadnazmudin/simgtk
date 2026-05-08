@@ -104,6 +104,7 @@ class Kelas extends CI_Controller {
         $data = [
             'nama'            => $this->input->post('nama', TRUE),
             'wali_kelas_id'   => $wali_kelas_id ?: NULL,
+            'jurusan'          => $this->input->post('jurusan', TRUE),
             'ketua_kelas_id'  => $ketua_kelas_id ?: NULL,
             'kapasitas'       => $this->input->post('kapasitas', TRUE)
         ];
@@ -142,6 +143,7 @@ class Kelas extends CI_Controller {
 
         $update = [
             'nama'           => $this->input->post('nama', TRUE),
+            'jurusan'        => $this->input->post('jurusan', TRUE),
             'wali_kelas_id'  => $wali_kelas_id ?: NULL,
             'ketua_kelas_id' => $ketua_kelas_id ?: NULL,
             'kapasitas'      => $this->input->post('kapasitas', TRUE)
@@ -196,9 +198,10 @@ class Kelas extends CI_Controller {
 
         $sheet->setCellValue('A1', 'No');
         $sheet->setCellValue('B1', 'Nama Kelas');
-        $sheet->setCellValue('C1', 'Wali Kelas');
-        $sheet->setCellValue('D1', 'Ketua Kelas');
-        $sheet->setCellValue('E1', 'Kapasitas');
+        $sheet->setCellValue('C1', 'Jurusan');
+        $sheet->setCellValue('D1', 'Wali Kelas');
+        $sheet->setCellValue('E1', 'Ketua Kelas');
+        $sheet->setCellValue('F1', 'Kapasitas');
 
         $row = 2;
         $no  = 1;
@@ -206,10 +209,11 @@ class Kelas extends CI_Controller {
         foreach ($data as $k) {
             $sheet->setCellValue("A$row", $no++);
             $sheet->setCellValue("B$row", $k->nama);
-            $sheet->setCellValue("C$row", $k->wali_nama);
-            $sheet->setCellValue("D$row", $k->ketua_nama);
+            $sheet->setCellValue("C$row", $k->jurusan);
+            $sheet->setCellValue("D$row", $k->wali_nama);
+            $sheet->setCellValue("E$row", $k->ketua_nama);
             $sheet->setCellValueExplicit(
-                "E$row",
+                "F$row",
                 (string)$k->kapasitas,
                 DataType::TYPE_STRING
             );
@@ -237,18 +241,25 @@ class Kelas extends CI_Controller {
         $rows = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 
         foreach ($rows as $i => $row) {
-            if ($i == 1) continue;
 
-            $wali  = $this->db->get_where('guru', ['nama' => trim($row['C'])])->row();
-            $ketua = $this->db->get_where('siswa', ['nama' => trim($row['D'])])->row();
+    if ($i == 1) continue;
 
-            $this->Kelas_model->insert([
-                'nama'           => $row['B'],
-                'wali_kelas_id'  => $wali ? $wali->id : NULL,
-                'ketua_kelas_id' => $ketua ? $ketua->id : NULL,
-                'kapasitas'      => $row['E']
-            ]);
-        }
+    $wali  = $this->db->get_where('guru', [
+        'nama' => trim($row['D'])
+    ])->row();
+
+    $ketua = $this->db->get_where('siswa', [
+        'nama' => trim($row['E'])
+    ])->row();
+
+    $this->Kelas_model->insert([
+        'nama'           => $row['B'],
+        'jurusan'        => $row['C'],
+        'wali_kelas_id'  => $wali ? $wali->id : NULL,
+        'ketua_kelas_id' => $ketua ? $ketua->id : NULL,
+        'kapasitas'      => $row['F']
+    ]);
+}
 
         $this->session->set_flashdata('success', 'Import data kelas selesai.');
         redirect('kelas');

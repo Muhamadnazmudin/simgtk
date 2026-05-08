@@ -22,7 +22,15 @@
                value="<?= $kelas->nama ?>"
                required>
       </div>
-
+      <!-- Jurusan -->
+<div class="form-group">
+  <label>Jurusan</label>
+  <input type="text"
+         name="jurusan"
+         class="form-control"
+         value="<?= $kelas->jurusan ?? '' ?>"
+         required>
+</div>
       <!-- Wali Kelas -->
       <div class="form-group">
         <label>Wali Kelas</label>

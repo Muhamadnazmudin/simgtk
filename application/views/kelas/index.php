@@ -38,6 +38,7 @@
     <tr>
       <th width="40">No</th>
       <th>Nama Kelas</th>
+      <th>Jurusan</th>
       <th>Wali Kelas</th>
       <th>Ketua Kelas</th>
       <th width="90">Kapasitas</th>
@@ -50,6 +51,7 @@
       <tr>
         <td><?= $no++ ?></td>
         <td><?= $k->nama ?></td>
+        <td><?= $k->jurusan ?></td>
         <td><?= $k->wali_nama ?? '-' ?></td>
         <td><?= $k->ketua_nama ?? '-' ?></td>
         <td><?= $k->kapasitas ?></td>

@@ -316,33 +316,34 @@ public function export_excel()
     error_reporting(0);
 
     // ======================== QUERY DATA ========================
-    $data = $this->db
+    // ======================== QUERY DATA ========================
+$data = $this->db
     ->select('
         siswa.*,
         kelas.nama AS nama_kelas,
-        jurusan.nama AS nama_jurusan
+        kelas.jurusan AS nama_jurusan
     ')
     ->from('siswa')
     ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
-    ->join('jurusan', 'jurusan.id = kelas.id_jurusan', 'left')
     ->get()
     ->result();
 
-    // ======================== FIELD EXPORT ========================
-    // ambil semua field siswa
-    $fields = $this->db->list_fields('siswa');
+// ======================== FIELD EXPORT ========================
 
-    // hapus id_kelas
-    $fields = array_filter($fields, function ($f) {
-        return $f != 'id_kelas';
-    });
+// ambil semua field siswa
+$fields = $this->db->list_fields('siswa');
 
-    // reset index array
-    $fields = array_values($fields);
+// hapus id_kelas
+$fields = array_filter($fields, function ($f) {
+    return $f != 'id_kelas';
+});
 
-    // tambahkan nama_kelas
-    $fields[] = 'nama_kelas';
-    $field[] = 'nama_jurusan';
+// reset index
+$fields = array_values($fields);
+
+// tambah field relasi
+$fields[] = 'nama_kelas';
+$fields[] = 'nama_jurusan';
 
     // ======================== SPREADSHEET ========================
     $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
