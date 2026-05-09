@@ -315,26 +315,14 @@ body.dark-mode #hasilCari .item-siswa:hover {
    MOBILE
 ===================================================== */
 
+/* =====================================================
+   MOBILE FIX SB ADMIN 2
+===================================================== */
 @media (max-width: 767px) {
 	html,
 	body {
 		height: auto !important;
-		overflow: auto !important;
-	}
-
-	.sidebar {
-		position: fixed !important;
-		top: 0;
-		left: -260px;
-		width: 260px;
-		height: 100vh;
-		overflow-y: auto;
-		transition: all 0.3s ease;
-		z-index: 3000;
-	}
-
-	.sidebar.toggled {
-		left: 0;
+		overflow-x: hidden !important;
 	}
 
 	.topbar {
@@ -343,7 +331,7 @@ body.dark-mode #hasilCari .item-siswa:hover {
 		left: 0;
 		right: 0;
 		height: 70px;
-		z-index: 3500;
+		z-index: 1050;
 	}
 
 	#content-wrapper {
@@ -352,8 +340,19 @@ body.dark-mode #hasilCari .item-siswa:hover {
 		height: auto !important;
 		overflow: visible !important;
 	}
-}
 
+	.sidebar {
+		z-index: 1040 !important;
+		height: 100vh;
+		overflow-y: auto;
+	}
+
+	#sidebarToggleTop {
+		position: relative;
+		z-index: 9999 !important;
+		pointer-events: auto !important;
+	}
+}
 /* =====================================================
    MODAL FIX
 ===================================================== */
@@ -378,4 +377,34 @@ body.modal-open .modal * {
 
 body.modal-open {
 	overflow: visible !important;
+}
+/* ===================================
+   MOBILE SIDEBAR RESPONSIVE
+=================================== */
+@media (max-width: 767.98px) {
+	#accordionSidebar {
+		position: fixed !important;
+		top: 0 !important;
+		left: -85% !important;
+		width: 75% !important;
+		max-width: 220px !important;
+		min-width: 200px !important;
+		height: 100vh !important;
+		overflow-y: auto !important;
+		z-index: 99999 !important;
+		transition: left 0.3s ease !important;
+	}
+
+	#accordionSidebar.mobile-open {
+		left: 0 !important;
+	}
+
+	.topbar {
+		z-index: 100000 !important;
+	}
+
+	#sidebarToggleTop {
+		position: relative !important;
+		z-index: 100001 !important;
+	}
 }

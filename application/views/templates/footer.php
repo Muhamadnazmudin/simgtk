@@ -100,44 +100,36 @@ $(document).on('click', '.btn-edit', function () {
     );
 });
 </script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+<!-- <script>
+$(document).ready(function () {
 
-    const btnToggleSidebar = document.getElementById('btnToggleSidebar');
-    const sidebar = document.getElementById('accordionSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-
-    // kalau bukan halaman guru, abaikan
-    if (!btnToggleSidebar || !sidebar || !overlay) {
-        return;
-    }
-
-    btnToggleSidebar.addEventListener('click', function (e) {
+    $('#sidebarToggleTop').on('click', function (e) {
         e.preventDefault();
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-    });
 
-    overlay.addEventListener('click', function () {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
+        $('body').toggleClass('sidebar-toggled');
+        $('.sidebar').toggleClass('toggled');
+
+        if ($('.sidebar').hasClass('toggled')) {
+            $('.sidebar .collapse').collapse('hide');
+        }
     });
 
 });
-</script>
+</script> -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+$(function () {
 
-    const sidebar = document.getElementById('accordionSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
+    $('#sidebarToggleTop').off('click').on('click', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
-    document.querySelectorAll('#accordionSidebar .nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
-                sidebar.classList.remove('show');
-                overlay.classList.remove('show');
-            }
-        });
+        const sidebar = $('#accordionSidebar');
+
+        if (sidebar.hasClass('mobile-open')) {
+            sidebar.removeClass('mobile-open');
+        } else {
+            sidebar.addClass('mobile-open');
+        }
     });
 
 });

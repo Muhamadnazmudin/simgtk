@@ -5,8 +5,10 @@
       <tr>
         <th>No</th>
         <th>NIS</th>
+        <th>NISN</th>
         <th>Nama</th>
         <th>Kelas Terakhir</th>
+        <th>Tahun Ajaran</th>
         <th>Status</th>
       </tr>
     </thead>
@@ -15,8 +17,10 @@
         <tr>
           <td><?= $no++ ?></td>
           <td><?= $s->nis ?></td>
+          <td><?= $s->nisn ?></td>
           <td><?= $s->nama ?></td>
           <td><?= $s->nama_kelas ?></td>
+          <td><?= $s->tahun_ajaran ?></td>
           <td><span class="badge bg-success"><?= ucfirst($s->status) ?></span></td>
         </tr>
       <?php endforeach; else: ?>

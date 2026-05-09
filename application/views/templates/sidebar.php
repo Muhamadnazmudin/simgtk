@@ -26,7 +26,7 @@ if (!isset($active)) $active = '';
   </li>
 
 <?php
-$group_data    = in_array($active, ['guru','kelas','siswa']);
+$group_data    = in_array($active, ['guru','kelas','siswa','kartu_osis','idcard_premium']);
 $group_mutasi  = in_array($active, ['mutasi','kenaikan','siswa_keluar','siswa_lulus','laporan']);
 $group_absen   = in_array($active, ['absensi','laporan_absensi']);
 $group_izin    = in_array($active, ['izin','laporan_izin']);
