@@ -51,7 +51,7 @@
         <input type="text"
                name="nama"
                class="form-control"
-               placeholder="Contoh: Abdul Mirza Ramadhan"
+               placeholder="Contoh: Muhamad Nazmudin"
                required>
     </div>
 
@@ -62,7 +62,7 @@
         <input type="text"
                name="tempat_lahir"
                class="form-control"
-               placeholder="Contoh: Bandung"
+               placeholder="Contoh: Kuningan"
                required>
     </div>
 
@@ -82,7 +82,7 @@
            required>
 
     <small class="text-muted">
-        Contoh: 26-09-2009
+        Contoh: 15-09-2008
     </small>
 </div>
 
