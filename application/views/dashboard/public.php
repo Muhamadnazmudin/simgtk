@@ -528,6 +528,14 @@ body.dark-mode .bot-anim {
               <i class="fas fa-users"></i> Siswa Mutasi
             </a>
           </li>
+
+             <!-- MENU CARI NISN -->
+    <li class="nav-item">
+      <a class="nav-link" href="<?= base_url('index.php/cari_nisn') ?>">
+        <i class="fas fa-id-card"></i> Cari NISN
+      </a>
+    </li>
+    
           <li class="nav-item">
   <a class="nav-link"
      href="<?= site_url('buku_tamu/daftar_hari_ini') ?>">
