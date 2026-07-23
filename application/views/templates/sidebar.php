@@ -26,7 +26,7 @@ if (!isset($active)) $active = '';
   </li>
 
 <?php
-$group_data    = in_array($active, ['guru','kelas','siswa','kartu_osis','idcard_premium']);
+$group_data    = in_array($active, ['guru','kelas','siswa','buku_induk','kartu_osis','idcard_premium']);
 $group_mutasi  = in_array($active, ['mutasi','kenaikan','siswa_keluar','siswa_lulus','laporan']);
 $group_absen   = in_array($active, ['absensi','laporan_absensi']);
 $group_izin    = in_array($active, ['izin','laporan_izin']);
@@ -98,7 +98,10 @@ $group_tutorial = in_array($active, [
 
             <a class="collapse-item <?= $active=='siswa'?'active':'' ?>" 
                href="<?= site_url('siswa') ?>">Data Siswa</a>
-
+                <a class="collapse-item <?= $active=='buku_induk'?'active':'' ?>"
+   href="<?= site_url('buku_induk') ?>">
+    Buku Induk
+</a>
             <a class="collapse-item <?= $active=='kartu_osis'?'active':'' ?>" 
                href="<?= site_url('kartu_osis') ?>">Kartu OSIS</a>
 

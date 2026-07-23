@@ -251,6 +251,23 @@ public function count_rekap_nilai($kelas_id, $mapel_id)
 
     return (int) $this->db->get()->row()->total;
 }
-
+public function get_ringkasan_siswa($siswa_id)
+{
+    return $this->db
+        ->select("
+            ta.tahun,
+            nr.tahun_id,
+            nr.semester,
+            ROUND(AVG(nr.nilai_angka),2) AS rata_rata
+        ")
+        ->from('nilai_rapor nr')
+        ->join('tahun_ajaran ta','ta.id=nr.tahun_id')
+        ->where('nr.siswa_id',$siswa_id)
+        ->group_by('nr.tahun_id,nr.semester')
+        ->order_by('nr.tahun_id','ASC')
+        ->order_by('nr.semester','ASC')
+        ->get()
+        ->result();
+}
 
 }
