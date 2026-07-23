@@ -6,7 +6,7 @@
 <style>
 
 body{
-    font-family: dejavusans;
+    font-family: Arial;
     font-size:10px;
     color:#000;
 }
@@ -54,62 +54,102 @@ td{
 
 <body>
 
-<!-- ============================= -->
+<!-- ===================================================== -->
 <!-- HEADER SEKOLAH -->
-<!-- ============================= -->
+<!-- ===================================================== -->
 
-<table cellpadding="2">
+<?php
+
+$logo = FCPATH . 'uploads/logo/' . $sekolah->logo;
+
+if (!file_exists($logo)) {
+    $logo = '';
+}
+
+?>
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
 
 <tr>
 
-<td width="15%" align="center">
+    <!-- LOGO -->
+    <td width="14%" align="center" valign="middle">
 
-<?php
-$logo = FCPATH.'assets/img/logo.png';
+        <?php if (!empty($logo)) : ?>
 
-if(file_exists($logo)){
-?>
-<img src="<?= $logo ?>" width="60">
-<?php } ?>
+            <img src="<?= $logo ?>" width="58">
 
-</td>
+        <?php endif; ?>
 
-<td width="70%" align="center">
+    </td>
 
-<div style="font-size:14px;font-weight:bold;">
-PEMERINTAH KABUPATEN KUNINGAN
-</div>
+    <!-- IDENTITAS SEKOLAH -->
+    <td width="86%" align="center" valign="middle">
 
-<div style="font-size:15px;font-weight:bold;">
-SMK NEGERI 1 CILIMUS
-</div>
+        <table width="100%" cellpadding="1" cellspacing="0" border="0">
 
-<div style="font-size:10px;">
-Jl. Raya Cilimus No.123 Kabupaten Kuningan
-</div>
+            <tr>
+                <td align="center" style="font-size:12px;font-weight:bold;">
+                    PEMERINTAH DAERAH PROVINSI JAWA BARAT
+                </td>
+            </tr>
 
-<div style="font-size:10px;">
-Telp. (0232) XXXXXXX
-</div>
+            <tr>
+                <td align="center" style="font-size:11px;font-weight:bold;">
+                    CABANG DINAS PENDIDIKAN WILAYAH X
+                </td>
+            </tr>
 
-</td>
+            <tr>
+                <td align="center" style="font-size:18px;font-weight:bold;">
+                    <?= strtoupper($sekolah->nama_sekolah) ?>
+                </td>
+            </tr>
 
-<td width="15%"></td>
+            <tr>
+                <td align="center" style="font-size:10px;font-weight:bold;">
+                    <?= $sekolah->alamat ?>,
+                    Desa <?= $sekolah->desa ?>,
+                    Kec. <?= ucfirst($sekolah->kecamatan) ?>
+                </td>
+            </tr>
+
+            <tr>
+                <td align="center" style="font-size:9px;">
+                    Kab. <?= $sekolah->kabupaten ?>
+                    &nbsp; | &nbsp;
+                    Telp. (0232) 8910145
+                    &nbsp; | &nbsp;
+                    Email : smkn1cilimus@gmail.com
+                </td>
+            </tr>
+
+        </table>
+
+    </td>
 
 </tr>
 
 </table>
 
-<hr>
+<!-- GARIS KOP -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td style="border-bottom:2px solid #000;"></td>
+</tr>
+</table>
 
 <br>
 
-<div class="judul">
+<div style="
+text-align:center;
+font-size:15px;
+font-weight:bold;
+">
 BUKU INDUK PESERTA DIDIK
 </div>
 
-<br><br>
-
+<br>
 <!-- ============================= -->
 <!-- FOTO + IDENTITAS -->
 <!-- ============================= -->

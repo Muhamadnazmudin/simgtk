@@ -48,8 +48,10 @@ $this->load->helper('tanggal');
 
 $role = $this->session->userdata('role_name');
 
-if (!in_array($role, ['admin', 'kesiswaan'])) {
-    show_error('Akses ditolak', 403);
+$role = $this->session->userdata('role_name');
+
+if (!in_array($role, ['admin','kesiswaan','guru','wakakur'])) {
+    show_error('Akses ditolak',403);
 }
         $limit = (int)$this->input->get('limit');
 
@@ -61,7 +63,15 @@ if (!in_array($role, ['admin', 'kesiswaan'])) {
             'kelas'  => $this->input->get('kelas', TRUE),
             'search' => trim($this->input->get('search', TRUE))
         ];
+// ===================================================
+// FILTER KHUSUS WALI KELAS
+// ===================================================
 
+if ($this->session->userdata('is_walikelas')) {
+
+    $filter['kelas_id'] = $this->session->userdata('kelas_id');
+
+}
         /*
         |--------------------------------------------------------------------------
         | TOTAL DATA
@@ -127,6 +137,7 @@ if (!in_array($role, ['admin', 'kesiswaan'])) {
         $data['title'] = 'Buku Induk';
 
         $data['active'] = 'buku_induk';
+        $data['active'] = 'wk_buku_induk';
 
         $data['filter'] = $filter;
 
@@ -147,15 +158,30 @@ if (!in_array($role, ['admin', 'kesiswaan'])) {
         $data['pagination'] = $this->pagination->create_links();
 
         /*
-        |--------------------------------------------------------------------------
-        | VIEW
-        |--------------------------------------------------------------------------
-        */
+|--------------------------------------------------------------------------
+| VIEW
+|--------------------------------------------------------------------------
+*/
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view('buku_induk/index', $data);
-        $this->load->view('templates/footer');
+if ($this->session->userdata('is_walikelas')) {
+
+    $data['active'] = 'wk_buku_induk';
+
+    $this->load->view('walikelas/templates/header', $data);
+    $this->load->view('walikelas/templates/sidebar', $data);
+    $this->load->view('buku_induk/index', $data);
+    $this->load->view('walikelas/templates/footer');
+
+} else {
+
+    $data['active'] = 'buku_induk';
+
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar', $data);
+    $this->load->view('buku_induk/index', $data);
+    $this->load->view('templates/footer');
+
+}
     }
 
     /*
@@ -173,7 +199,16 @@ if (!in_array($role, ['admin', 'kesiswaan'])) {
     if (!$data['siswa']) {
         show_404();
     }
+// ===================================================
+// BATASI AKSES WALI KELAS
+// ===================================================
+if ($this->session->userdata('is_walikelas')) {
 
+    if ($data['siswa']->id_kelas != $this->session->userdata('kelas_id')) {
+        show_error('Anda tidak memiliki akses ke Buku Induk siswa ini.', 403);
+    }
+
+}
     // ==========================
     // RAPOR
     // ==========================
@@ -190,8 +225,25 @@ if (!in_array($role, ['admin', 'kesiswaan'])) {
     $riwayat = $this->Buku_induk_model->getRiwayatTahun($id);
 
     $data['kehadiran'] = [];
+    
+    $kelas = strtoupper($data['siswa']->nama_kelas);
 
+if (strpos($kelas, 'XII') !== false) {
+    $semesterTerakhir = 6;
+} elseif (strpos($kelas, 'XI') !== false) {
+    $semesterTerakhir = 4;
+} else {
+    $semesterTerakhir = 2;
+}
+
+$jumlahRiwayat = count($riwayat);
+
+// semester awal
+$semesterNo = $semesterTerakhir - ($jumlahRiwayat * 2) + 1;
+
+if ($semesterNo < 1) {
     $semesterNo = 1;
+}
 
     foreach ($riwayat as $r) {
 
@@ -234,13 +286,31 @@ if (!in_array($role, ['admin', 'kesiswaan'])) {
         ];
     }
 
-    // ==========================
-    // VIEW
-    // ==========================
+    /*
+|--------------------------------------------------------------------------
+| VIEW
+|--------------------------------------------------------------------------
+*/
+
+if ($this->session->userdata('is_walikelas')) {
+
+    $data['active'] = 'wk_buku_induk';
+
+    $this->load->view('walikelas/templates/header', $data);
+    $this->load->view('walikelas/templates/sidebar', $data);
+    $this->load->view('buku_induk/detail', $data);
+    $this->load->view('walikelas/templates/footer');
+
+} else {
+
+    $data['active'] = 'buku_induk';
+
     $this->load->view('templates/header', $data);
-    $this->load->view('templates/sidebar');
+    $this->load->view('templates/sidebar', $data);
     $this->load->view('buku_induk/detail', $data);
     $this->load->view('templates/footer');
+
+}
 }
 public function cetak($id)
 {
@@ -249,7 +319,16 @@ public function cetak($id)
     if (!$data['siswa']) {
         show_404();
     }
+// ===================================================
+// BATASI AKSES WALI KELAS
+// ===================================================
+if ($this->session->userdata('is_walikelas')) {
 
+    if ($data['siswa']->id_kelas != $this->session->userdata('kelas_id')) {
+        show_error('Anda tidak memiliki akses ke Buku Induk siswa ini.', 403);
+    }
+
+}
     // rapor
     $this->load->model('Nilai_rapor_model');
     $data['rapor'] = $this->Nilai_rapor_model
@@ -262,7 +341,24 @@ public function cetak($id)
 
     $data['kehadiran'] = [];
 
+    $kelas = strtoupper($data['siswa']->nama_kelas);
+
+if (strpos($kelas, 'XII') !== false) {
+    $semesterTerakhir = 6;
+} elseif (strpos($kelas, 'XI') !== false) {
+    $semesterTerakhir = 4;
+} else {
+    $semesterTerakhir = 2;
+}
+
+$jumlahRiwayat = count($riwayat);
+
+// semester awal
+$semesterNo = $semesterTerakhir - ($jumlahRiwayat * 2) + 1;
+
+if ($semesterNo < 1) {
     $semesterNo = 1;
+}
 
     foreach ($riwayat as $r) {
 
@@ -308,7 +404,9 @@ $this->pdf->SetAutoPageBreak(TRUE, 10);
 
 // A4 Portrait
 $this->pdf->AddPage('P', 'A4');
-
+$data['sekolah'] = $this->db
+    ->get('sekolah')
+    ->row();
 $html = $this->load->view('buku_induk/pdf', $data, true);
 
 $this->pdf->writeHTML($html);

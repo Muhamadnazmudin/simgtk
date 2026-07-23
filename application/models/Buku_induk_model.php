@@ -44,7 +44,17 @@ class Buku_induk_model extends CI_Model
                 $filter['kelas']
             );
         }
+// ==========================================================
+// FILTER KHUSUS WALI KELAS
+// ==========================================================
+if (!empty($filter['kelas_id'])) {
 
+    $this->db->where(
+        'siswa.id_kelas',
+        $filter['kelas_id']
+    );
+
+}
         if (!empty($filter['search'])) {
 
             $this->db->group_start();

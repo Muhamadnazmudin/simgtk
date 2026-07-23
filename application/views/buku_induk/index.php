@@ -95,33 +95,37 @@
 
             <div class="row">
 
-                <div class="col-md-3">
+               <?php if (!$this->session->userdata('is_walikelas')): ?>
 
-                    <label>Kelas</label>
+<div class="col-md-3">
 
-                    <select
-                        name="kelas"
-                        class="form-control">
+    <label>Kelas</label>
 
-                        <option value="">Semua Kelas</option>
+    <select
+        name="kelas"
+        class="form-control">
 
-                        <?php foreach($kelas as $k): ?>
+        <option value="">Semua Kelas</option>
 
-                        <option
-                            value="<?= $k->id ?>"
-                            <?= ($filter['kelas']==$k->id)?'selected':'' ?>>
+        <?php foreach($kelas as $k): ?>
 
-                            <?= $k->nama ?>
+        <option
+            value="<?= $k->id ?>"
+            <?= ($filter['kelas']==$k->id)?'selected':'' ?>>
 
-                        </option>
+            <?= $k->nama ?>
 
-                        <?php endforeach; ?>
+        </option>
 
-                    </select>
+        <?php endforeach; ?>
 
-                </div>
+    </select>
 
-                <div class="col-md-5">
+</div>
+
+<?php endif; ?>
+
+                <div class="<?= $this->session->userdata('is_walikelas') ? 'col-md-8' : 'col-md-5' ?>">
 
                     <label>Pencarian</label>
 

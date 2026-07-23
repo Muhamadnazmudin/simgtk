@@ -265,7 +265,12 @@ body.dark-mode .topbar{
     <span>Hasil Verval PD</span>
   </a>
 </li>
-
+<li class="nav-item <?= ($active=='wk_buku_induk') ? 'active' : '' ?>">
+    <a class="nav-link" href="<?= site_url('buku_induk') ?>">
+        <i class="fas fa-book"></i>
+        <span>Buku Induk</span>
+    </a>
+</li>
 
   <!-- Rekap Absensi -->
   <li class="nav-item <?= ($active=='wk_absensi')?'active':'' ?>">
@@ -329,9 +334,16 @@ body.dark-mode .topbar{
 
 <!-- ============================ -->
 
-<!-- Content Wrapper -->
- <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+ <!-- Content Wrapper -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <div class="container-fluid">
 
 <script>
 const btnToggleSidebar = document.getElementById('btnToggleSidebar');
