@@ -58,7 +58,9 @@ body.dark-mode .topbar .nav-link {
 
 #content-wrapper {
     min-height: 100vh;
-    padding-top: 90px
+    padding-top: 90px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 /* HILANGKAN semua override yang merusak layout */
@@ -66,7 +68,36 @@ html, body {
     overflow: auto !important;
     height: auto !important;
 }
+/* ===============================
+   DASHBOARD SPACING
+   =============================== */
 
+#content .container-fluid{
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-bottom: 25px;
+}
+
+@media (min-width:1200px){
+
+    #content .container-fluid{
+    width:100%;
+    max-width:100%;
+    padding:25px;
+}
+
+}
+
+@media (max-width:768px){
+
+    #content .container-fluid{
+
+        padding-left:15px;
+        padding-right:15px;
+
+    }
+
+}
   </style>
 </head>
 
