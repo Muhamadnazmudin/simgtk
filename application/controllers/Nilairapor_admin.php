@@ -5,15 +5,28 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Nilairapor_admin extends CI_Controller {
 
+    private $tahun_id;
+
     public function __construct()
     {
         parent::__construct();
+
+        $session_tahun = $this->session->userdata('tahun_id');
+
+        if ($session_tahun) {
+            $this->tahun_id = $session_tahun;
+        } else {
+            $t = $this->db->get_where('tahun_ajaran', ['aktif' => 1])->row();
+            $this->tahun_id = $t ? $t->id : null;
+        }
+
         $this->load->model([
             'Nilai_rapor_model',
             'Siswa_model',
             'Mapel_model'
         ]);
     }
+
 
     /* =========================
      * INPUT NILAI (MANUAL)
@@ -38,11 +51,12 @@ class Nilairapor_admin extends CI_Controller {
         $nilai    = $this->input->post('nilai_angka');
 
         $this->Nilai_rapor_model->insert_or_update([
-            'siswa_id'    => $siswa_id,
-            'mapel_id'    => $mapel_id,
-            'semester'    => $semester,
-            'nilai_angka' => $nilai
-        ]);
+    'siswa_id'    => $siswa_id,
+    'mapel_id'    => $mapel_id,
+    'semester'    => $semester,
+    'tahun_id'    => $this->tahun_id,
+    'nilai_angka' => $nilai
+]);
 
         $this->session->set_flashdata(
             'success',
@@ -173,11 +187,12 @@ class Nilairapor_admin extends CI_Controller {
 
                 // 🔁 REPLACE (TIMPA NILAI LAMA)
                 $this->Nilai_rapor_model->insert_or_update([
-                    'siswa_id'    => $siswa->id,
-                    'mapel_id'    => $mapel_id,
-                    'semester'    => $semester,
-                    'nilai_angka' => $nilai
-                ]);
+    'siswa_id'    => $siswa->id,
+    'mapel_id'    => $mapel_id,
+    'semester'    => $semester,
+    'tahun_id'    => $this->tahun_id,
+    'nilai_angka' => $nilai
+]);
 
                 $berhasil++;
             }

@@ -4,31 +4,54 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Nilai_rapor_model extends CI_Model {
 
     private $table = 'nilai_rapor';
+private $tahun_id;
+public function __construct()
+{
+    parent::__construct();
 
+    $session_tahun = $this->session->userdata('tahun_id');
+
+    if ($session_tahun) {
+
+        $this->tahun_id = $session_tahun;
+
+    } else {
+
+        $t = $this->db
+            ->get_where('tahun_ajaran', [
+                'aktif' => 1
+            ])
+            ->row();
+
+        $this->tahun_id = $t ? $t->id : null;
+    }
+}
     /* ===============================
        INSERT NILAI (HANYA KOLOM VALID)
     ================================= */
     public function insert($data)
     {
-        return $this->db->insert($this->table, [
-            'siswa_id'    => $data['siswa_id'],
-            'mapel_id'    => $data['mapel_id'],
-            'semester'    => $data['semester'],
-            'nilai_angka' => $data['nilai_angka']
-        ]);
+       return $this->db->insert($this->table, [
+    'siswa_id'    => $data['siswa_id'],
+    'mapel_id'    => $data['mapel_id'],
+    'semester'    => $data['semester'],
+    'tahun_id'    => $data['tahun_id'],
+    'nilai_angka' => $data['nilai_angka']
+]);
     }
 
     /* ===============================
        CEK DUPLIKAT NILAI
     ================================= */
-    public function cek_nilai($siswa_id, $mapel_id, $semester)
-    {
-        return $this->db->get_where($this->table, [
-            'siswa_id' => $siswa_id,
-            'mapel_id' => $mapel_id,
-            'semester' => $semester
-        ])->row();
-    }
+   public function cek_nilai($siswa_id, $mapel_id, $semester)
+{
+    return $this->db->get_where($this->table, [
+        'siswa_id' => $siswa_id,
+        'mapel_id' => $mapel_id,
+        'semester' => $semester,
+        'tahun_id' => $this->tahun_id
+    ])->row();
+}
 
     /* ===============================
        NILAI SISWA (VIEW SISWA)
@@ -136,7 +159,26 @@ public function rekap_by_siswa_kelas($siswa_id)
 }
 public function insert_or_update($data)
 {
-    return $this->db->replace('nilai_rapor', $data);
+    $cek = $this->db
+        ->where('siswa_id', $data['siswa_id'])
+        ->where('mapel_id', $data['mapel_id'])
+        ->where('semester', $data['semester'])
+        ->where('tahun_id', $data['tahun_id'])
+        ->get('nilai_rapor')
+        ->row();
+
+    if ($cek) {
+
+        return $this->db
+            ->where('id_nilai', $cek->id_nilai)
+            ->update('nilai_rapor', [
+                'nilai_angka' => $data['nilai_angka'],
+                'updated_at'  => date('Y-m-d H:i:s')
+            ]);
+
+    }
+
+    return $this->db->insert('nilai_rapor', $data);
 }
 public function rekap_nilai_paginated($kelas_id, $mapel_id, $limit, $offset)
 {
@@ -146,6 +188,7 @@ public function rekap_nilai_paginated($kelas_id, $mapel_id, $limit, $offset)
     $this->db->from('nilai_rapor nr');
     $this->db->join('siswa s', 's.id = nr.siswa_id');
     $this->db->join('mapel m', 'm.id_mapel = nr.mapel_id');
+    $this->db->where('nr.tahun_id', $this->tahun_id);
 
     if ($kelas_id) {
         $this->db->where('s.id_kelas', $kelas_id);
@@ -176,10 +219,12 @@ public function rekap_nilai_paginated($kelas_id, $mapel_id, $limit, $offset)
         ->join('kelas k', 'k.id = s.id_kelas')
         ->join('mapel m', 'm.id_mapel = base.id_mapel')
         ->join(
-            'nilai_rapor nr',
-            'nr.siswa_id = base.siswa_id AND nr.mapel_id = base.id_mapel',
-            'left'
-        )
+    'nilai_rapor nr',
+    'nr.siswa_id = base.siswa_id
+     AND nr.mapel_id = base.id_mapel
+     AND nr.tahun_id = '.$this->db->escape($this->tahun_id),
+    'left'
+)
         ->group_by(['base.siswa_id', 'base.id_mapel'])
         ->order_by('s.nama', 'ASC')
         ->limit($limit, $offset)
@@ -194,6 +239,7 @@ public function count_rekap_nilai($kelas_id, $mapel_id)
     $this->db->from('nilai_rapor nr');
     $this->db->join('siswa s', 's.id = nr.siswa_id');
     $this->db->join('mapel m', 'm.id_mapel = nr.mapel_id');
+    $this->db->where('nr.tahun_id', $this->tahun_id);
 
     if ($kelas_id) {
         $this->db->where('s.id_kelas', $kelas_id);
