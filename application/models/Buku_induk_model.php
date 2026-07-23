@@ -147,5 +147,18 @@ class Buku_induk_model extends CI_Model
             ->get('kelas')
             ->result();
     }
-
+public function getRiwayatTahun($siswa_id)
+{
+    return $this->db
+        ->select('
+            st.tahun_id,
+            ta.tahun
+        ')
+        ->from('siswa_tahun st')
+        ->join('tahun_ajaran ta', 'ta.id = st.tahun_id')
+        ->where('st.siswa_id', $siswa_id)
+        ->order_by('ta.id', 'ASC')
+        ->get()
+        ->result();
+}
 }

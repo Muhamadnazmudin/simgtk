@@ -1052,11 +1052,19 @@ foreach($rapor as $r){
 
     <div class="card shadow mb-4">
 
-        <div class="card-header bg-success text-white">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
 
-            <i class="fas fa-calendar-check mr-2"></i>
+            <div>
 
-            Rekap Kehadiran
+                <i class="fas fa-calendar-check mr-2"></i>
+
+                Rekap Kehadiran Peserta Didik
+
+            </div>
+
+            <small>
+                Berdasarkan Tahun Ajaran & Semester
+            </small>
 
         </div>
 
@@ -1064,20 +1072,29 @@ foreach($rapor as $r){
 
             <div class="table-responsive">
 
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover table-striped">
 
                     <thead class="thead-light">
 
-                        <tr>
+                        <tr class="text-center">
 
                             <th width="50">No</th>
+
                             <th>Tahun Ajaran</th>
-                            <th>Semester</th>
-                            <th>Hadir</th>
-                            <th>Sakit</th>
-                            <th>Izin</th>
-                            <th>Alpha</th>
-                            <th width="120">Detail</th>
+
+                            <th width="120">Semester</th>
+
+                            <th width="80">Hadir</th>
+
+                            <th width="80">Sakit</th>
+
+                            <th width="80">Izin</th>
+
+                            <th width="80">Alpha</th>
+
+                            <th width="90">Terlambat</th>
+
+                            <th width="90">Detail</th>
 
                         </tr>
 
@@ -1085,15 +1102,127 @@ foreach($rapor as $r){
 
                     <tbody>
 
+                    <?php if (!empty($kehadiran)) : ?>
+
+                        <?php $no = 1; ?>
+
+                        <?php foreach ($kehadiran as $k) : ?>
+
                         <tr>
 
-                            <td colspan="8" class="text-center text-muted py-4">
+                            <td class="text-center align-middle">
+                                <?= $no++ ?>
+                            </td>
+
+                            <td class="align-middle">
+                                <strong><?= $k->tahun_ajaran ?></strong>
+                            </td>
+
+                            <td class="text-center align-middle">
+
+                                <span class="badge badge-pill badge-primary px-3 py-2">
+
+                                    Semester <?= $k->semester ?>
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center align-middle">
+
+                                <span class="badge badge-success">
+
+                                    <?= (int)$k->hadir ?>
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center align-middle">
+
+                                <span class="badge badge-info">
+
+                                    <?= (int)$k->sakit ?>
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center align-middle">
+
+                                <span class="badge badge-warning">
+
+                                    <?= (int)$k->izin ?>
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center align-middle">
+
+                                <span class="badge badge-danger">
+
+                                    <?= (int)$k->alpha ?>
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center align-middle">
+
+                                <?php if($k->terlambat > 0){ ?>
+
+                                    <span class="badge badge-warning">
+
+                                        <?= $k->terlambat ?>
+
+                                    </span>
+
+                                <?php }else{ ?>
+
+                                    <span class="text-muted">
+
+                                        -
+
+                                    </span>
+
+                                <?php } ?>
+
+                            </td>
+
+                            <td class="text-center align-middle">
+
+                                <a href="#"
+                                   class="btn btn-outline-primary btn-sm">
+
+                                    <i class="fas fa-eye"></i>
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        <?php endforeach; ?>
+
+                    <?php else : ?>
+
+                        <tr>
+
+                            <td colspan="9"
+                                class="text-center text-muted py-5">
+
+                                <i class="fas fa-calendar-times fa-3x mb-3"></i>
+
+                                <br>
 
                                 Belum ada data kehadiran.
 
                             </td>
 
                         </tr>
+
+                    <?php endif; ?>
 
                     </tbody>
 
