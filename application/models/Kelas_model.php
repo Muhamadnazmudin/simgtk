@@ -16,6 +16,7 @@ class Kelas_model extends CI_Model {
             siswa.nama AS ketua_nama
         ');
         $this->db->from($this->table);
+        $this->db->where('kelas.is_active', 1);
         $this->db->join('guru',  'guru.id = kelas.wali_kelas_id',  'left');
         $this->db->join('siswa', 'siswa.id = kelas.ketua_kelas_id', 'left');
         $this->db->order_by('kelas.nama', 'ASC');
@@ -31,9 +32,11 @@ class Kelas_model extends CI_Model {
      * COUNT
      * ========================================================== */
     public function count_all()
-    {
-        return $this->db->count_all($this->table);
-    }
+{
+    return $this->db
+        ->where('is_active', 1)
+        ->count_all_results($this->table);
+}
 
     /* ==========================================================
      * CRUD BASIC
@@ -115,22 +118,24 @@ class Kelas_model extends CI_Model {
 
     // Ambil semua kelas tanpa limit
     public function get_all_simple()
-    {
-        return $this->db
-            ->order_by('nama', 'ASC')
-            ->get($this->table)
-            ->result();
-    }
+{
+    return $this->db
+        ->where('is_active', 1)
+        ->order_by('nama', 'ASC')
+        ->get($this->table)
+        ->result();
+}
 
     // Ambil kelas berdasarkan pola nama
-    public function get_by_pattern($pattern)
-    {
-        return $this->db
-            ->like('nama', $pattern)
-            ->order_by('id', 'ASC')
-            ->get($this->table)
-            ->row();
-    }
+   public function get_by_pattern($pattern)
+{
+    return $this->db
+        ->where('is_active', 1)
+        ->like('nama', $pattern)
+        ->order_by('id', 'ASC')
+        ->get($this->table)
+        ->row();
+}
 
     // Tentukan kelas berikutnya
     public function next_level($id_kelas)
@@ -149,10 +154,11 @@ class Kelas_model extends CI_Model {
         else return null;
 
         return $this->db
-            ->like('nama', $next)
-            ->order_by('id', 'ASC')
-            ->get($this->table)
-            ->row();
+    ->where('is_active', 1)
+    ->like('nama', $next)
+    ->order_by('id', 'ASC')
+    ->get($this->table)
+    ->row();
     }
     // ==========================================================
 // 🔥 Ambil siswa dalam kelas tertentu (untuk ketua kelas)

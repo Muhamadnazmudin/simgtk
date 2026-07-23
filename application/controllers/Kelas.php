@@ -102,12 +102,13 @@ class Kelas extends CI_Controller {
         }
 
         $data = [
-            'nama'            => $this->input->post('nama', TRUE),
-            'wali_kelas_id'   => $wali_kelas_id ?: NULL,
-            'jurusan'          => $this->input->post('jurusan', TRUE),
-            'ketua_kelas_id'  => $ketua_kelas_id ?: NULL,
-            'kapasitas'       => $this->input->post('kapasitas', TRUE)
-        ];
+    'nama'           => $this->input->post('nama', TRUE),
+    'wali_kelas_id'  => $wali_kelas_id ?: NULL,
+    'jurusan'        => $this->input->post('jurusan', TRUE),
+    'ketua_kelas_id' => $ketua_kelas_id ?: NULL,
+    'kapasitas'      => $this->input->post('kapasitas', TRUE),
+    'is_active'      => 1
+];
 
         $this->Kelas_model->insert($data);
 
@@ -177,14 +178,53 @@ class Kelas extends CI_Controller {
 
 
     /* =====================================================
-     * DELETE
-     * ===================================================== */
-    public function delete($id)
-    {
-        $this->Kelas_model->delete($id);
-        $this->session->set_flashdata('success', 'Data kelas berhasil dihapus.');
+ * NONAKTIFKAN KELAS
+ * ===================================================== */
+public function nonaktif($id)
+{
+    $jumlah = $this->db
+        ->where('id_kelas', $id)
+        ->where('status', 'aktif')
+        ->count_all_results('siswa');
+
+    if ($jumlah > 0) {
+
+        $this->session->set_flashdata(
+            'error',
+            'Kelas tidak dapat dinonaktifkan karena masih memiliki <b>'.$jumlah.'</b> siswa aktif-Moal Baleg.'
+        );
+
         redirect('kelas');
+        return;
     }
+
+    $this->Kelas_model->update($id, [
+        'is_active' => 0
+    ]);
+
+    $this->session->set_flashdata(
+        'success',
+        'Kelas berhasil dinonaktifkan.'
+    );
+
+    redirect('kelas');
+}
+/* =====================================================
+ * AKTIFKAN KELAS
+ * ===================================================== */
+public function aktif($id)
+{
+    $this->Kelas_model->update($id, [
+        'is_active' => 1
+    ]);
+
+    $this->session->set_flashdata(
+        'success',
+        'Kelas berhasil diaktifkan kembali.'
+    );
+
+    redirect('kelas');
+}
 
     /* =====================================================
      * EXPORT EXCEL
@@ -253,12 +293,13 @@ class Kelas extends CI_Controller {
     ])->row();
 
     $this->Kelas_model->insert([
-        'nama'           => $row['B'],
-        'jurusan'        => $row['C'],
-        'wali_kelas_id'  => $wali ? $wali->id : NULL,
-        'ketua_kelas_id' => $ketua ? $ketua->id : NULL,
-        'kapasitas'      => $row['F']
-    ]);
+    'nama'           => $row['B'],
+    'jurusan'        => $row['C'],
+    'wali_kelas_id'  => $wali ? $wali->id : NULL,
+    'ketua_kelas_id' => $ketua ? $ketua->id : NULL,
+    'kapasitas'      => $row['F'],
+    'is_active'      => 1
+]);
 }
 
         $this->session->set_flashdata('success', 'Import data kelas selesai.');

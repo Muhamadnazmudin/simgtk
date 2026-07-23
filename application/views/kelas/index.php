@@ -23,52 +23,153 @@
   </div>
 <?php endif; ?>
 
-<?php if ($this->session->flashdata('error')): ?>
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+<?php if($this->session->flashdata('error')): ?>
+
+<div class="alert alert-danger alert-dismissible fade show">
+
     <i class="fas fa-exclamation-circle"></i>
-    <?= $this->session->flashdata('error'); ?>
-    <button type="button" class="close" data-dismiss="alert">
-      <span>&times;</span>
+
+    <?= $this->session->flashdata('error') ?>
+
+    <button class="close" data-dismiss="alert">
+
+        <span>&times;</span>
+
     </button>
-  </div>
+
+</div>
+
 <?php endif; ?>
 
-<table class="table table-bordered table-striped table-responsive-sm">
-  <thead class="thead-light">
-    <tr>
-      <th width="40">No</th>
-      <th>Nama Kelas</th>
-      <th>Jurusan</th>
-      <th>Wali Kelas</th>
-      <th>Ketua Kelas</th>
-      <th width="90">Kapasitas</th>
-      <th width="120">Jumlah Siswa</th>
-      <th width="120">Aksi</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php $no = $start + 1; foreach ($kelas as $k): ?>
-      <tr>
-        <td><?= $no++ ?></td>
-        <td><?= $k->nama ?></td>
-        <td><?= $k->jurusan ?></td>
-        <td><?= $k->wali_nama ?? '-' ?></td>
-        <td><?= $k->ketua_nama ?? '-' ?></td>
-        <td><?= $k->kapasitas ?></td>
-        <td><?= $k->jumlah_siswa ?></td>
-        <td>
-          <a href="<?= site_url('kelas/edit/'.$k->id) ?>" class="btn btn-warning btn-sm">
-            <i class="fas fa-edit"></i>
-          </a>
-          <a href="<?= site_url('kelas/delete/'.$k->id) ?>"
-             onclick="return confirm('Hapus data ini?')"
-             class="btn btn-danger btn-sm">
-            <i class="fas fa-trash"></i>
-          </a>
-        </td>
-      </tr>
-    <?php endforeach; ?>
-  </tbody>
+<table class="table table-bordered table-hover table-striped table-responsive-sm">
+    <thead class="thead-dark text-center">
+        <tr>
+            <th width="50">No</th>
+            <th>Nama Kelas</th>
+            <th>Jurusan</th>
+            <th>Wali Kelas</th>
+            <th>Ketua Kelas</th>
+            <th width="90">Kapasitas</th>
+            <th width="100">Jml Siswa</th>
+            <th width="100">Status</th>
+            <th width="140">Aksi</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    <?php if(empty($kelas)): ?>
+
+        <tr>
+            <td colspan="9" class="text-center text-muted">
+                Tidak ada data kelas.
+            </td>
+        </tr>
+
+    <?php else: ?>
+
+        <?php $no = $start + 1; ?>
+
+        <?php foreach($kelas as $k): ?>
+
+        <tr>
+
+            <td class="text-center">
+                <?= $no++ ?>
+            </td>
+
+            <td>
+                <strong><?= $k->nama ?></strong>
+            </td>
+
+            <td>
+                <?= $k->jurusan ?: '-' ?>
+            </td>
+
+            <td>
+                <?= $k->wali_nama ?: '-' ?>
+            </td>
+
+            <td>
+                <?= $k->ketua_nama ?: '-' ?>
+            </td>
+
+            <td class="text-center">
+                <?= $k->kapasitas ?>
+            </td>
+
+            <td class="text-center">
+
+                <span class="badge badge-info">
+
+                    <?= $k->jumlah_siswa ?>
+
+                </span>
+
+            </td>
+
+            <td class="text-center">
+
+                <?php if($k->is_active == 1): ?>
+
+                    <span class="badge badge-success">
+                        Aktif
+                    </span>
+
+                <?php else: ?>
+
+                    <span class="badge badge-danger">
+                        Nonaktif
+                    </span>
+
+                <?php endif; ?>
+
+            </td>
+
+            <td class="text-center">
+
+                <?php if($k->is_active == 1): ?>
+
+                    <a href="<?= site_url('kelas/edit/'.$k->id) ?>"
+                       class="btn btn-warning btn-sm"
+                       title="Edit">
+
+                        <i class="fas fa-edit"></i>
+
+                    </a>
+
+                    <a href="<?= site_url('kelas/nonaktif/'.$k->id) ?>"
+                       class="btn btn-danger btn-sm"
+                       title="Nonaktifkan"
+                       onclick="return confirm('Yakin ingin menonaktifkan kelas <?= $k->nama ?> ?')">
+
+                        <i class="fas fa-ban"></i>
+
+                    </a>
+
+                <?php else: ?>
+
+                    <a href="<?= site_url('kelas/aktif/'.$k->id) ?>"
+                       class="btn btn-success btn-sm"
+                       title="Aktifkan"
+                       onclick="return confirm('Aktifkan kembali kelas <?= $k->nama ?> ?')">
+
+                        <i class="fas fa-check"></i>
+
+                    </a>
+
+                <?php endif; ?>
+
+            </td>
+
+        </tr>
+
+        <?php endforeach; ?>
+
+    <?php endif; ?>
+
+    </tbody>
+
 </table>
 
 <?= $pagination ?>
@@ -91,7 +192,14 @@
             <label>Nama Kelas</label>
             <input type="text" name="nama" class="form-control" required>
           </div>
-
+<div class="form-group">
+    <label>Jurusan</label>
+    <input type="text"
+           name="jurusan"
+           class="form-control"
+           placeholder="Contoh : MPLB"
+           required>
+</div>
           <div class="form-group">
             <label>Wali Kelas</label>
             <select name="wali_kelas_id" class="form-control">

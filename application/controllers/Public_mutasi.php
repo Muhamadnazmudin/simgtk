@@ -19,87 +19,101 @@ class Public_mutasi extends CI_Controller {
     // VIEW: dashboard/mutasi_public.php
     // ==========================================================
     public function index()
-    {
-        // ===============================
-        // FILTER INPUT (GET)
-        // ===============================
-        $kelas  = $this->input->get('kelas', TRUE);
-        $jenis  = $this->input->get('jenis', TRUE);
-        $search = $this->input->get('search', TRUE);
-        $tahun  = date('Y');
+{
+    // ===============================
+    // FILTER
+    // ===============================
+    $kelas     = $this->input->get('kelas', TRUE);
+    $jenis     = $this->input->get('jenis', TRUE);
+    $search    = $this->input->get('search', TRUE);
+    $tahun_id  = $this->input->get('tahun_id', TRUE);
 
-        // ===============================
-        // PAGINATION CONFIG
-        // ===============================
-        $config['base_url'] = site_url('public_mutasi/index');
-        $config['per_page'] = 10;
-        $config['page_query_string'] = TRUE;
-        $config['query_string_segment'] = 'page';
-        $config['reuse_query_string'] = TRUE;
+    // jika belum memilih tahun → pakai tahun aktif
+    if (empty($tahun_id)) {
 
-        $page   = (int) $this->input->get('page');
-        $offset = ($page > 0) ? $page : 0;
+        $aktif = $this->db
+            ->get_where('tahun_ajaran', ['aktif' => 1])
+            ->row();
 
-        // ===============================
-        // AMBIL DATA MUTASI (SATU SUMBER)
-        // ===============================
-        // ambil semua dulu untuk hitung total
-        $all_mutasi = $this->Mutasi_model->get_public([
-            'kelas'  => $kelas,
-            'jenis'  => $jenis,
-            'search' => $search
-        ]);
-
-        $config['total_rows'] = count($all_mutasi);
-
-        // ===============================
-        // INIT PAGINATION
-        // ===============================
-        $config['full_tag_open']   = '<ul class="pagination justify-content-center">';
-        $config['full_tag_close']  = '</ul>';
-
-        $config['first_link']      = '&laquo;';
-        $config['first_tag_open']  = '<li class="page-item">';
-        $config['first_tag_close'] = '</li>';
-
-        $config['last_link']       = '&raquo;';
-        $config['last_tag_open']   = '<li class="page-item">';
-        $config['last_tag_close']  = '</li>';
-
-        $config['next_link']       = '&rsaquo;';
-        $config['next_tag_open']   = '<li class="page-item">';
-        $config['next_tag_close']  = '</li>';
-
-        $config['prev_link']       = '&lsaquo;';
-        $config['prev_tag_open']   = '<li class="page-item">';
-        $config['prev_tag_close']  = '</li>';
-
-        $config['cur_tag_open']    = '<li class="page-item active"><span class="page-link">';
-        $config['cur_tag_close']   = '</span></li>';
-
-        $config['num_tag_open']    = '<li class="page-item">';
-        $config['num_tag_close']   = '</li>';
-
-        $config['attributes']      = ['class' => 'page-link'];
-
-        $this->pagination->initialize($config);
-
-        // ===============================
-        // DATA UNTUK VIEW
-        // ===============================
-        $data = [
-            'judul'        => 'Data Siswa Mutasi',
-            'tahun'        => $tahun,
-            'mutasi'       => array_slice($all_mutasi, $offset, $config['per_page']),
-            'kelas_list'   => $this->Mutasi_model->get_kelas_list(),
-            'pagination'   => $this->pagination->create_links()
-        ];
-
-        // ===============================
-        // LOAD VIEW PUBLIC
-        // ===============================
-        $this->load->view('dashboard/mutasi_public', $data);
+        $tahun_id = $aktif ? $aktif->id : null;
     }
+
+    // ambil data tahun untuk judul
+    $tahun = $this->db
+        ->get_where('tahun_ajaran', ['id' => $tahun_id])
+        ->row();
+
+    // ===============================
+    // PAGINATION
+    // ===============================
+    $config['base_url'] = site_url('public_mutasi/index');
+    $config['per_page'] = 10;
+    $config['page_query_string'] = TRUE;
+    $config['query_string_segment'] = 'page';
+    $config['reuse_query_string'] = TRUE;
+
+    $page   = (int)$this->input->get('page');
+    $offset = ($page > 0) ? $page : 0;
+
+    // ===============================
+    // DATA
+    // ===============================
+    $all_mutasi = $this->Mutasi_model->get_public([
+        'tahun_id' => $tahun_id,
+        'kelas'    => $kelas,
+        'jenis'    => $jenis,
+        'search'   => $search
+    ]);
+
+    $config['total_rows'] = count($all_mutasi);
+
+    // ===============================
+    // PAGINATION STYLE
+    // ===============================
+    $config['full_tag_open']   = '<ul class="pagination justify-content-center">';
+    $config['full_tag_close']  = '</ul>';
+
+    $config['first_link']      = '&laquo;';
+    $config['first_tag_open']  = '<li class="page-item">';
+    $config['first_tag_close'] = '</li>';
+
+    $config['last_link']       = '&raquo;';
+    $config['last_tag_open']   = '<li class="page-item">';
+    $config['last_tag_close']  = '</li>';
+
+    $config['next_link']       = '&rsaquo;';
+    $config['next_tag_open']   = '<li class="page-item">';
+    $config['next_tag_close']  = '</li>';
+
+    $config['prev_link']       = '&lsaquo;';
+    $config['prev_tag_open']   = '<li class="page-item">';
+    $config['prev_tag_close']  = '</li>';
+
+    $config['cur_tag_open']    = '<li class="page-item active"><span class="page-link">';
+    $config['cur_tag_close']   = '</span></li>';
+
+    $config['num_tag_open']    = '<li class="page-item">';
+    $config['num_tag_close']   = '</li>';
+
+    $config['attributes']      = ['class' => 'page-link'];
+
+    $this->pagination->initialize($config);
+
+    // ===============================
+    // VIEW
+    // ===============================
+    $data = [
+        'judul'        => 'Data Siswa Mutasi',
+        'tahun'        => $tahun ? $tahun->tahun : '',
+        'tahun_id'     => $tahun_id,
+        'tahun_list'   => $this->Mutasi_model->get_tahun_list(),
+        'mutasi'       => array_slice($all_mutasi, $offset, $config['per_page']),
+        'kelas_list'   => $this->Mutasi_model->get_kelas_list(),
+        'pagination'   => $this->pagination->create_links()
+    ];
+
+    $this->load->view('dashboard/mutasi_public', $data);
+}
     public function export_excel()
 {
     // ambil data sesuai filter

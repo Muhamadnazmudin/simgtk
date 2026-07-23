@@ -606,26 +606,60 @@ body.dark-mode .bot-anim {
 </header>
 
 <!-- ==================== MAIN CONTENT ==================== -->
+<!-- ==================== MAIN CONTENT ==================== -->
 <main class="container my-5">
 
-  <!-- HEADER / INTRO -->
-  <div class="text-center mb-5">
-    <div class="welcome-section">
-      <h3>Selamat Datang di Sistem Mutasi Siswa 👋</h3>
-      <p id="currentTime">Data per <strong>-</strong></p>
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+
+        <div class="welcome-section">
+
+            <h3 class="fw-bold">
+                Selamat Datang di Sistem Mutasi Siswa 👋
+            </h3>
+
+            <p id="currentTime">
+                Data per <strong>-</strong>
+            </p>
+
+        </div>
+
+        <h2 class="section-title mt-4 mb-2">
+
+            Statistik Mutasi Siswa
+
+        </h2>
+
+        <h5 class="text-primary fw-semibold">
+
+            Tahun Ajaran
+            <?= $tahun_aktif->tahun ?>
+
+        </h5>
+
+        <p class="text-muted">
+
+            Menampilkan statistik mutasi siswa berdasarkan
+            <strong>Tahun Ajaran Aktif</strong>.
+
+        </p>
+
     </div>
 
-    <h2 class="section-title mt-4">
-      Statistik Mutasi Siswa Sekolah
-    </h2>
-  </div>
+    <?php
 
-  <?php $this->load->view('dashboard/index', [
-      'rombel' => $rombel,
-      'aktif' => $aktif,
-      'keluar' => $keluar,
-      'lulus' => $lulus
-  ]); ?>
+    $this->load->view('dashboard/index', [
+
+        'rombel'  => $rombel,
+        'aktif'   => $aktif,
+        'keluar'  => $keluar,
+        'lulus'   => $lulus
+
+    ]);
+
+    ?>
+
+</main>
 <!-- ===============================
  Siswa Aktif Berdasarkan Jenis Kelamin
 =============================== -->

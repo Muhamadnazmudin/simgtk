@@ -69,19 +69,22 @@ $data['jumlah_siswa_aktif'] = $this->db
     ->where('status', 'aktif')
     ->count_all_results('siswa');
 
-$data['jumlah_rombel'] = $this->db->count_all('kelas');
+$data['jumlah_rombel'] = $this->db
+    ->where('is_active', 1)
+    ->count_all_results('kelas');
 
 
 
         $q = $this->db
-            ->select('tahun_ajaran.tahun, COUNT(siswa.id) AS jumlah')
-            ->join('tahun_ajaran', 'tahun_ajaran.id = siswa.tahun_id', 'left')
-            ->where('siswa.status', 'lulus')
-            ->where('siswa.tahun_id', $this->tahun_id)
-            ->group_by('tahun_ajaran.tahun')
-            ->get('siswa');
+    ->select('tahun_ajaran.tahun, COUNT(siswa.id) AS jumlah')
+    ->from('siswa')
+    ->join('tahun_ajaran', 'tahun_ajaran.id = siswa.tahun_id', 'left')
+    ->where('siswa.status', 'lulus')
+    ->group_by('tahun_ajaran.id')
+    ->order_by('tahun_ajaran.id', 'DESC')
+    ->get();
 
-        $data['lulus'] = $q ? $q->result() : [];
+$data['lulus'] = $q->result();
         $data['per_rombel'] = $this->get_siswa_per_rombel();
 
         $this->load->view('templates/header', $data);
@@ -106,15 +109,21 @@ $data['gender_tingkat'] = $this->get_siswa_aktif_gender_by_tingkat();
 /* TAMBAHKAN INI */
 $q = $this->db
     ->select('tahun_ajaran.tahun, COUNT(siswa.id) AS jumlah')
+    ->from('siswa')
     ->join('tahun_ajaran', 'tahun_ajaran.id = siswa.tahun_id', 'left')
     ->where('siswa.status', 'lulus')
-    ->where('siswa.tahun_id', $this->tahun_id)
-    ->group_by('tahun_ajaran.tahun')
-    ->get('siswa');
+    ->group_by('tahun_ajaran.id')
+    ->order_by('tahun_ajaran.id', 'DESC')
+    ->get();
 
-$data['lulus'] = $q ? $q->result() : [];
+$data['lulus'] = $q->result();
+$tahun_aktif = $this->db
+    ->where('aktif', 1)
+    ->get('tahun_ajaran')
+    ->row();
 
-/* BARU LOAD VIEW */
+$data['tahun_aktif'] = $tahun_aktif;
+
 $this->load->view('dashboard/public', $data);
 }
 
@@ -233,24 +242,28 @@ private function get_siswa_aktif_gender_by_tingkat()
 
     foreach ($regex as $k => $r) {
 
-        $this->db->select('COUNT(siswa.id) AS jumlah');
-        $this->db->from('siswa');
-        $this->db->join('kelas', 'kelas.id = siswa.id_kelas', 'left');
+        $this->db->select('COUNT(m.id) AS jumlah');
+        $this->db->from('mutasi m');
 
-        // STATUS KELUAR
-        $this->db->where_in('siswa.status', [
-            'keluar',
-            'mutasi_keluar',
-            'meninggal'
-        ]);
+        $this->db->join('siswa s', 's.id = m.siswa_id', 'left');
+        $this->db->join('siswa_tahun st',
+            'st.siswa_id = s.id AND st.tahun_id = m.tahun_id',
+            'left');
 
-        $this->db->where("kelas.nama REGEXP '$r'");
+        $this->db->join('kelas k', 'k.id = st.kelas_id', 'left');
+
+        $this->db->where('m.jenis', 'keluar');
+        $this->db->where('m.tahun_id', $this->tahun_id);
+
+        $this->db->where("k.nama REGEXP '$r'");
 
         $row = $this->db->get()->row();
+
         $out[$k] = $row ? (int)$row->jumlah : 0;
     }
 
     $out['total'] = $out['x'] + $out['xi'] + $out['xii'];
+
     return $out;
 }
 

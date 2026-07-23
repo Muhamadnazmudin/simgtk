@@ -7,10 +7,12 @@ class Mutasi_model extends CI_Model {
     // COUNT (UNTUK PAGINATION)
     // ================================================================
     public function count_all()
-    {
-        $this->db->where('status_mutasi', 'aktif');
-        return $this->db->count_all_results('mutasi');
-    }
+{
+    $this->db->where('status_mutasi', 'aktif');
+    $this->db->where('tahun_id', $this->session->userdata('tahun_id'));
+
+    return $this->db->count_all_results('mutasi');
+}
 
     // ================================================================
     // GET ALL MUTASI + JOIN SISWA, KELAS & TAHUN
@@ -30,6 +32,7 @@ class Mutasi_model extends CI_Model {
         $this->db->join('kelas ktujuan', 'ktujuan.id = mutasi.tujuan_kelas_id', 'left');
         $this->db->join('tahun_ajaran', 'tahun_ajaran.id = mutasi.tahun_id', 'left');
         $this->db->where('mutasi.status_mutasi', 'aktif');
+        $this->db->where('mutasi.tahun_id', $this->session->userdata('tahun_id'));
         $this->db->order_by('mutasi.id', 'DESC');
         $this->db->limit($limit, $offset);
 
@@ -326,9 +329,21 @@ public function get_public($filter = [])
     $this->db->join('kelas kelas_tujuan', 'kelas_tujuan.id = mutasi.tujuan_kelas_id', 'left');
     $this->db->join('tahun_ajaran', 'tahun_ajaran.id = mutasi.tahun_id', 'left');
     $this->db->join('users', 'users.id = mutasi.created_by', 'left');
+$this->db->where('mutasi.status_mutasi', 'aktif');
 
+if (!empty($filter['tahun_id'])) {
+
+    $this->db->where('mutasi.tahun_id', $filter['tahun_id']);
+
+} else {
+
+    $this->db->where('mutasi.tahun_id', $this->session->userdata('tahun_id'));
+
+}
     $this->db->where('mutasi.status_mutasi', 'aktif');
-
+if (!empty($filter['tahun_id'])) {
+    $this->db->where('mutasi.tahun_id', $filter['tahun_id']);
+}
     if (!empty($filter['kelas'])) {
         $this->db->where('mutasi.kelas_asal_id', $filter['kelas']);
     }

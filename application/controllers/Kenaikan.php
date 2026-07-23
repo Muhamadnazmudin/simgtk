@@ -136,6 +136,10 @@ class Kenaikan extends CI_Controller {
 
                 $siswa = $this->Siswa_model->get_by_id($id_siswa);
                 $kelas_lama = $siswa->id_kelas;
+                // Lewati jika belum dipilih kelas tujuan
+if ($kelas_baru === '' || $kelas_baru === null) {
+    continue;
+}
 
                 if ($kelas_baru == 'lulus') {
                     // simpan riwayat
