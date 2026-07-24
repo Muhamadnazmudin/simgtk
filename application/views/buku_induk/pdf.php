@@ -73,18 +73,16 @@ if (!file_exists($logo)) {
 <tr>
 
     <!-- LOGO -->
-    <td width="14%" align="center" valign="middle">
+    <td width="16%" align="center" valign="middle">
 
         <?php if (!empty($logo)) : ?>
-
-            <img src="<?= $logo ?>" width="58">
-
+            <img src="<?= $logo ?>" width="60">
         <?php endif; ?>
 
     </td>
 
     <!-- IDENTITAS SEKOLAH -->
-    <td width="86%" align="center" valign="middle">
+    <td width="68%" align="center" valign="middle">
 
         <table width="100%" cellpadding="1" cellspacing="0" border="0">
 
@@ -128,6 +126,9 @@ if (!file_exists($logo)) {
 
     </td>
 
+    <!-- KOLOM KOSONG AGAR JUDUL BENAR-BENAR DI TENGAH -->
+    <td width="16%"></td>
+
 </tr>
 
 </table>
@@ -135,7 +136,7 @@ if (!file_exists($logo)) {
 <!-- GARIS KOP -->
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
-<td style="border-bottom:2px solid #000;"></td>
+<td style="border-bottom:3px solid #000;"></td>
 </tr>
 </table>
 
@@ -183,9 +184,19 @@ BUKU INDUK PESERTA DIDIK
 <td><?= $siswa->nisn ?></td>
 </tr>
 
+<?php
+$jk = '-';
+
+if ($siswa->jk == 'L') {
+    $jk = 'Laki-laki';
+} elseif ($siswa->jk == 'P') {
+    $jk = 'Perempuan';
+}
+?>
+
 <tr>
-<td class="label">Jenis Kelamin</td>
-<td><?= $siswa->jk ?></td>
+    <td class="label">Jenis Kelamin</td>
+    <td><?= $jk ?></td>
 </tr>
 
 <tr>
@@ -224,38 +235,28 @@ if(!empty($siswa->tgl_lahir)){
 </tr>
 
 <tr>
-<td class="label">Alamat</td>
-<td>
-
-<?= $siswa->alamat ?>
-
-<?php
-if(!empty($siswa->rt)){
-    echo " RT ".$siswa->rt;
-}
-
-if(!empty($siswa->rw)){
-    echo " RW ".$siswa->rw;
-}
-?>
-
-</td>
-
+    <td class="label">Alamat</td>
+    <td><?= $siswa->alamat ?></td>
 </tr>
 
 <tr>
-<td class="label">Dusun</td>
-<td><?= $siswa->dusun ?></td>
+    <td class="label">Dusun</td>
+    <td><?= $siswa->dusun ?: '-' ?></td>
 </tr>
 
 <tr>
-<td class="label">Kecamatan</td>
-<td><?= $siswa->kecamatan ?></td>
+    <td class="label">RT / RW</td>
+    <td><?= (!empty($siswa->rt) || !empty($siswa->rw)) ? sprintf('%03d',$siswa->rt).' / '.sprintf('%03d',$siswa->rw) : '-' ?></td>
 </tr>
 
 <tr>
-<td class="label">Kode Pos</td>
-<td><?= $siswa->kode_pos ?></td>
+    <td class="label">Kecamatan</td>
+    <td><?= $siswa->kecamatan ?></td>
+</tr>
+
+<tr>
+    <td class="label">Kode Pos</td>
+    <td><?= $siswa->kode_pos ?></td>
 </tr>
 
 <tr>
@@ -501,7 +502,7 @@ FOTO<br>
 </table>
 
 <br><br>
-
+<br pagebreak="true"/>
 <table cellpadding="5">
     <tr>
         <td style="background-color:#d9edf7;border:1px solid #666;">

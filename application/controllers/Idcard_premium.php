@@ -16,31 +16,22 @@ class Idcard_premium extends CI_Controller {
        =============================== */
     public function index()
 {
-    $nama   = $this->input->get('nama');
-    $kelas  = $this->input->get('kelas');
+    $filter = [
+        'nama'  => trim($this->input->get('nama')),
+        'kelas' => $this->input->get('kelas')
+    ];
 
-    $this->db->select('siswa.*, kelas.nama AS nama_kelas');
-    $this->db->from('siswa');
-    $this->db->join('kelas','kelas.id = siswa.id_kelas','left');
+    $data = [
+        'title'       => 'ID Card Premium',
+        'active'      => 'idcard_premium',
+        'group_data'  => true,
+        'siswa'       => $this->model->getList(
+                            $filter['nama'],
+                            $filter['kelas']
+                        ),
+        'kelas_list'  => $this->model->getKelas()
+    ];
 
-    if (!empty($nama)) {
-        $this->db->like('siswa.nama', $nama);
-    }
-
-    if (!empty($kelas)) {
-        $this->db->where('siswa.id_kelas', $kelas);
-    }
-
-    $this->db->order_by('siswa.nama','ASC');
-
-    $data['siswa'] = $this->db->get()->result();
-    $data['kelas_list'] = $this->db->get('kelas')->result();
-
-    $data['title'] = "ID Card Premium";
-    $data['active'] = 'idcard_premium';
-    $data['group_data'] = true;
-
-    
     $this->load->view('templates/header', $data);
     $this->load->view('templates/sidebar', $data);
     $this->load->view('idcard_premium/index', $data);
@@ -51,54 +42,74 @@ class Idcard_premium extends CI_Controller {
     /* ===============================
        PREVIEW CARD
        =============================== */
-    public function preview($id)
-    {
-        $siswa = $this->model->getById($id);
-        if (!$siswa) show_404();
-
-        /* GENERATE QR */
-        $qrFolder = FCPATH.'assets/qrcodes/';
-        if (!is_dir($qrFolder)) {
-            mkdir($qrFolder, 0755, true);
-        }
-
-        $qrFile = $qrFolder.$siswa->nisn.'.png';
-
-        if (!file_exists($qrFile)) {
-            QRcode::png(
-                $siswa->nisn,
-                $qrFile,
-                QR_ECLEVEL_H,
-                4,
-                2
-            );
-        }
-
-        $data['qr_path'] = 'assets/qrcodes/'.$siswa->nisn.'.png';
-        $data['title'] = "Preview ID Card";
-        $data['siswa'] = $siswa;
-
-        $data['active'] = 'idcard_premium';
-        $data['group_data'] = true;
-
-        $this->load->view('idcard_premium/preview', $data);
-    }
-    public function cetak_kelas($kelas_id)
+    public function preview($id = null)
 {
-    $this->db->select('siswa.*, kelas.nama AS nama_kelas');
-    $this->db->from('siswa');
-    $this->db->join('kelas','kelas.id = siswa.id_kelas','left');
-    $this->db->where('siswa.id_kelas', $kelas_id);
-    $this->db->order_by('siswa.nama','ASC');
+    if (!$id) {
+        show_404();
+    }
 
-    $siswa = $this->db->get()->result();
+    $siswa = $this->model->getById($id);
 
-    if (empty($siswa)) show_404();
+    if (!$siswa) {
+        show_404();
+    }
 
-    $data['siswa'] = $siswa;
-    $data['title'] = "Cetak Massal ID Card";
+    $qr_path = $this->_generateQr($siswa->nisn);
 
-    $this->load->view('idcard_premium/cetak_massal', $data);
+    $data = [
+        'title'      => 'Preview ID Card',
+        'active'     => 'idcard_premium',
+        'group_data' => true,
+        'siswa'      => $siswa,
+        'qr_path'    => $qr_path
+    ];
+
+    $this->load->view('idcard_premium/preview', $data);
 }
+    public function cetak_kelas($kelas_id = null)
+{
+    if (!$kelas_id) {
+        show_404();
+    }
 
+    $siswa = $this->model->getByKelas($kelas_id);
+
+    if (empty($siswa)) {
+        show_404();
+    }
+
+    $data = [
+        'title' => 'Cetak Massal ID Card',
+        'siswa' => $siswa
+    ];
+
+    $this->load->view(
+        'idcard_premium/cetak_massal',
+        $data
+    );
+}
+private function _generateQr($text)
+{
+    $folder = FCPATH . 'assets/qrcodes/';
+
+    if (!is_dir($folder)) {
+        mkdir($folder, 0755, true);
+    }
+
+    $file = $folder . $text . '.png';
+
+    if (!file_exists($file)) {
+
+        QRcode::png(
+            $text,
+            $file,
+            QR_ECLEVEL_H,
+            4,
+            2
+        );
+
+    }
+
+    return 'assets/qrcodes/' . $text . '.png';
+}
 }

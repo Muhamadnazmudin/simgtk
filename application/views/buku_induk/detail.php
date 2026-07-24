@@ -79,15 +79,17 @@
 
                     ?>
 
-                    <img
-                        src="<?= $foto ?>"
-                        class="img-fluid rounded-circle shadow mb-3"
-                        style="
-                            width:180px;
-                            height:180px;
-                            object-fit:cover;
-                            border:5px solid #e9ecef;
-                        ">
+   <img
+    src="<?= $foto ?>"
+    class="rounded-circle shadow-sm mb-3"
+    style="
+        width:100px;
+        height:100px;
+        object-fit:cover;
+        object-position:center 15%;
+        border:4px solid #e9ecef;
+        transform:scale(1.35);
+    ">
 
                     <br>
 
