@@ -783,7 +783,7 @@ Wali
 
 <tr>
 
-<th>Nomor SKHUN</th>
+<th>Nomor Ijazah</th>
 
 <td><?= $siswa->skhun ?: '-' ?></td>
 

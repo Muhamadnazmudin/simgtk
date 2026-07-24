@@ -136,110 +136,273 @@ class Nilairapor_admin extends CI_Controller {
     }
 
     public function import_proses_lebar()
-    {
-        require FCPATH . 'vendor/autoload.php';
+{
+    require FCPATH . 'vendor/autoload.php';
 
-        $semester = $this->input->post('semester');
-
-        if (empty($_FILES['file']['name'])) {
-            redirect('Nilairapor_admin/import');
-        }
-
-        $spreadsheet = IOFactory::load($_FILES['file']['tmp_name']);
-        $sheetData   = $spreadsheet->getActiveSheet()->toArray();
-
-        // Header mapel
-        $header   = $sheetData[0];
-        $mapelMap = [];
-
-        foreach ($header as $index => $nama_mapel) {
-            if ($index == 0) continue;
-
-            $mapel = $this->db->get_where('mapel', [
-                'nama_mapel' => trim($nama_mapel)
-            ])->row();
-
-            if ($mapel) {
-                $mapelMap[$index] = $mapel->id_mapel;
-            }
-        }
-
-        $berhasil = 0;
-
-        foreach ($sheetData as $rowIndex => $row) {
-
-            if ($rowIndex == 0) continue;
-
-            $nisn = trim($row[0]);
-            if (!$nisn) continue;
-
-            $siswa = $this->db->get_where('siswa', [
-                'nisn'   => $nisn,
-                'status' => 'aktif'
-            ])->row();
-
-            if (!$siswa) continue;
-
-            foreach ($mapelMap as $colIndex => $mapel_id) {
-
-                $nilai = trim($row[$colIndex]);
-                if ($nilai === '') continue;
-
-                // 🔁 REPLACE (TIMPA NILAI LAMA)
-                $this->Nilai_rapor_model->insert_or_update([
-    'siswa_id'    => $siswa->id,
-    'mapel_id'    => $mapel_id,
-    'semester'    => $semester,
-    'tahun_id'    => $this->tahun_id,
-    'nilai_angka' => $nilai
-]);
-
-                $berhasil++;
-            }
-        }
-
-        $this->session->set_flashdata(
-            'success',
-            "Import selesai. Total nilai diproses: $berhasil"
-        );
-
+    if (empty($_FILES['file']['name'])) {
         redirect('Nilairapor_admin/import');
     }
+
+    $spreadsheet = IOFactory::load($_FILES['file']['tmp_name']);
+    $sheetData   = $spreadsheet->getActiveSheet()->toArray();
+
+    /*
+    |--------------------------------------------------------------------------
+    | HEADER
+    |--------------------------------------------------------------------------
+    | Row 0 = Nama Mapel
+    | Row 1 = Semester
+    | Row 2 dst = Data
+    |--------------------------------------------------------------------------
+    */
+
+    $headerMapel = $sheetData[0];
+    $headerSmt   = $sheetData[1];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mapping Kolom -> Mapel + Semester
+    |--------------------------------------------------------------------------
+    */
+
+    $mapelMap = [];
+    $currentMapel = '';
+
+    for ($col = 2; $col < count($headerMapel); $col++) {
+
+        if (trim($headerMapel[$col]) != '') {
+            $currentMapel = trim($headerMapel[$col]);
+        }
+
+        if ($currentMapel == '') {
+            continue;
+        }
+
+        $semester = (int) preg_replace('/[^0-9]/', '', $headerSmt[$col]);
+
+        if ($semester == 0) {
+            continue;
+        }
+
+        $mapel = $this->db
+            ->where('nama_mapel', $currentMapel)
+            ->get('mapel')
+            ->row();
+
+        if (!$mapel) {
+            continue;
+        }
+
+        $mapelMap[$col] = [
+            'mapel_id'  => $mapel->id_mapel,
+            'semester'  => $semester
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | IMPORT DATA
+    |--------------------------------------------------------------------------
+    */
+
+    $berhasil = 0;
+    $skipSiswa = 0;
+    $skipNilai = 0;
+
+    foreach ($sheetData as $rowIndex => $row) {
+
+        if ($rowIndex < 2) {
+            continue;
+        }
+
+        $nisn = trim($row[0]);
+
+        if ($nisn == '') {
+            continue;
+        }
+
+        // Nama hanya sebagai referensi
+        $namaExcel = isset($row[1]) ? trim($row[1]) : '';
+
+        $siswa = $this->db
+            ->where('nisn', $nisn)
+            ->where('status', 'aktif')
+            ->get('siswa')
+            ->row();
+
+        if (!$siswa) {
+            $skipSiswa++;
+            continue;
+        }
+
+        foreach ($mapelMap as $col => $info) {
+
+            if (!isset($row[$col])) {
+                continue;
+            }
+
+            $nilai = trim($row[$col]);
+
+            // kosong = skip
+            if ($nilai === '') {
+                $skipNilai++;
+                continue;
+            }
+
+            $this->Nilai_rapor_model->insert_or_update([
+                'siswa_id'    => $siswa->id,
+                'mapel_id'    => $info['mapel_id'],
+                'semester'    => $info['semester'],
+                'tahun_id'    => $this->tahun_id,
+                'nilai_angka' => $nilai
+            ]);
+
+            $berhasil++;
+        }
+    }
+
+    $this->session->set_flashdata(
+        'success',
+        'Import selesai.<br>
+        Nilai diproses : <b>'.$berhasil.'</b><br>
+        Siswa tidak ditemukan : <b>'.$skipSiswa.'</b><br>
+        Nilai kosong dilewati : <b>'.$skipNilai.'</b>'
+    );
+
+    redirect('Nilairapor_admin/import');
+}
 
     /* =========================
      * DOWNLOAD TEMPLATE
      * ========================= */
     public function download_template_lebar()
-    {
-        require FCPATH . 'vendor/autoload.php';
+{
+    require FCPATH . 'vendor/autoload.php';
 
-        $mapel = $this->db->order_by('nama_mapel', 'ASC')->get('mapel')->result();
+    $mapel = $this->db
+        ->order_by('nama_mapel', 'ASC')
+        ->get('mapel')
+        ->result();
 
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Import Nilai');
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setTitle('Template Nilai');
 
-        $sheet->setCellValue('A1', 'NISN');
+    /*
+    |--------------------------------------------------------------------------
+    | HEADER
+    |--------------------------------------------------------------------------
+    */
 
-        $col = 'B';
-        foreach ($mapel as $m) {
-            $sheet->setCellValue($col.'1', $m->nama_mapel);
-            $sheet->getColumnDimension($col)->setWidth(25);
+    $sheet->setCellValue('A1', 'NISN');
+    $sheet->mergeCells('A1:A2');
+
+    $sheet->setCellValue('B1', 'NAMA SISWA');
+    $sheet->mergeCells('B1:B2');
+
+    $sheet->getColumnDimension('A')->setWidth(18);
+    $sheet->getColumnDimension('B')->setWidth(35);
+
+    $col = 3; // Kolom C
+
+    foreach ($mapel as $m) {
+
+        $startCol = $col;
+        $endCol   = $col + 5;
+
+        // Merge nama mapel
+        $sheet->mergeCellsByColumnAndRow(
+            $startCol,
+            1,
+            $endCol,
+            1
+        );
+
+        $sheet->setCellValueByColumnAndRow(
+            $startCol,
+            1,
+            $m->nama_mapel
+        );
+
+        // Semester
+        for ($smt = 1; $smt <= 6; $smt++) {
+
+            $sheet->setCellValueByColumnAndRow(
+                $col,
+                2,
+                'Smt'.$smt
+            );
+
+            $sheet->getColumnDimensionByColumn($col)
+                  ->setWidth(9);
+
             $col++;
         }
-
-        $sheet->getStyle('A1:'.$col.'1')->getFont()->setBold(true);
-        $sheet->getColumnDimension('A')->setWidth(18);
-
-        $sheet->setCellValue('A2', '0083666053');
-        $sheet->setCellValue('B2', '80');
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="template_import_nilai_lebar.xlsx"');
-        header('Cache-Control: max-age=0');
-
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-        $writer->save('php://output');
-        exit;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | STYLE HEADER
+    |--------------------------------------------------------------------------
+    */
+
+    $lastColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col - 1);
+
+    $headerStyle = [
+        'font' => [
+            'bold'  => true,
+            'color' => ['rgb' => 'FFFFFF']
+        ],
+        'alignment' => [
+            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+            'wrapText'   => true
+        ],
+        'fill' => [
+            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+            'startColor' => [
+                'rgb' => '4F81BD'
+            ]
+        ],
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+            ]
+        ]
+    ];
+
+    $sheet->getStyle("A1:{$lastColumn}2")
+          ->applyFromArray($headerStyle);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONTOH DATA
+    |--------------------------------------------------------------------------
+    */
+
+    $sheet->setCellValue('A3', '0083666053');
+    $sheet->setCellValue('B3', 'NAMA SISWA');
+
+    /*
+    |--------------------------------------------------------------------------
+    | FREEZE HEADER
+    |--------------------------------------------------------------------------
+    */
+
+    $sheet->freezePane('C3');
+
+    /*
+    |--------------------------------------------------------------------------
+    | OUTPUT
+    |--------------------------------------------------------------------------
+    */
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="template_import_nilai.xlsx"');
+    header('Cache-Control: max-age=0');
+
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $writer->save('php://output');
+    exit;
+}
 }
