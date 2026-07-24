@@ -180,76 +180,122 @@ public function insert_or_update($data)
 
     return $this->db->insert('nilai_rapor', $data);
 }
-public function rekap_nilai_paginated($kelas_id, $mapel_id, $limit, $offset)
+public function rekap_siswa($kelas_id = null, $limit = 100, $offset = 0)
 {
-    // SUBQUERY: pasangan siswa-mapel (INILAH YANG DIPAGINATE)
-    $this->db->distinct();
-    $this->db->select('s.id AS siswa_id, m.id_mapel');
-    $this->db->from('nilai_rapor nr');
-    $this->db->join('siswa s', 's.id = nr.siswa_id');
-    $this->db->join('mapel m', 'm.id_mapel = nr.mapel_id');
-    $this->db->where('nr.tahun_id', $this->tahun_id);
+    /* ======================================
+     * DAFTAR SISWA
+     * ====================================== */
 
-    if ($kelas_id) {
-        $this->db->where('s.id_kelas', $kelas_id);
+    $this->db->select('
+        s.id,
+        s.nisn,
+        s.nama,
+        k.nama AS nama_kelas
+    ');
+
+    $this->db->from('siswa s');
+    $this->db->join('kelas k', 'k.id = s.id_kelas', 'left');
+
+    // Tahun aktif
+    $this->db->join(
+        'siswa_tahun st',
+        'st.siswa_id = s.id
+        AND st.tahun_id = '.$this->db->escape($this->tahun_id),
+        'left'
+    );
+
+    $this->db->where('st.status', 'aktif');
+
+    if (!empty($kelas_id)) {
+        $this->db->where('st.kelas_id', $kelas_id);
     }
 
-    if ($mapel_id) {
-        $this->db->where('m.id_mapel', $mapel_id);
+    $this->db->order_by('k.nama', 'ASC');
+    $this->db->order_by('s.nama', 'ASC');
+
+    $this->db->limit($limit, $offset);
+
+    $siswa = $this->db->get()->result();
+
+    if (empty($siswa)) {
+        return [];
     }
 
-    $subquery_sql = $this->db->get_compiled_select();
+    /* ======================================
+     * AMBIL ID SISWA
+     * ====================================== */
 
-    // QUERY UTAMA
-    return $this->db
+    $ids = array_column($siswa, 'id');
+
+    /* ======================================
+     * AMBIL SEMUA NILAI
+     * ====================================== */
+
+    $nilai = $this->db
         ->select('
-            s.nama AS nama_siswa,
-            k.nama AS nama_kelas,
-            m.nama_mapel,
-
-            MAX(CASE WHEN nr.semester = 1 THEN nr.nilai_angka END) AS smt1,
-            MAX(CASE WHEN nr.semester = 2 THEN nr.nilai_angka END) AS smt2,
-            MAX(CASE WHEN nr.semester = 3 THEN nr.nilai_angka END) AS smt3,
-            MAX(CASE WHEN nr.semester = 4 THEN nr.nilai_angka END) AS smt4,
-            MAX(CASE WHEN nr.semester = 5 THEN nr.nilai_angka END) AS smt5,
-            MAX(CASE WHEN nr.semester = 6 THEN nr.nilai_angka END) AS smt6
-        ', false)
-        ->from("($subquery_sql) AS base")
-        ->join('siswa s', 's.id = base.siswa_id')
-        ->join('kelas k', 'k.id = s.id_kelas')
-        ->join('mapel m', 'm.id_mapel = base.id_mapel')
-        ->join(
-    'nilai_rapor nr',
-    'nr.siswa_id = base.siswa_id
-     AND nr.mapel_id = base.id_mapel
-     AND nr.tahun_id = '.$this->db->escape($this->tahun_id),
-    'left'
-)
-        ->group_by(['base.siswa_id', 'base.id_mapel'])
-        ->order_by('s.nama', 'ASC')
-        ->limit($limit, $offset)
+            siswa_id,
+            mapel_id,
+            semester,
+            nilai_angka
+        ')
+        ->from('nilai_rapor')
+        ->where('tahun_id', $this->tahun_id)
+        ->where_in('siswa_id', $ids)
         ->get()
         ->result();
+
+    /* ======================================
+     * PIVOT
+     * ====================================== */
+
+    $pivot = [];
+
+    foreach ($nilai as $n) {
+
+        $pivot[$n->siswa_id][$n->mapel_id][$n->semester]
+            = $n->nilai_angka;
+
+    }
+
+    /* ======================================
+     * HASIL
+     * ====================================== */
+
+    $hasil = [];
+
+    foreach ($siswa as $s) {
+
+        $hasil[] = [
+
+            'id'    => $s->id,
+            'nisn'  => $s->nisn,
+            'nama'  => $s->nama,
+            'kelas' => $s->nama_kelas,
+
+            'nilai' => isset($pivot[$s->id])
+                ? $pivot[$s->id]
+                : []
+
+        ];
+
+    }
+
+    return $hasil;
 }
 
 
-public function count_rekap_nilai($kelas_id, $mapel_id)
+public function count_rekap_siswa($kelas_id = null)
 {
-    $this->db->select('COUNT(DISTINCT CONCAT(s.id,"-",m.id_mapel)) AS total');
-    $this->db->from('nilai_rapor nr');
-    $this->db->join('siswa s', 's.id = nr.siswa_id');
-    $this->db->join('mapel m', 'm.id_mapel = nr.mapel_id');
-    $this->db->where('nr.tahun_id', $this->tahun_id);
+    $this->db->from('siswa_tahun');
 
-    if ($kelas_id) {
-        $this->db->where('s.id_kelas', $kelas_id);
+    $this->db->where('tahun_id', $this->tahun_id);
+    $this->db->where('status', 'aktif');
+
+    if (!empty($kelas_id)) {
+        $this->db->where('kelas_id', $kelas_id);
     }
 
-    if ($mapel_id) {
-        $this->db->where('m.id_mapel', $mapel_id);
-    }
-
-    return (int) $this->db->get()->row()->total;
+    return $this->db->count_all_results();
 }
 public function get_ringkasan_siswa($siswa_id)
 {
@@ -269,5 +315,39 @@ public function get_ringkasan_siswa($siswa_id)
         ->get()
         ->result();
 }
+/* ==========================================
+ * MAPEL YANG DIGUNAKAN PADA REKAP
+ * ========================================== */
+public function get_mapel_rekap($kelas_id = null)
+{
+    $this->db->distinct();
 
+    $this->db->select('
+        m.id_mapel,
+        m.nama_mapel
+    ');
+
+    $this->db->from('nilai_rapor nr');
+
+    $this->db->join(
+        'mapel m',
+        'm.id_mapel = nr.mapel_id'
+    );
+
+    $this->db->join(
+        'siswa_tahun st',
+        'st.siswa_id = nr.siswa_id
+        AND st.tahun_id = nr.tahun_id'
+    );
+
+    $this->db->where('nr.tahun_id', $this->tahun_id);
+
+    if (!empty($kelas_id)) {
+        $this->db->where('st.kelas_id', $kelas_id);
+    }
+
+    $this->db->order_by('m.nama_mapel', 'ASC');
+
+    return $this->db->get()->result();
+}
 }

@@ -1,105 +1,223 @@
 <div class="container-fluid">
 
-    <h4 class="mb-3">
-        <i class="fas fa-list"></i> Daftar / Rekap Nilai Rapor
-    </h4>
+    <div class="d-sm-flex align-items-center justify-content-between mb-3">
 
-    <!-- Filter -->
-    <form method="get" class="row mb-4">
-        <div class="col-md-3">
-            <select name="kelas" class="form-control">
-                <option value="">-- Semua Kelas --</option>
-                <?php foreach ($kelas as $k): ?>
-                    <option value="<?= $k->id ?>"
-                        <?= ($this->input->get('kelas') == $k->id) ? 'selected' : '' ?>>
-                        <?= $k->nama ?>
-                    </option>
-                <?php endforeach ?>
-            </select>
-        </div>
+        <h4>
+            <i class="fas fa-book"></i>
+            Rekap Nilai Rapor
+        </h4>
 
-        <div class="col-md-3">
-            <select name="mapel" class="form-control">
-                <option value="">-- Semua Mapel --</option>
-                <?php foreach ($mapel as $m): ?>
-                    <option value="<?= $m->id_mapel ?>"
-                        <?= ($this->input->get('mapel') == $m->id_mapel) ? 'selected' : '' ?>>
-                        <?= $m->nama_mapel ?>
-                    </option>
-                <?php endforeach ?>
-            </select>
-        </div>
+        <a href="<?= site_url('Nilairapor_admin') ?>" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Kembali
+        </a>
 
-        <div class="col-md-2">
-            <button class="btn btn-primary">
-                <i class="fas fa-filter"></i> Filter
-            </button>
-        </div>
-    </form>
-
-    <!-- Tabel Rekap -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-sm">
-            <thead class="thead-dark text-center">
-                <tr>
-                    <th>No</th>
-                    <th>Nama Siswa</th>
-                    <th>Kelas</th>
-                    <th>Mata Pelajaran</th>
-                    <th>Smt 1</th>
-                    <th>Smt 2</th>
-                    <th>Smt 3</th>
-                    <th>Smt 4</th>
-                    <th>Smt 5</th>
-                    <th>Smt 6</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <?php if (!empty($rekap)): ?>
-                    <?php $no = (($page - 1) * 100) + 1; foreach ($rekap as $r):
-                        $smt1 = (int) $r->smt1;
-                        $smt2 = (int) $r->smt2;
-                        $smt3 = (int) $r->smt3;
-                        $smt4 = (int) $r->smt4;
-                        $smt5 = (int) $r->smt5;
-                        $smt6 = (int) $r->smt6;
-                        $total = $smt1 + $smt2 + $smt3 + $smt4 + $smt5 + $smt6;
-                    ?>
-                    <tr>
-                        <td class="text-center"><?= $no++ ?></td>
-                        <td><?= $r->nama_siswa ?></td>
-                        <td><?= $r->nama_kelas ?></td>
-                        <td><?= $r->nama_mapel ?: '-' ?></td>
-                        <td class="text-center"><?= $smt1 ?></td>
-                        <td class="text-center"><?= $smt2 ?></td>
-                        <td class="text-center"><?= $smt3 ?></td>
-                        <td class="text-center"><?= $smt4 ?></td>
-                        <td class="text-center"><?= $smt5 ?></td>
-                        <td class="text-center"><?= $smt6 ?></td>
-                        <td class="text-center font-weight-bold"><?= $total ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="11" class="text-center text-muted">
-                            Data nilai belum tersedia.
-                        </td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
     </div>
-    <?php if (!empty($pagination)): ?>
-    <div class="mt-3">
-        <?= $pagination ?>
+
+    <!-- FILTER -->
+
+    <div class="card shadow mb-3">
+
+        <div class="card-body">
+
+            <form method="get">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label>Kelas</label>
+
+                        <select name="kelas" class="form-control">
+
+                            <option value="">Semua Kelas</option>
+
+                            <?php foreach($kelas as $k): ?>
+
+                                <option
+                                    value="<?= $k->id ?>"
+                                    <?= $this->input->get('kelas')==$k->id?'selected':'' ?>
+                                >
+                                    <?= $k->nama ?>
+                                </option>
+
+                            <?php endforeach; ?>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <label>&nbsp;</label>
+
+                        <button class="btn btn-primary btn-block">
+
+                            <i class="fas fa-filter"></i>
+
+                            Filter
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
-<?php endif; ?>
 
+    <!-- TABEL -->
 
-    <a href="<?= site_url('Nilairapor_admin') ?>" class="btn btn-secondary mt-3">
-        <i class="fas fa-arrow-left"></i> Kembali ke Input Nilai
-    </a>
+    <div class="card shadow">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-sm table-hover mb-0">
+
+                    <thead>
+
+                    <!-- HEADER 1 -->
+
+                    <tr class="thead-dark text-center">
+
+                        <th rowspan="2">No</th>
+
+                        <th rowspan="2">NISN</th>
+
+                        <th rowspan="2">Nama Siswa</th>
+
+                        <th rowspan="2">Kelas</th>
+
+                        <?php foreach($mapel as $m): ?>
+
+                            <th colspan="6">
+
+                                <?= $m->nama_mapel ?>
+
+                            </th>
+
+                        <?php endforeach; ?>
+
+                    </tr>
+
+                    <!-- HEADER 2 -->
+
+                    <tr class="thead-dark text-center">
+
+                        <?php foreach($mapel as $m): ?>
+
+                            <?php for($smt=1;$smt<=6;$smt++): ?>
+
+                                <th>
+
+                                    <?= $smt ?>
+
+                                </th>
+
+                            <?php endfor; ?>
+
+                        <?php endforeach; ?>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    <?php if(empty($rekap)): ?>
+
+                        <tr>
+
+                            <td colspan="<?= (count($mapel)*6)+4 ?>" class="text-center">
+
+                                Belum ada data.
+
+                            </td>
+
+                        </tr>
+
+                    <?php else: ?>
+
+                        <?php
+
+                        $no=(($page-1)*100)+1;
+
+                        foreach($rekap as $r):
+
+                        ?>
+
+                        <tr>
+
+                            <td class="text-center">
+
+                                <?= $no++ ?>
+
+                            </td>
+
+                            <td>
+
+                                <?= $r['nisn'] ?>
+
+                            </td>
+
+                            <td>
+
+                                <?= $r['nama'] ?>
+
+                            </td>
+
+                            <td>
+
+                                <?= $r['kelas'] ?>
+
+                            </td>
+
+                            <?php foreach($mapel as $m): ?>
+
+                                <?php for($smt=1;$smt<=6;$smt++): ?>
+
+                                    <td class="text-center">
+
+                                        <?= isset($r['nilai'][$m->id_mapel][$smt])
+                                            ? $r['nilai'][$m->id_mapel][$smt]
+                                            : '-'
+                                        ?>
+
+                                    </td>
+
+                                <?php endfor; ?>
+
+                            <?php endforeach; ?>
+
+                        </tr>
+
+                        <?php endforeach; ?>
+
+                    <?php endif; ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <?php if(!empty($pagination)): ?>
+
+        <div class="mt-3">
+
+            <?= $pagination ?>
+
+        </div>
+
+    <?php endif; ?>
 
 </div>

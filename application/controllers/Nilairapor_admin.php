@@ -66,52 +66,111 @@ class Nilairapor_admin extends CI_Controller {
     }
 
     /* =========================
-     * REKAP NILAI (ADMIN)
-     * ========================= */
-    public function rekap()
+ * REKAP NILAI (ADMIN)
+ * ========================= */
+public function rekap()
 {
     $this->load->library('pagination');
 
     $data['active'] = 'nilai_daftar';
 
-    $kelas_id = $this->input->get('kelas');
-    $mapel_id = $this->input->get('mapel');
+    // =========================
+    // FILTER
+    // =========================
+    $kelas_id = $this->input->get('kelas', true);
 
+    // =========================
+    // PAGINATION
+    // =========================
     $per_page = 100;
-    $page     = (int) $this->input->get('page');
-    if ($page < 1) $page = 1;
+
+    $page = (int)$this->input->get('page');
+    if ($page < 1) {
+        $page = 1;
+    }
 
     $offset = ($page - 1) * $per_page;
 
-    // TOTAL DATA (WAJIB SESUAI GROUP BY)
+    // =========================
+    // TOTAL DATA
+    // =========================
     $total_rows = $this->Nilai_rapor_model
-        ->count_rekap_nilai($kelas_id, $mapel_id);
+        ->count_rekap_siswa($kelas_id);
 
-    // CONFIG PAGINATION (QUERY STRING AMAN)
+    // =========================
+    // PAGINATION CONFIG
+    // =========================
     $config['base_url'] = site_url('Nilairapor_admin/rekap');
+
+    $query = [];
+
+    if (!empty($kelas_id)) {
+        $query['kelas'] = $kelas_id;
+    }
+
+    $config['suffix'] = !empty($query)
+        ? '&' . http_build_query($query)
+        : '';
+
+    $config['first_url'] = $config['base_url']
+        . '?page=1'
+        . $config['suffix'];
+
     $config['total_rows'] = $total_rows;
     $config['per_page'] = $per_page;
+
     $config['page_query_string'] = true;
     $config['query_string_segment'] = 'page';
     $config['use_page_numbers'] = true;
 
-    // styling bootstrap
+    // Bootstrap
     $config['full_tag_open'] = '<ul class="pagination justify-content-center">';
     $config['full_tag_close'] = '</ul>';
+
+    $config['first_tag_open'] = '<li class="page-item">';
+    $config['first_tag_close'] = '</li>';
+
+    $config['last_tag_open'] = '<li class="page-item">';
+    $config['last_tag_close'] = '</li>';
+
+    $config['next_tag_open'] = '<li class="page-item">';
+    $config['next_tag_close'] = '</li>';
+
+    $config['prev_tag_open'] = '<li class="page-item">';
+    $config['prev_tag_close'] = '</li>';
+
     $config['num_tag_open'] = '<li class="page-item">';
     $config['num_tag_close'] = '</li>';
+
     $config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
     $config['cur_tag_close'] = '</span></li>';
-    $config['attributes'] = ['class' => 'page-link'];
+
+    $config['attributes'] = [
+        'class' => 'page-link'
+    ];
 
     $this->pagination->initialize($config);
 
+    // =========================
     // DATA
-    $data['kelas'] = $this->db->get('kelas')->result();
-    $data['mapel'] = $this->db->get('mapel')->result();
+    // =========================
 
+    $data['kelas'] = $this->db
+        ->order_by('nama', 'ASC')
+        ->get('kelas')
+        ->result();
+
+    // Header tabel
+    $data['mapel'] = $this->Nilai_rapor_model
+    ->get_mapel_rekap($kelas_id);
+
+    // Rekap nilai (SEMUA SEMESTER)
     $data['rekap'] = $this->Nilai_rapor_model
-        ->rekap_nilai_paginated($kelas_id, $mapel_id, $per_page, $offset);
+        ->rekap_siswa(
+            $kelas_id,
+            $per_page,
+            $offset
+        );
 
     $data['pagination'] = $this->pagination->create_links();
     $data['page'] = $page;
