@@ -1,146 +1,390 @@
 <div class="container-fluid">
-    <h4 class="mb-3">Monitoring Mengajar Guru (Hari Ini)</h4>
 
-    <div class="table-responsive">
-        <div class="row mb-3">
-    <div class="col-md-3">
-        <label>Filter Guru</label>
-        <select id="filterGuru" class="form-control form-control-sm">
-            <option value="">Semua Guru</option>
-        </select>
-    </div>
+    <div class="card shadow mb-4">
 
-    <div class="col-md-3">
-        <label>Filter Kelas</label>
-        <select id="filterKelas" class="form-control form-control-sm">
-            <option value="">Semua Kelas</option>
-        </select>
-    </div>
-</div>
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 
-        <table class="table table-bordered table-sm" id="tblMonitoring">
-            <thead class="table-light">
-                <tr>
-                    <th>Guru</th>
-                    <th>Kelas</th>
-                    <th>Mapel</th>
-                    <th>Jam</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-</div>
+            <h4 class="mb-0">
+                <i class="fas fa-chalkboard-teacher mr-2"></i>
+                Monitoring Mengajar Guru
+            </h4>
 
-<script>
-function loadMonitoring() {
-    fetch("<?= site_url('monitoring_mengajar/load_data') ?>")
-        .then(res => res.json())
-        .then(data => {
-            let tbody = '';
-            data.forEach(row => {
+            <small id="lastUpdate">
+                -
+            </small>
 
-                let badge = '';
-                if (row.status === 'sedang') {
-                    badge = '<span class="badge bg-success">Sedang Mengajar</span>';
-                } else if (row.status === 'selesai') {
-                    badge = '<span class="badge bg-primary">Selesai</span>';
-                } else {
-                    badge = '<span class="badge bg-warning text-dark">Belum Mulai</span>';
-                }
+        </div>
 
-                tbody += `
-                    <tr>
-                        <td>${row.guru}</td>
-                        <td>${row.kelas}</td>
-                        <td>${row.mapel}</td>
-                        <td>
-                            <strong>${row.jam_awal} – ${row.jam_akhir}</strong><br>
-                            <small class="text-muted">
-                                ${row.jam_mulai} – ${row.jam_selesai}
-                            </small>
-                        </td>
-                        <td class="text-center">${badge}</td>
+        <div class="card-body">
+
+            <div class="row mb-4">
+
+                <div class="col-md-3">
+
+                    <label>Filter Guru</label>
+
+                    <select
+                        id="filterGuru"
+                        class="form-control">
+
+                        <option value="">Semua Guru</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label>Filter Kelas</label>
+
+                    <select
+                        id="filterKelas"
+                        class="form-control">
+
+                        <option value="">Semua Kelas</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+
+                    <button
+                        class="btn btn-primary btn-block"
+                        onclick="loadMonitoring()">
+
+                        <i class="fas fa-sync"></i>
+
+                        Refresh
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-hover table-bordered">
+
+                    <thead class="thead-light">
+
+                    <tr class="text-center">
+
+                        <th>Guru</th>
+
+                        <th>Kelas</th>
+
+                        <th>Mapel</th>
+
+                        <th width="14%">Jam</th>
+
+                        <th>Materi</th>
+
+                        <th width="8%">Selfie</th>
+
+                        <th width="12%">Status</th>
+
                     </tr>
-                `;
 
-            });
+                    </thead>
 
-            document.querySelector('#tblMonitoring tbody').innerHTML = tbody;
-        });
-}
+                    <tbody id="tbodyMonitoring">
 
-// load awal
+                    <tr>
+
+                        <td colspan="7" class="text-center">
+
+                            Memuat data...
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="modal fade" id="modalSelfie" tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Selfie Mengajar
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal">
+
+                    <span>&times;</span>
+
+                </button>
+
+            </div>
+
+            <div class="modal-body text-center">
+
+                <img
+                    id="imgSelfie"
+                    src=""
+                    class="img-fluid rounded shadow">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+loadFilter();
+
 loadMonitoring();
 
-// auto refresh tiap 30 detik
-setInterval(loadMonitoring, 30000);
-</script>
-<script>
-function loadFilter() {
-    fetch("<?= site_url('monitoring_mengajar/filter_data') ?>")
-        .then(res => res.json())
-        .then(res => {
-            let guruOpt = '<option value="">Semua Guru</option>';
-            res.guru.forEach(g => {
-                guruOpt += `<option value="${g.id}">${g.nama}</option>`;
-            });
-            document.getElementById('filterGuru').innerHTML = guruOpt;
+setInterval(loadMonitoring,30000);
 
-            let kelasOpt = '<option value="">Semua Kelas</option>';
-            res.kelas.forEach(k => {
-                kelasOpt += `<option value="${k.id}">${k.nama}</option>`;
-            });
-            document.getElementById('filterKelas').innerHTML = kelasOpt;
+document
+.getElementById('filterGuru')
+.addEventListener('change',loadMonitoring);
+
+document
+.getElementById('filterKelas')
+.addEventListener('change',loadMonitoring);
+
+function loadFilter(){
+
+    fetch("<?= site_url('monitoring_mengajar/filter_data') ?>")
+
+    .then(r=>r.json())
+
+    .then(res=>{
+
+        let guru='<option value="">Semua Guru</option>';
+
+        res.guru.forEach(g=>{
+
+            guru+=`
+                <option value="${g.id}">
+                    ${g.nama}
+                </option>
+            `;
+
         });
+
+        document
+        .getElementById('filterGuru')
+        .innerHTML=guru;
+
+        let kelas='<option value="">Semua Kelas</option>';
+
+        res.kelas.forEach(k=>{
+
+            kelas+=`
+                <option value="${k.id}">
+                    ${k.nama}
+                </option>
+            `;
+
+        });
+
+        document
+        .getElementById('filterKelas')
+        .innerHTML=kelas;
+
+    });
+
 }
 
-// function loadMonitoring() {
-//     const guru  = document.getElementById('filterGuru').value;
-//     const kelas = document.getElementById('filterKelas').value;
+function loadMonitoring(){
 
-//     fetch(`<?= site_url('monitoring_mengajar/load_data') ?>?guru_id=${guru}&kelas_id=${kelas}`)
-//         .then(res => res.json())
-//         .then(data => {
-//             let tbody = '';
-//             data.forEach(row => {
+    const guru=document
+        .getElementById('filterGuru')
+        .value;
 
-//                 let badge = '';
-//                 if (row.status === 'sedang') {
-//                     badge = '<span class="badge bg-success">Sedang Mengajar</span>';
-//                 } else if (row.status === 'selesai') {
-//                     badge = '<span class="badge bg-primary">Selesai</span>';
-//                 } else {
-//                     badge = '<span class="badge bg-warning text-dark">Belum Mulai</span>';
-//                 }
+    const kelas=document
+        .getElementById('filterKelas')
+        .value;
 
-//                 tbody += `
-//                     <tr>
-//                         <td>${row.guru}</td>
-//                         <td>${row.kelas}</td>
-//                         <td>${row.mapel}</td>
-//                         <td>${row.jam}</td>
-//                         <td>${row.mulai}</td>
-//                         <td>${row.selesai}</td>
-//                         <td class="text-center">${badge}</td>
-//                     </tr>
-//                 `;
-//             });
+    fetch(`<?= site_url('monitoring_mengajar/load_data') ?>?guru_id=${guru}&kelas_id=${kelas}`)
 
-//             document.querySelector('#tblMonitoring tbody').innerHTML = tbody;
-//         });
-// }
+    .then(r=>r.json())
 
-// // event filter
-// document.getElementById('filterGuru').addEventListener('change', loadMonitoring);
-// document.getElementById('filterKelas').addEventListener('change', loadMonitoring);
+    .then(rows=>{
 
-// // init
-// loadFilter();
-// loadMonitoring();
+        let html='';
 
-// // auto refresh tiap 30 detik
-// setInterval(loadMonitoring, 30000);
+        if(rows.length===0){
+
+            html=`
+                <tr>
+                    <td colspan="7"
+                        class="text-center text-muted">
+
+                        Tidak ada data.
+
+                    </td>
+                </tr>
+            `;
+
+        }
+
+        rows.forEach(r=>{
+
+            let badge='';
+
+            switch(r.status){
+
+                case 'sedang':
+
+                    badge=`
+                        <span class="badge badge-success">
+                            Sedang Mengajar
+                        </span>
+                    `;
+
+                break;
+
+                case 'selesai':
+
+                    badge=`
+                        <span class="badge badge-primary">
+                            Selesai
+                        </span>
+                    `;
+
+                break;
+
+                default:
+
+                    badge=`
+                        <span class="badge badge-warning">
+                            Belum Mulai
+                        </span>
+                    `;
+
+            }
+
+          let selfie = '-';
+
+if (r.selfie) {
+
+    selfie = `
+        <a href="javascript:void(0)"
+           onclick="lihatSelfie('${r.selfie}')">
+
+            <i class="fas fa-image"></i>
+
+            Lihat Foto
+
+        </a>
+    `;
+
+}
+
+            html+=`
+
+            <tr>
+
+                <td>
+
+                    <strong>
+
+                        ${r.guru}
+
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    ${r.kelas}
+
+                </td>
+
+                <td>
+
+                    ${r.mapel}
+
+                </td>
+
+                <td>
+
+                    <strong>
+
+                        ${r.jam_awal} - ${r.jam_akhir}
+
+                    </strong>
+
+                    <br>
+
+                    <small class="text-muted">
+
+                        ${r.jam_mulai}
+                        -
+                        ${r.jam_selesai}
+
+                    </small>
+
+                </td>
+
+                <td>
+
+                    ${r.materi}
+
+                </td>
+
+                <td class="text-center">
+
+                    ${selfie}
+
+                </td>
+
+                <td class="text-center">
+
+                    ${badge}
+
+                </td>
+
+            </tr>
+
+            `;
+
+        });
+
+        document
+        .getElementById('tbodyMonitoring')
+        .innerHTML=html;
+
+        document
+        .getElementById('lastUpdate')
+        .innerHTML='Update : '+new Date().toLocaleTimeString();
+
+    });
+
+}
+function lihatSelfie(url)
+{
+    document
+        .getElementById('imgSelfie')
+        .src = url;
+
+    $('#modalSelfie').modal('show');
+}
 </script>
-

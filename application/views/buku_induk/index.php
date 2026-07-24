@@ -262,7 +262,7 @@ foreach($siswa as $row):
 
 $foto = !empty($row->foto)
 ? base_url('uploads/foto/'.$row->foto)
-: base_url('assets/img/default.png');
+: base_url('assets/img/default-user.jpg');
 
 ?>
 

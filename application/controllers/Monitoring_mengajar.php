@@ -34,51 +34,69 @@ class Monitoring_mengajar extends CI_Controller {
     $kelas_id = $this->input->get('kelas_id');
 
     $rows = $this->Monitoring_mengajar_model
-        ->get_monitoring_hari_ini($guru_id, $kelas_id);
+        ->getMonitoring($guru_id, $kelas_id);
 
-    $data = [];
+    $result = [];
 
     foreach ($rows as $r) {
 
-        // ===== STATUS DARI LOG =====
         if ($r->log_mulai && !$r->log_selesai) {
+
             $status = 'sedang';
+
         } elseif ($r->log_selesai) {
+
             $status = 'selesai';
+
         } else {
+
             $status = 'belum';
+
         }
 
-        $data[] = [
-            'guru'       => $r->nama_guru,
-            'kelas'      => $r->nama_kelas,
-            'mapel'      => $r->nama_mapel,
+        $result[] = [
 
-            // ⬅️ JAM RANGE
-            'jam_awal'   => $r->jam_awal,
-            'jam_akhir'  => $r->jam_akhir,
+            'guru' => $r->nama_guru,
 
-            // ⬅️ JAM SEKOLAH (jadwal)
-            'jam_mulai'  => $r->jam_mulai
-                ? substr($r->jam_mulai, 0, 5)
+            'kelas' => $r->nama_kelas,
+
+            'mapel' => $r->nama_mapel,
+
+            'jam_awal' => $r->jam_awal,
+
+            'jam_akhir' => $r->jam_akhir,
+
+            'jam_mulai' => $r->jam_mulai
+                ? substr($r->jam_mulai,0,5)
                 : '-',
-            'jam_selesai'=> $r->jam_selesai
-                ? substr($r->jam_selesai, 0, 5)
+
+            'jam_selesai' => $r->jam_selesai
+                ? substr($r->jam_selesai,0,5)
                 : '-',
 
-            'status'     => $status
+            'materi' => $r->materi ?: '-',
+
+            'selfie' => $r->selfie
+                ? base_url('uploads/selfie/'.$r->selfie)
+                : '',
+
+            'status' => $status
+
         ];
     }
 
-    echo json_encode($data);
+    echo json_encode($result);
 }
 
 public function filter_data()
 {
-    $data['guru']  = $this->db->order_by('nama','ASC')->get('guru')->result();
-    $data['kelas'] = $this->db->order_by('nama','ASC')->get('kelas')->result();
+    echo json_encode([
 
-    echo json_encode($data);
+        'guru'  => $this->Monitoring_mengajar_model->getGuru(),
+
+        'kelas' => $this->Monitoring_mengajar_model->getKelas()
+
+    ]);
 }
 
 
