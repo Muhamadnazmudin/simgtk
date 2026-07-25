@@ -8,24 +8,34 @@ class Nilairapor_admin extends CI_Controller {
     private $tahun_id;
 
     public function __construct()
-    {
-        parent::__construct();
+{
+    parent::__construct();
 
-        $session_tahun = $this->session->userdata('tahun_id');
+    is_logged_in();
 
-        if ($session_tahun) {
-            $this->tahun_id = $session_tahun;
-        } else {
-            $t = $this->db->get_where('tahun_ajaran', ['aktif' => 1])->row();
-            $this->tahun_id = $t ? $t->id : null;
-        }
-
-        $this->load->model([
-            'Nilai_rapor_model',
-            'Siswa_model',
-            'Mapel_model'
-        ]);
+    // Admin atau Wakakur
+    if (!in_array($this->session->userdata('role_id'), [1, 4])) {
+        show_error('Akses ditolak', 403);
     }
+
+    $session_tahun = $this->session->userdata('tahun_id');
+
+    if ($session_tahun) {
+        $this->tahun_id = $session_tahun;
+    } else {
+        $t = $this->db
+            ->get_where('tahun_ajaran', ['aktif' => 1])
+            ->row();
+
+        $this->tahun_id = $t ? $t->id : null;
+    }
+
+    $this->load->model([
+        'Nilai_rapor_model',
+        'Siswa_model',
+        'Mapel_model'
+    ]);
+}
 
 
     /* =========================
@@ -177,9 +187,19 @@ public function rekap()
     $data['page'] = $page;
 
     $this->load->view('templates/header', $data);
+
+if ($this->session->userdata('role_id') == 4) {
+
+    $this->load->view('templates/sidebar_guru', $data);
+
+} else {
+
     $this->load->view('templates/sidebar', $data);
-    $this->load->view('admin/nilai_rapor/rekap', $data);
-    $this->load->view('templates/footer');
+
+}
+
+$this->load->view('admin/nilai_rapor/rekap', $data);
+$this->load->view('templates/footer');
 }
 
     /* =========================

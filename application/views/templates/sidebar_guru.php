@@ -528,6 +528,15 @@ body.dark-mode #accordionSidebar .sidebar-divider {
     </a>
 </li>
 
+
+<li class="nav-item <?= ($active=='nilai_daftar') ? 'active' : '' ?>">
+        <a class="nav-link text-primary"
+           href="<?= site_url('Nilairapor_admin/rekap') ?>">
+            <i class="fas fa-book"></i>
+            <span>Rekap Nilai</span>
+        </a>
+    </li>
+    
 <?php endif; ?>
 
 
