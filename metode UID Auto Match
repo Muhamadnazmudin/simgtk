@@ -6,3 +6,7 @@ http://localhost:90/mutases/index.php/rfid/pending
 
 lanjutkan match antara UID dengan siswa pada laman match
 http://localhost:90/mutases/index.php/rfid/match
+
+
+akses absensi dengan Rfid
+http://localhost:90/mutases/RfidAbsensi/scan_real

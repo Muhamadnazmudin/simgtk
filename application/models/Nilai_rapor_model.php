@@ -187,35 +187,50 @@ public function rekap_siswa($kelas_id = null, $limit = 100, $offset = 0)
      * ====================================== */
 
     $this->db->select('
-        s.id,
-        s.nisn,
-        s.nama,
-        k.nama AS nama_kelas
-    ');
+    s.id,
+    s.nisn,
+    s.nama,
+    k.nama AS nama_kelas
+');
 
-    $this->db->from('siswa s');
-    $this->db->join('kelas k', 'k.id = s.id_kelas', 'left');
+$this->db->from('siswa s');
 
-    // Tahun aktif
-    $this->db->join(
-        'siswa_tahun st',
-        'st.siswa_id = s.id
-        AND st.tahun_id = '.$this->db->escape($this->tahun_id),
-        'left'
-    );
+/*
+|--------------------------------------------------------------------------
+| Tahun aktif siswa
+|--------------------------------------------------------------------------
+*/
 
-    $this->db->where('st.status', 'aktif');
+$this->db->join(
+    'siswa_tahun st',
+    'st.siswa_id = s.id
+     AND st.tahun_id = '.$this->db->escape($this->tahun_id).'
+     AND st.status = "aktif"',
+    'inner'
+);
 
-    if (!empty($kelas_id)) {
-        $this->db->where('st.kelas_id', $kelas_id);
-    }
+/*
+|--------------------------------------------------------------------------
+| Ambil nama kelas dari siswa_tahun
+|--------------------------------------------------------------------------
+*/
 
-    $this->db->order_by('k.nama', 'ASC');
-    $this->db->order_by('s.nama', 'ASC');
+$this->db->join(
+    'kelas k',
+    'k.id = st.kelas_id',
+    'left'
+);
 
-    $this->db->limit($limit, $offset);
+if (!empty($kelas_id)) {
+    $this->db->where('st.kelas_id', $kelas_id);
+}
 
-    $siswa = $this->db->get()->result();
+$this->db->order_by('k.nama', 'ASC');
+$this->db->order_by('s.nama', 'ASC');
+
+$this->db->limit($limit, $offset);
+
+$siswa = $this->db->get()->result();
 
     if (empty($siswa)) {
         return [];

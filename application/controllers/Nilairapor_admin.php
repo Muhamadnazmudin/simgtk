@@ -464,4 +464,27 @@ public function rekap()
     $writer->save('php://output');
     exit;
 }
+
+
+public function export_rekap_excel()
+{
+    $this->load->library('Spreadsheet_lib');
+
+    $kelas_id = $this->input->get('kelas');
+
+    $mapel = $this->Nilai_rapor_model->get_mapel_rekap($kelas_id);
+
+    $rekap = $this->Nilai_rapor_model->rekap_siswa(
+        $kelas_id,
+        99999,
+        0
+    );
+// echo '<pre>';
+// print_r($rekap);
+// exit;
+    $this->spreadsheet_lib->export_rekap_nilai(
+        $rekap,
+        $mapel
+    );
+}
 }

@@ -130,4 +130,125 @@ class Spreadsheet_Lib
         $writer->save('php://output');
         exit();
     }
+
+
+    // =====================================================================
+// 3. EXPORT REKAP NILAI RAPOR
+// =====================================================================
+public function export_rekap_nilai($rekap, $mapel)
+{
+    $excel = new Spreadsheet();
+    $sheet = $excel->getActiveSheet();
+    $sheet->setTitle('Rekap Nilai');
+
+    // =====================================================
+    // HEADER
+    // =====================================================
+
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'NISN');
+    $sheet->setCellValue('C1', 'Nama Siswa');
+    $sheet->setCellValue('D1', 'Kelas');
+
+    $sheet->mergeCells('A1:A2');
+    $sheet->mergeCells('B1:B2');
+    $sheet->mergeCells('C1:C2');
+    $sheet->mergeCells('D1:D2');
+
+    $col = 5; // Kolom E
+
+    foreach ($mapel as $m) {
+
+        $start = $col;
+        $end   = $col + 5;
+
+        $sheet->mergeCellsByColumnAndRow($start, 1, $end, 1);
+        $sheet->setCellValueByColumnAndRow($start, 1, $m->nama_mapel);
+
+        for ($smt = 1; $smt <= 6; $smt++) {
+            $sheet->setCellValueByColumnAndRow($col, 2, $smt);
+            $col++;
+        }
+    }
+
+    // =====================================================
+    // DATA
+    // =====================================================
+
+    $row = 3;
+    $no  = 1;
+
+    foreach ($rekap as $r) {
+
+        $sheet->setCellValueByColumnAndRow(1, $row, $no++);
+        $sheet->setCellValueByColumnAndRow(2, $row, $r['nisn']);
+        $sheet->setCellValueByColumnAndRow(3, $row, $r['nama']);
+        $sheet->setCellValueByColumnAndRow(4, $row, $r['kelas']);
+
+        $col = 5;
+
+        foreach ($mapel as $m) {
+
+            for ($smt = 1; $smt <= 6; $smt++) {
+
+                $nilai = $r['nilai'][$m->id_mapel][$smt] ?? '';
+
+                $sheet->setCellValueByColumnAndRow(
+                    $col,
+                    $row,
+                    $nilai
+                );
+
+                $col++;
+            }
+        }
+
+        $row++;
+    }
+
+    // =====================================================
+    // STYLE
+    // =====================================================
+
+    $lastCol = $sheet->getHighestColumn();
+    $lastRow = $sheet->getHighestRow();
+
+    $sheet->getStyle("A1:{$lastCol}2")->applyFromArray([
+        'font' => [
+            'bold' => true
+        ],
+        'alignment' => [
+            'horizontal' => Alignment::HORIZONTAL_CENTER,
+            'vertical'   => Alignment::VERTICAL_CENTER
+        ],
+        'borders' => [
+            'allBorders' => [
+                'style' => Border::BORDER_THIN
+            ]
+        ]
+    ]);
+
+    $sheet->getStyle("A3:{$lastCol}{$lastRow}")
+          ->getBorders()
+          ->getAllBorders()
+          ->setBorderStyle(Border::BORDER_THIN);
+
+    foreach (range('A', $lastCol) as $c) {
+        $sheet->getColumnDimension($c)->setAutoSize(true);
+    }
+
+    $sheet->freezePane('E3');
+
+    // =====================================================
+    // OUTPUT
+    // =====================================================
+
+    header('Content-Type: application/vnd.ms-excel');
+    header('Content-Disposition: attachment;filename="Rekap_Nilai_Rapor.xls"');
+    header('Cache-Control: max-age=0');
+
+    $writer = new Xls($excel);
+    $writer->save('php://output');
+    exit;
+}
 }

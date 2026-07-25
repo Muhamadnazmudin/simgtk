@@ -1,36 +1,367 @@
+<style>
+
+:root{
+    --primary:#4e73df;
+    --primary-dark:#375ad3;
+    --border:#e3e6f0;
+    --hover:#f8f9fc;
+    --header:#4e73df;
+}
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.card{
+    border:0;
+    border-radius:10px;
+}
+
+.card-header{
+    background:#fff;
+    border-bottom:1px solid var(--border);
+    padding:15px 20px;
+}
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+.page-title{
+
+    font-size:26px;
+
+    font-weight:700;
+
+    color:#2e3a59;
+
+}
+
+.page-subtitle{
+
+    color:#858796;
+
+    font-size:13px;
+
+}
+
+/* =====================================================
+   FILTER
+===================================================== */
+
+.filter-label{
+
+    font-weight:600;
+
+    color:#4b5563;
+
+    margin-bottom:8px;
+
+}
+
+.filter-card .form-control{
+
+    height:42px;
+
+}
+
+.filter-card .btn{
+
+    height:42px;
+
+}
+
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
+.toolbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:15px;
+
+}
+
+.toolbar-title{
+
+    font-size:17px;
+
+    font-weight:700;
+
+    color:#4e73df;
+
+}
+
+.toolbar-info{
+
+    margin-top:4px;
+
+    color:#858796;
+
+    font-size:13px;
+
+}
+
+.toolbar-right{
+
+    display:flex;
+
+    gap:8px;
+
+}
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table-wrapper{
+
+    overflow:auto;
+
+    max-height:600px;
+
+}
+
+.table{
+
+    margin-bottom:0;
+
+    white-space:nowrap;
+
+}
+
+.table thead th{
+
+    background:var(--header);
+
+    color:#fff;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:10;
+
+}
+
+.table td{
+
+    vertical-align:middle;
+
+}
+
+/* =====================================================
+   BUTTON
+===================================================== */
+
+.btn i{
+
+    margin-right:4px;
+
+}
+
+
+
+/* =====================================================
+   TABLE HEADER
+===================================================== */
+
+.table thead tr:first-child th{
+
+    padding:12px 8px;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    border-color:#6b86ea;
+
+    vertical-align:middle;
+
+}
+
+.table thead tr:nth-child(2) th{
+
+    padding:6px;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    border-color:#6b86ea;
+
+}
+
+/* Sticky header 2 baris */
+
+.table thead tr:first-child th{
+
+    top:0;
+
+    z-index:12;
+
+}
+
+.table thead tr:nth-child(2) th{
+
+    top:44px;
+
+    z-index:11;
+
+}
+
+/* =========================================
+   KOLOM
+========================================= */
+
+.col-no{
+
+    width:55px;
+    min-width:55px;
+
+}
+
+.col-nisn{
+
+    width:140px;
+    min-width:140px;
+
+}
+
+.col-nama{
+
+    width:280px;
+    min-width:280px;
+
+    text-align:left !important;
+
+}
+
+.col-kelas{
+
+    width:110px;
+    min-width:110px;
+
+}
+
+/* =========================================
+   MAPEL
+========================================= */
+
+.mapel-header{
+
+    min-width:170px;
+    max-width:170px;
+
+    white-space:normal;
+
+    line-height:1.35;
+
+    word-break:break-word;
+
+    text-align:center;
+
+}
+
+/* =========================================
+   SEMESTER
+========================================= */
+
+.semester{
+
+    width:42px;
+    min-width:42px;
+
+    text-align:center;
+
+}
+
+/* Garis pemisah antar mapel */
+
+.mapel-group{
+
+    border-right:2px solid rgba(255,255,255,.25) !important;
+
+}
+</style>
+
 <div class="container-fluid">
 
-    <div class="d-sm-flex align-items-center justify-content-between mb-3">
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
-        <h4>
-            <i class="fas fa-book"></i>
-            Rekap Nilai Rapor
-        </h4>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
 
-        <a href="<?= site_url('Nilairapor_admin') ?>" class="btn btn-secondary">
+        <div>
+
+            <div class="page-title">
+
+                <i class="fas fa-book text-primary mr-2"></i>
+
+                Rekap Nilai Rapor
+
+            </div>
+
+            <div class="page-subtitle">
+
+                Rekap nilai rapor siswa berdasarkan semester.
+
+            </div>
+
+        </div>
+
+        <a href="<?= site_url('Nilairapor_admin') ?>"
+           class="btn btn-secondary shadow-sm">
+
             <i class="fas fa-arrow-left"></i>
+
             Kembali
+
         </a>
 
     </div>
 
-    <!-- FILTER -->
+    <!-- =====================================================
+         FILTER
+    ====================================================== -->
 
-    <div class="card shadow mb-3">
+    <div class="card shadow-sm filter-card mb-4">
 
         <div class="card-body">
 
             <form method="get">
 
-                <div class="row">
+                <div class="row align-items-end">
 
                     <div class="col-md-4">
 
-                        <label>Kelas</label>
+                        <label class="filter-label">
 
-                        <select name="kelas" class="form-control">
+                            Kelas
 
-                            <option value="">Semua Kelas</option>
+                        </label>
+
+                        <select
+                            name="kelas"
+                            class="form-control">
+
+                            <option value="">
+
+                                Semua Kelas
+
+                            </option>
 
                             <?php foreach($kelas as $k): ?>
 
@@ -38,7 +369,9 @@
                                     value="<?= $k->id ?>"
                                     <?= $this->input->get('kelas')==$k->id?'selected':'' ?>
                                 >
+
                                     <?= $k->nama ?>
+
                                 </option>
 
                             <?php endforeach; ?>
@@ -49,15 +382,27 @@
 
                     <div class="col-md-2">
 
-                        <label>&nbsp;</label>
-
-                        <button class="btn btn-primary btn-block">
+                        <button
+                            class="btn btn-primary btn-block">
 
                             <i class="fas fa-filter"></i>
 
                             Filter
 
                         </button>
+
+                    </div>
+
+                    <div class="col-md-6 text-right">
+
+                        <a href="<?= site_url('Nilairapor_admin/export_rekap_excel?kelas='.$this->input->get('kelas')) ?>"
+                           class="btn btn-success">
+
+                            <i class="fas fa-file-excel"></i>
+
+                            Export Excel
+
+                        </a>
 
                     </div>
 
@@ -69,155 +414,309 @@
 
     </div>
 
-    <!-- TABEL -->
+    <!-- =====================================================
+         TABEL
+    ====================================================== -->
 
-    <div class="card shadow">
+    <div class="card shadow-sm">
 
-        <div class="card-body p-0">
+        <div class="card-header">
 
-            <div class="table-responsive">
+            <div class="toolbar">
 
-                <table class="table table-bordered table-sm table-hover mb-0">
+                <div>
 
-                    <thead>
+                    <div class="toolbar-title">
 
-                    <!-- HEADER 1 -->
+                        <i class="fas fa-table mr-1"></i>
 
-                    <tr class="thead-dark text-center">
+                        Data Rekap Nilai
 
-                        <th rowspan="2">No</th>
+                    </div>
 
-                        <th rowspan="2">NISN</th>
+                    <div class="toolbar-info">
 
-                        <th rowspan="2">Nama Siswa</th>
+                        Menampilkan
 
-                        <th rowspan="2">Kelas</th>
+                        <strong><?= number_format(count($rekap)) ?></strong>
 
-                        <?php foreach($mapel as $m): ?>
+                        siswa
 
-                            <th colspan="6">
+                        •
 
-                                <?= $m->nama_mapel ?>
+                        <strong><?= number_format(count($mapel)) ?></strong>
 
-                            </th>
+                        mata pelajaran
 
-                        <?php endforeach; ?>
+                    </div>
 
-                    </tr>
-
-                    <!-- HEADER 2 -->
-
-                    <tr class="thead-dark text-center">
-
-                        <?php foreach($mapel as $m): ?>
-
-                            <?php for($smt=1;$smt<=6;$smt++): ?>
-
-                                <th>
-
-                                    <?= $smt ?>
-
-                                </th>
-
-                            <?php endfor; ?>
-
-                        <?php endforeach; ?>
-
-                    </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                    <?php if(empty($rekap)): ?>
-
-                        <tr>
-
-                            <td colspan="<?= (count($mapel)*6)+4 ?>" class="text-center">
-
-                                Belum ada data.
-
-                            </td>
-
-                        </tr>
-
-                    <?php else: ?>
-
-                        <?php
-
-                        $no=(($page-1)*100)+1;
-
-                        foreach($rekap as $r):
-
-                        ?>
-
-                        <tr>
-
-                            <td class="text-center">
-
-                                <?= $no++ ?>
-
-                            </td>
-
-                            <td>
-
-                                <?= $r['nisn'] ?>
-
-                            </td>
-
-                            <td>
-
-                                <?= $r['nama'] ?>
-
-                            </td>
-
-                            <td>
-
-                                <?= $r['kelas'] ?>
-
-                            </td>
-
-                            <?php foreach($mapel as $m): ?>
-
-                                <?php for($smt=1;$smt<=6;$smt++): ?>
-
-                                    <td class="text-center">
-
-                                        <?= isset($r['nilai'][$m->id_mapel][$smt])
-                                            ? $r['nilai'][$m->id_mapel][$smt]
-                                            : '-'
-                                        ?>
-
-                                    </td>
-
-                                <?php endfor; ?>
-
-                            <?php endforeach; ?>
-
-                        </tr>
-
-                        <?php endforeach; ?>
-
-                    <?php endif; ?>
-
-                    </tbody>
-
-                </table>
+                </div>
 
             </div>
 
         </div>
 
-    </div>
+        <div class="card-body p-0">
 
-    <?php if(!empty($pagination)): ?>
+            <div class="table-wrapper">
 
-        <div class="mt-3">
+                <table class="table table-bordered table-hover table-sm">
+<thead>
 
-            <?= $pagination ?>
+<tr>
+
+    <th rowspan="2" class="col-no">
+
+        No
+
+    </th>
+
+    <th rowspan="2" class="col-nisn">
+
+        NISN
+
+    </th>
+
+    <th rowspan="2" class="col-nama">
+
+        Nama Siswa
+
+    </th>
+
+    <th rowspan="2" class="col-kelas">
+
+        Kelas
+
+    </th>
+
+    <?php foreach($mapel as $m): ?>
+
+        <th colspan="6" class="mapel-header mapel-group">
+
+            <?= $m->nama_mapel ?>
+
+        </th>
+
+    <?php endforeach; ?>
+
+</tr>
+
+<tr>
+
+<?php foreach($mapel as $m): ?>
+
+    <?php for($i=1;$i<=6;$i++): ?>
+
+        <th class="semester">
+
+            <?= $i ?>
+
+        </th>
+
+    <?php endfor; ?>
+
+<?php endforeach; ?>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<?php if(empty($rekap)): ?>
+
+<tr>
+
+    <td colspan="<?= (count($mapel) * 6) + 4 ?>" class="text-center py-5">
+
+        <div class="text-muted">
+
+            <i class="fas fa-folder-open fa-3x mb-3"></i>
+
+            <h5 class="mb-2">
+
+                Data nilai belum tersedia
+
+            </h5>
+
+            <small>
+
+                Silakan lakukan import nilai rapor atau pilih kelas yang memiliki data.
+
+            </small>
 
         </div>
 
-    <?php endif; ?>
+    </td>
+
+</tr>
+
+<?php else: ?>
+
+<?php
+
+$no = (($page - 1) * 100) + 1;
+
+foreach($rekap as $r):
+
+?>
+
+<tr>
+
+    <td class="text-center">
+
+        <?= $no++ ?>
+
+    </td>
+
+    <td>
+
+        <?= $r['nisn'] ?>
+
+    </td>
+
+    <td>
+
+        <strong>
+
+            <?= $r['nama'] ?>
+
+        </strong>
+
+    </td>
+
+    <td class="text-center">
+
+        <?= $r['kelas'] ?>
+
+    </td>
+
+    <?php foreach($mapel as $m): ?>
+
+        <?php for($smt=1;$smt<=6;$smt++): ?>
+
+            <?php
+
+            $nilai = $r['nilai'][$m->id_mapel][$smt] ?? null;
+
+            if($nilai === null){
+
+                $class = 'text-muted';
+
+                $text  = '-';
+
+            }elseif($nilai < 75){
+
+                $class = 'text-danger font-weight-bold';
+
+                $text  = fmod($nilai,1)==0
+                        ? number_format($nilai,0)
+                        : number_format($nilai,1);
+
+            }elseif($nilai < 85){
+
+                $class = 'text-warning font-weight-bold';
+
+                $text  = fmod($nilai,1)==0
+                        ? number_format($nilai,0)
+                        : number_format($nilai,1);
+
+            }else{
+
+                $class = 'text-success font-weight-bold';
+
+                $text  = fmod($nilai,1)==0
+                        ? number_format($nilai,0)
+                        : number_format($nilai,1);
+
+            }
+
+            ?>
+
+            <td class="text-center <?= $class ?>">
+
+                <?= $text ?>
+
+            </td>
+
+        <?php endfor; ?>
+
+    <?php endforeach; ?>
+
+</tr>
+
+<?php endforeach; ?>
+
+<?php endif; ?>
+
+</tbody>
+
+                </table>
+
+            </div>
+            <!-- /.table-wrapper -->
+
+        </div>
+        <!-- /.card-body -->
+
+        <?php if(!empty($pagination)): ?>
+
+        <div class="card-footer bg-white border-top">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                <small class="text-muted">
+
+                    Menampilkan
+
+                    <strong><?= number_format(count($rekap)) ?></strong>
+
+                    data pada halaman ini.
+
+                </small>
+
+                <div>
+
+                    <?= $pagination ?>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <?php endif; ?>
+
+    </div>
+    <!-- /.card -->
 
 </div>
+<!-- /.container-fluid -->
+
+<script>
+
+$(function(){
+
+    // Tooltip Bootstrap
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // Hover nilai
+    $('.table tbody td').hover(
+
+        function(){
+
+            $(this).addClass('bg-light');
+
+        },
+
+        function(){
+
+            $(this).removeClass('bg-light');
+
+        }
+
+    );
+
+});
+
+</script>
