@@ -365,4 +365,47 @@ public function get_mapel_rekap($kelas_id = null)
 
     return $this->db->get()->result();
 }
+
+/* ==========================================
+ * HAPUS NILAI RAPOR
+ * ========================================== */
+public function hapus_nilai($kelas_id, $mapel_id, $semester = 'all')
+{
+    $this->db->select('nr.id_nilai');
+
+    $this->db->from('nilai_rapor nr');
+
+    $this->db->join(
+        'siswa_tahun st',
+        'st.siswa_id = nr.siswa_id
+         AND st.tahun_id = nr.tahun_id',
+        'inner'
+    );
+
+    $this->db->where('nr.tahun_id', $this->tahun_id);
+    $this->db->where('st.kelas_id', $kelas_id);
+    $this->db->where('st.status', 'aktif');
+    $this->db->where('nr.mapel_id', $mapel_id);
+
+    if ($semester != 'all') {
+
+        $this->db->where('nr.semester', $semester);
+
+    }
+
+    $rows = $this->db->get()->result();
+
+    if (empty($rows)) {
+
+        return 0;
+
+    }
+
+    $ids = array_column($rows, 'id_nilai');
+
+    $this->db->where_in('id_nilai', $ids);
+    $this->db->delete('nilai_rapor');
+
+    return count($ids);
+}
 }

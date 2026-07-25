@@ -487,4 +487,37 @@ public function export_rekap_excel()
         $mapel
     );
 }
+
+/* ==========================================
+ * HAPUS NILAI RAPOR
+ * ========================================== */
+public function hapus_nilai()
+{
+    $kelas_id  = $this->input->post('kelas_id');
+    $mapel_id  = $this->input->post('mapel_id');
+    $semester  = $this->input->post('semester');
+
+    if (empty($kelas_id) || empty($mapel_id)) {
+
+        $this->session->set_flashdata(
+            'error',
+            'Kelas dan Mata Pelajaran wajib dipilih.'
+        );
+
+        redirect('Nilairapor_admin/rekap?kelas='.$kelas_id);
+    }
+
+    $hapus = $this->Nilai_rapor_model->hapus_nilai(
+        $kelas_id,
+        $mapel_id,
+        $semester
+    );
+
+    $this->session->set_flashdata(
+        'success',
+        $hapus.' nilai berhasil dihapus.'
+    );
+
+    redirect('Nilairapor_admin/rekap?kelas='.$kelas_id);
+}
 }

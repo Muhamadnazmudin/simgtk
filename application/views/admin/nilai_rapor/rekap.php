@@ -393,18 +393,7 @@
 
                     </div>
 
-                    <div class="col-md-6 text-right">
-
-                        <a href="<?= site_url('Nilairapor_admin/export_rekap_excel?kelas='.$this->input->get('kelas')) ?>"
-                           class="btn btn-success">
-
-                            <i class="fas fa-file-excel"></i>
-
-                            Export Excel
-
-                        </a>
-
-                    </div>
+                    
 
                 </div>
 
@@ -424,35 +413,57 @@
 
             <div class="toolbar">
 
-                <div>
+    <div>
 
-                    <div class="toolbar-title">
+        <div class="toolbar-title">
 
-                        <i class="fas fa-table mr-1"></i>
+            <i class="fas fa-table mr-1"></i>
 
-                        Data Rekap Nilai
+            Data Rekap Nilai
 
-                    </div>
+        </div>
 
-                    <div class="toolbar-info">
+        <div class="toolbar-info">
 
-                        Menampilkan
+            Menampilkan
 
-                        <strong><?= number_format(count($rekap)) ?></strong>
+            <strong><?= number_format(count($rekap)) ?></strong>
 
-                        siswa
+            siswa •
 
-                        •
+            <strong><?= number_format(count($mapel)) ?></strong>
 
-                        <strong><?= number_format(count($mapel)) ?></strong>
+            mata pelajaran
 
-                        mata pelajaran
+        </div>
 
-                    </div>
+    </div>
 
-                </div>
+    <div class="toolbar-right">
 
-            </div>
+        <a href="<?= site_url('Nilairapor_admin/export_rekap_excel?kelas='.$this->input->get('kelas')) ?>"
+           class="btn btn-success btn-sm">
+
+            <i class="fas fa-file-excel"></i>
+
+            Export Excel
+
+        </a>
+
+        <button
+            class="btn btn-danger btn-sm"
+            data-toggle="modal"
+            data-target="#modalHapusNilai">
+
+            <i class="fas fa-trash"></i>
+
+            Hapus Nilai
+
+        </button>
+
+    </div>
+
+</div>
 
         </div>
 
@@ -692,31 +703,122 @@ foreach($rekap as $r):
 
 </div>
 <!-- /.container-fluid -->
+<div class="modal fade" id="modalHapusNilai" tabindex="-1">
 
-<script>
+    <div class="modal-dialog">
 
-$(function(){
+        <form action="<?= site_url('Nilairapor_admin/hapus_nilai') ?>" method="post">
+<input type="hidden"
+       name="<?= $this->security->get_csrf_token_name(); ?>"
+       value="<?= $this->security->get_csrf_hash(); ?>">
+            <input type="hidden"
+                   name="kelas_id"
+                   value="<?= $this->input->get('kelas') ?>">
 
-    // Tooltip Bootstrap
-    $('[data-toggle="tooltip"]').tooltip();
+            <div class="modal-content">
 
-    // Hover nilai
-    $('.table tbody td').hover(
+                <div class="modal-header">
 
-        function(){
+                    <h5 class="modal-title">
 
-            $(this).addClass('bg-light');
+                        Hapus Nilai
 
-        },
+                    </h5>
 
-        function(){
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal">
 
-            $(this).removeClass('bg-light');
+                        <span>&times;</span>
 
-        }
+                    </button>
 
-    );
+                </div>
 
-});
+                <div class="modal-body">
 
-</script>
+                    <div class="form-group">
+
+                        <label>Mata Pelajaran</label>
+
+                        <select
+                            name="mapel_id"
+                            class="form-control"
+                            required>
+
+                            <option value="">
+
+                                -- Pilih Mata Pelajaran --
+
+                            </option>
+
+                            <?php foreach($mapel as $m): ?>
+
+                                <option value="<?= $m->id_mapel ?>">
+
+                                    <?= $m->nama_mapel ?>
+
+                                </option>
+
+                            <?php endforeach; ?>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Semester</label>
+
+                        <select
+                            name="semester"
+                            class="form-control">
+
+                            <option value="all">Semua Semester</option>
+
+                            <?php for($i=1;$i<=6;$i++): ?>
+
+                                <option value="<?= $i ?>">
+
+                                    Semester <?= $i ?>
+
+                                </option>
+
+                            <?php endfor; ?>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button
+                        class="btn btn-danger">
+
+                        <i class="fas fa-trash"></i>
+
+                        Hapus Nilai
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
