@@ -156,9 +156,10 @@ public function rekap()
     // =========================
 
     $data['kelas'] = $this->db
-        ->order_by('nama', 'ASC')
-        ->get('kelas')
-        ->result();
+    ->where('is_active', 1)
+    ->order_by('nama', 'ASC')
+    ->get('kelas')
+    ->result();
 
     // Header tabel
     $data['mapel'] = $this->Nilai_rapor_model

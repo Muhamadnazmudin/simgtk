@@ -9,33 +9,35 @@ class Kelas_model extends CI_Model {
      * GET ALL (JOIN wali kelas + ketua kelas)
      * ========================================================== */
     public function get_all($limit = null, $offset = null)
-    {
-        $this->db->select('
-            kelas.*,
-            guru.nama  AS wali_nama,
-            siswa.nama AS ketua_nama
-        ');
-        $this->db->from($this->table);
-        $this->db->where('kelas.is_active', 1);
-        $this->db->join('guru',  'guru.id = kelas.wali_kelas_id',  'left');
-        $this->db->join('siswa', 'siswa.id = kelas.ketua_kelas_id', 'left');
-        $this->db->order_by('kelas.nama', 'ASC');
+{
+    $this->db->select('
+        kelas.*,
+        guru.nama AS wali_nama,
+        siswa.nama AS ketua_nama
+    ');
 
-        if ($limit !== null) {
-            $this->db->limit($limit, $offset);
-        }
+    $this->db->from($this->table);
 
-        return $this->db->get()->result();
+    // HAPUS FILTER is_active
+
+    $this->db->join('guru', 'guru.id = kelas.wali_kelas_id', 'left');
+    $this->db->join('siswa', 'siswa.id = kelas.ketua_kelas_id', 'left');
+
+    $this->db->order_by('kelas.nama', 'ASC');
+
+    if ($limit !== null) {
+        $this->db->limit($limit, $offset);
     }
+
+    return $this->db->get()->result();
+}
 
     /* ==========================================================
      * COUNT
      * ========================================================== */
     public function count_all()
 {
-    return $this->db
-        ->where('is_active', 1)
-        ->count_all_results($this->table);
+    return $this->db->count_all($this->table);
 }
 
     /* ==========================================================
