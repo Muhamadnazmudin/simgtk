@@ -104,6 +104,7 @@
 <br>
 <div class="section-title">B. KESEJAHTERAAN PESERTA DIDIK</div>
 <table>
+<tr><td class="label">Desil</td><td class="value"><?= $siswa->desil ?></td></tr>
 <tr><td class="label">Penerima KPS</td><td class="value"><?= $siswa->penerima_kps ?></td></tr>
 <tr><td class="label">Nomor KPS</td><td class="value"><?= $siswa->no_kps ?></td></tr>
 </table>

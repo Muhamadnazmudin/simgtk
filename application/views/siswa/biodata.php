@@ -101,14 +101,40 @@
             </table>
     </div>
 
-            <!-- =================== B. KESEJAHTERAAN =================== -->
-            <div class="section-title">B. KESEJAHTERAAN PESERTA DIDIK</div>
-            <div class="table-responsive">
+           <!-- =================== B. KESEJAHTERAAN =================== -->
+<div class="section-title">B. KESEJAHTERAAN PESERTA DIDIK</div>
+<div class="table-responsive">
     <table class="table table-bordered bio-table">
-                <tr><td class="bio-label">Penerima KPS</td><td class="bio-value"><?= $siswa->penerima_kps ?></td></tr>
-                <tr><td class="bio-label">Nomor KPS</td><td class="bio-value"><?= $siswa->no_kps ?></td></tr>
-            </table>
-        </div>
+
+        <tr>
+            <td class="bio-label">Status Desil</td>
+            <td class="bio-value">
+                <?php
+                if (empty($siswa->desil)) {
+                    echo '<span class="text-muted">Belum Diisi</span>';
+                } else {
+                    echo 'Desil ' . $siswa->desil;
+                }
+                ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="bio-label">Penerima KPS</td>
+            <td class="bio-value">
+                <?= $siswa->penerima_kps ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="bio-label">Nomor KPS</td>
+            <td class="bio-value">
+                <?= $siswa->no_kps ?>
+            </td>
+        </tr>
+
+    </table>
+</div>
             <!-- =================== C. PERIODIK =================== -->
             <div class="section-title">C. DATA PERIODIK</div>
             <div class="table-responsive">

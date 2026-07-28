@@ -277,12 +277,50 @@ input[readonly] {
                     <tr><td class="bio-label">Email</td><td><input type="email" name="email" value="<?= $siswa->email ?>"></td></tr>
                 </table>
 
-                <!-- B. KESEJAHTERAAN -->
-                <!-- <div class="section-title">B. KESEJAHTERAAN PESERTA DIDIK</div>
-                <table class="table bio-table">
-                    <tr><td class="bio-label">Penerima KPS</td><td><input type="text" name="penerima_kps" value="<?= $siswa->penerima_kps ?>"></td></tr>
-                    <tr><td class="bio-label">Nomor KPS</td><td><input type="text" name="no_kps" value="<?= $siswa->no_kps ?>"></td></tr>
-                </table> -->
+                <div class="section-title">B. KESEJAHTERAAN PESERTA DIDIK</div>
+
+<table class="table bio-table">
+
+<tr>
+    <td class="bio-label">Status Desil</td>
+    <td>
+        <select name="desil" class="form-control">
+            <option value="">-- Belum Diisi --</option>
+
+            <?php for($i=1;$i<=10;$i++): ?>
+                <option value="<?= $i ?>"
+                    <?= ($siswa->desil == $i ? 'selected' : '') ?>>
+                    Desil <?= $i ?>
+                </option>
+            <?php endfor; ?>
+
+        </select>
+
+        <small class="text-muted">
+            Pilih sesuai hasil pengecekan DTSEN.
+        </small>
+    </td>
+</tr>
+
+<tr>
+    <td class="bio-label">Penerima KPS</td>
+    <td>
+        <input type="text"
+               name="penerima_kps"
+               value="<?= $siswa->penerima_kps ?>">
+    </td>
+</tr>
+
+<tr>
+    <td class="bio-label">Nomor KPS</td>
+    <td>
+        <input type="text"
+               name="no_kps"
+               value="<?= $siswa->no_kps ?>">
+    </td>
+</tr>
+
+</table>
 
                 <!-- C. DATA PERIODIK -->
                 <div class="section-title">C. DATA PERIODIK</div>

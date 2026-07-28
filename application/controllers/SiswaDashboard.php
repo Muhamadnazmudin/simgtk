@@ -261,8 +261,9 @@ public function update_biodata()
         'hp' => $this->input->post('hp'),
         'email' => $this->input->post('email'),
 
-        'penerima_kps' => $this->input->post('penerima_kps'),
-        'no_kps' => $this->input->post('no_kps'),
+        'desil'        => $this->input->post('desil'),
+'penerima_kps' => $this->input->post('penerima_kps'),
+'no_kps'       => $this->input->post('no_kps'),
 
         'tinggi_badan' => $this->input->post('tinggi_badan'),
         'berat_badan' => $this->input->post('berat_badan'),

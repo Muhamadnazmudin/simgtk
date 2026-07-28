@@ -558,11 +558,11 @@ body.dark-mode .bot-anim {
             </a>
           </li>
           
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="<?= base_url('index.php/scrapijazah') ?>">
               <i class="fas fa-graduation-cap"></i> Scrap Ijazah PDF
             </a>
-          </li>
+          </li> -->
         </ul>
 
         <!-- Right side actions -->
