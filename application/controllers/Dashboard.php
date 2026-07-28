@@ -55,10 +55,6 @@ class Dashboard extends CI_Controller {
         $data['aktif']  = $this->get_siswa_aktif_by_tingkat();
         $data['masuk']  = $this->get_siswa_masuk_by_tingkat();
         $data['keluar'] = $this->get_siswa_keluar_by_tingkat();
-        $data['rombel'] = $this->get_kelas_by_tingkat();
-        $data['aktif']  = $this->get_siswa_aktif_by_tingkat();
-        $data['masuk']  = $this->get_siswa_masuk_by_tingkat();
-        $data['keluar'] = $this->get_siswa_keluar_by_tingkat();
 
         // ===============================
 //  KARTU RINGKAS DASHBOARD (TOP)
@@ -132,23 +128,35 @@ $this->load->view('dashboard/public', $data);
     // ==========================================================
     // 🔹 HITUNG KELAS PER TINGKAT
     // ==========================================================
-    private function get_kelas_by_tingkat() {
-        $out = ['x'=>0,'xi'=>0,'xii'=>0,'total'=>0];
+    private function get_kelas_by_tingkat()
+{
+    $out = [
+        'x'     => 0,
+        'xi'    => 0,
+        'xii'   => 0,
+        'total' => 0
+    ];
 
-        $regex = [
-            'x'   => "^X( |$|[^I])",
-            'xi'  => "^XI( |$)",
-            'xii' => "^XII"
-        ];
+    $regex = [
+        'x'   => "^X( |$|[^I])",
+        'xi'  => "^XI( |$)",
+        'xii' => "^XII( |$)"
+    ];
 
-        foreach ($regex as $k => $r) {
-            $this->db->where("nama REGEXP '$r'");
-            $out[$k] = $this->db->count_all_results('kelas');
-        }
+    foreach ($regex as $k => $r) {
 
-        $out['total'] = $out['x'] + $out['xi'] + $out['xii'];
-        return $out;
+        $this->db->from('kelas');
+        $this->db->where('is_active', 1);
+        $this->db->where("nama REGEXP '$r'");
+
+        $out[$k] = $this->db->count_all_results();
+
     }
+
+    $out['total'] = $out['x'] + $out['xi'] + $out['xii'];
+
+    return $out;
+}
 
 
 
