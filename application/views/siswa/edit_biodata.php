@@ -11,12 +11,17 @@ if (substr($owner_phone, 0, 1) === '0') $owner_phone = '62' . substr($owner_phon
 
 // --- daftar pilihan (dipakai berulang) ---
 $pendidikan_list = [
-    "Tidak Sekolah",
-    "SD / sederajat",
-    "SMP / sederajat",
-    "SMA / sederajat",
-    "D1", "D2", "D3", "D4 / S1",
-    "S2", "S3"
+    'Tidak Sekolah',
+    'Putus SD',
+    'SD/Sederajat',
+    'SMP/Sederajat',
+    'SMA/Sederajat',
+    'D1',
+    'D2',
+    'D3',
+    'D4/S1',
+    'S2',
+    'S3'
 ];
 
 $pekerjaan_list = [
@@ -302,7 +307,7 @@ input[readonly] {
     </td>
 </tr>
 
-<tr>
+<!-- <tr>
     <td class="bio-label">Penerima KPS</td>
     <td>
         <input type="text"
@@ -318,7 +323,7 @@ input[readonly] {
                name="no_kps"
                value="<?= $siswa->no_kps ?>">
     </td>
-</tr>
+</tr> -->
 
 </table>
 

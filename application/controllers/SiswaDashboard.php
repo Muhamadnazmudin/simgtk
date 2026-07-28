@@ -228,9 +228,11 @@ public function edit_biodata()
     $this->cek_login();
 
     $data['siswa'] = $this->getSiswa();
-    if (!$data['siswa']) { redirect('SiswaAuth/logout'); }
+    if (!$data['siswa']) {
+        redirect('SiswaAuth/logout');
+    }
 
-    $data['active'] = 'biodata';
+    $data['active'] = 'edit_biodata';
 
     $this->load->view('siswa/layout/header', $data);
     $this->load->view('siswa/layout/sidebar', $data);

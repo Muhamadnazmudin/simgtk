@@ -219,19 +219,108 @@ $config['reuse_query_string'] = true;
     if ($this->input->post()) {
 
         $data = [
-            'nis' => $this->input->post('nis', TRUE),
-            'nisn' => $this->input->post('nisn', TRUE),
-            'nama' => $this->input->post('nama', TRUE),
-            'jk' => $this->input->post('jk', TRUE),
-            'agama' => $this->input->post('agama', TRUE),
-            'tempat_lahir' => $this->input->post('tempat_lahir', TRUE),
-            'tgl_lahir' => $this->input->post('tgl_lahir', TRUE),
-            'alamat' => $this->input->post('alamat', TRUE),
-            'id_kelas' => $this->input->post('id_kelas', TRUE),
-            'tahun_id' => $this->input->post('tahun_id', TRUE),
-            'status' => $this->input->post('status', TRUE),
-            'no_hp_ortu' => $this->input->post('no_hp_ortu'),
-        ];
+
+    // ===========================
+    // DATA PRIBADI
+    // ===========================
+    'nis'             => $this->input->post('nis', TRUE),
+    'nisn'            => $this->input->post('nisn', TRUE),
+    'nama'            => $this->input->post('nama', TRUE),
+    'jk'              => $this->input->post('jk', TRUE),
+    'agama'           => $this->input->post('agama', TRUE),
+    'tempat_lahir'    => $this->input->post('tempat_lahir', TRUE),
+    'tgl_lahir'       => $this->input->post('tgl_lahir', TRUE),
+    'nomor_kk'        => $this->input->post('nomor_kk', TRUE),
+    'nik'             => $this->input->post('nik', TRUE),
+    'anak_keberapa'   => $this->input->post('anak_keberapa', TRUE),
+
+    'alamat'          => $this->input->post('alamat', TRUE),
+    'rt'              => $this->input->post('rt', TRUE),
+    'rw'              => $this->input->post('rw', TRUE),
+    'dusun'           => $this->input->post('dusun', TRUE),
+    'kecamatan'       => $this->input->post('kecamatan', TRUE),
+    'kode_pos'        => $this->input->post('kode_pos', TRUE),
+    'telp'            => $this->input->post('telp', TRUE),
+    'hp'              => $this->input->post('hp', TRUE),
+    'email'           => $this->input->post('email', TRUE),
+
+    // ===========================
+    // KESEJAHTERAAN
+    // ===========================
+    'desil'           => $this->input->post('desil', TRUE),
+    'penerima_kps'    => $this->input->post('penerima_kps', TRUE),
+    'no_kps'          => $this->input->post('no_kps', TRUE),
+
+    // ===========================
+    // DATA PERIODIK
+    // ===========================
+    'tinggi_badan'    => $this->input->post('tinggi_badan', TRUE),
+    'berat_badan'     => $this->input->post('berat_badan', TRUE),
+    'hobi'            => $this->input->post('hobi', TRUE),
+    'cita_cita'       => $this->input->post('cita_cita', TRUE),
+
+    // ===========================
+    // DATA PENDIDIKAN
+    // ===========================
+    'sekolah_asal'    => $this->input->post('sekolah_asal', TRUE),
+    'skhun'           => $this->input->post('skhun', TRUE),
+
+    // ===========================
+    // DATA AYAH
+    // ===========================
+    'nama_ayah'            => $this->input->post('nama_ayah', TRUE),
+    'nik_ayah'             => $this->input->post('nik_ayah', TRUE),
+    'tahun_lahir_ayah'     => $this->input->post('tahun_lahir_ayah', TRUE),
+    'pendidikan_ayah'      => $this->input->post('pendidikan_ayah', TRUE),
+    'pekerjaan_ayah'       => $this->input->post('pekerjaan_ayah', TRUE),
+    'penghasilan_ayah'     => $this->input->post('penghasilan_ayah', TRUE),
+
+    // ===========================
+    // DATA IBU
+    // ===========================
+    'nama_ibu'             => $this->input->post('nama_ibu', TRUE),
+    'nik_ibu'              => $this->input->post('nik_ibu', TRUE),
+    'tahun_lahir_ibu'      => $this->input->post('tahun_lahir_ibu', TRUE),
+    'pendidikan_ibu'       => $this->input->post('pendidikan_ibu', TRUE),
+    'pekerjaan_ibu'        => $this->input->post('pekerjaan_ibu', TRUE),
+    'penghasilan_ibu'      => $this->input->post('penghasilan_ibu', TRUE),
+
+    // ===========================
+    // DATA WALI
+    // ===========================
+    'nama_wali'            => $this->input->post('nama_wali', TRUE),
+    'nik_wali'             => $this->input->post('nik_wali', TRUE),
+    'tahun_lahir_wali'     => $this->input->post('tahun_lahir_wali', TRUE),
+    'pendidikan_wali'      => $this->input->post('pendidikan_wali', TRUE),
+    'pekerjaan_wali'       => $this->input->post('pekerjaan_wali', TRUE),
+    'penghasilan_wali'     => $this->input->post('penghasilan_wali', TRUE),
+
+    // ===========================
+    // AKADEMIK
+    // ===========================
+    'id_kelas'        => $this->input->post('id_kelas', TRUE),
+    'tahun_id'        => $this->input->post('tahun_id', TRUE),
+    'status'          => $this->input->post('status', TRUE),
+
+    // ===========================
+    // KONTAK
+    // ===========================
+    'no_hp_ortu'      => $this->input->post('no_hp_ortu', TRUE),
+
+];
+// ===========================
+// TIDAK MEMILIKI WALI
+// ===========================
+if ($this->input->post('punya_wali') == '0') {
+
+    $data['nama_wali']          = NULL;
+    $data['nik_wali']           = NULL;
+    $data['tahun_lahir_wali']   = NULL;
+    $data['pendidikan_wali']    = NULL;
+    $data['pekerjaan_wali']     = NULL;
+    $data['penghasilan_wali']   = NULL;
+
+}
 
         // ============================================
         // 🔥 HANDLE UPLOAD FOTO
