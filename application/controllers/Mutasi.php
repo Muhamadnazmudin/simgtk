@@ -215,12 +215,15 @@ $this->db->where('id', $siswa_id)->update('siswa', [
         }
 
         // Ambil kelas asal dari siswa_tahun
-        $siswa_tahun = $this->db->get_where('siswa_tahun', [
-            'siswa_id' => $siswa_id,
-            'tahun_id' => $tahun_id
-        ])->row();
-
-        $kelas_asal_id = $siswa_tahun ? $siswa_tahun->kelas_id : NULL;
+        $siswa_tahun = $this->db
+    ->where([
+        'siswa_id' => $siswa_id,
+        'tahun_id' => $tahun_id,
+        'status'   => 'aktif'
+    ])
+    ->order_by('id','DESC')
+    ->get('siswa_tahun')
+    ->row();
 
         // ---- Upload file mutasi keluar ----
         $file_name = null;
