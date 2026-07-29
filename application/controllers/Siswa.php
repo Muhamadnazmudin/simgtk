@@ -1038,7 +1038,7 @@ if (!$exist || empty($exist->token_qr)) {
 
 public function cetak($id)
 {
-    // Ambil data siswa lengkap
+    // Ambil data siswa
     $data['siswa'] = $this->db
         ->select('siswa.*, kelas.nama AS nama_kelas, tahun_ajaran.tahun AS tahun_ajaran')
         ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
@@ -1048,46 +1048,35 @@ public function cetak($id)
         ->row();
 
     if (!$data['siswa']) {
-        echo "Data siswa tidak ditemukan.";
-        return;
+        show_error('Data siswa tidak ditemukan.');
     }
 
-    // Load view HTML
+    // Tambahkan ini
+    $data['sekolah'] = $this->db->get('sekolah')->row();
+
     $html = $this->load->view('siswa/cetak', $data, TRUE);
 
-    // Load TCPDF
     $this->load->library('pdf');
 
-    // Buat objek PDF baru
     $pdf = new Tcpdf('P', PDF_UNIT, 'A4', true, 'UTF-8', false);
 
-    // Info PDF
     $pdf->SetCreator('Sistem Mutasi');
     $pdf->SetAuthor('Sekolah');
     $pdf->SetTitle('Data Siswa');
 
-    // Margin
-    $pdf->SetMargins(10, 10, 10);
+    $pdf->SetMargins(10,10,10);
     $pdf->SetHeaderMargin(0);
     $pdf->SetFooterMargin(0);
+    $pdf->SetAutoPageBreak(TRUE,10);
 
-    // Auto break
-    $pdf->SetAutoPageBreak(TRUE, 10);
-
-    // Tambah halaman
     $pdf->AddPage();
-
-    // Tulis HTML
     $pdf->writeHTML($html, true, false, true, false, '');
 
-    // Nama file
-    $fileName = 'Data_Siswa_' . str_replace(' ', '_', $data['siswa']->nama) . '.pdf';
+    $fileName = 'Data_Siswa_'.str_replace(' ','_',$data['siswa']->nama).'.pdf';
 
-    // Output PDF ke browser
     $mode = $this->input->get('download') ? 'D' : 'I';
-$pdf->Output($fileName, $mode);
-exit;
-
+    $pdf->Output($fileName,$mode);
+    exit;
 }
 public function cetak_semua()
 {
