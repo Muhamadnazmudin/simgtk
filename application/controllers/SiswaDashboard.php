@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class SiswaDashboard extends CI_Controller {
-
+private $sheet_url = 'https://script.google.com/macros/s/AKfycbySQTOl8EZLnAxYaO5v2PEYwgTUIKgpK2ROeJUlkN2lpbI5UUcfUyUvAT6lc1A5cdtP2A/exec';
     public function __construct()
     {
         parent::__construct();
@@ -241,7 +241,8 @@ public function edit_biodata()
 }
 public function update_biodata()
 {
-    $this->cek_login();
+
+$this->cek_login();
 
     $siswa = $this->getSiswa();
     if (!$siswa) redirect('SiswaAuth/logout');
@@ -298,28 +299,90 @@ public function update_biodata()
 
         'no_hp_ortu' => $this->input->post('no_hp_ortu'),
     ];
+$data_lama = $this->db
+    ->select('siswa.*, kelas.nama AS kelas')
+    ->from('siswa')
+    ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
+    ->where('siswa.id', $siswa->id)
+    ->get()
+    ->row_array();
+ $this->db->where('id', $siswa->id)->update('siswa', $data);
 
-    $this->db->where('id', $siswa->id)->update('siswa', $data);
+$data_baru = $this->db
+    ->select('siswa.*, kelas.nama AS kelas')
+    ->from('siswa')
+    ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
+    ->where('siswa.id', $siswa->id)
+    ->get()
+    ->row_array();
 
-    $this->session->set_flashdata('success', 'Biodata berhasil diperbarui!');
-    redirect('SiswaDashboard/biodata');
+$this->syncGoogleSheet($data_lama, $data_baru);
+
+$this->session->set_flashdata('success', 'Biodata berhasil diperbarui!');
+redirect('SiswaDashboard/biodata');
+}
+
+private function syncGoogleSheet($lama, $baru)
+{
+    unset(
+    $lama['id'],
+    $lama['id_kelas'],
+    $lama['password'],
+    $lama['token_qr'],
+    $lama['foto'],
+    $lama['rfid_uid'],
+    $lama['created_at'],
+    $lama['status_verval'],
+    $lama['catatan_verval'],
+    $lama['verval_by'],
+    $lama['verval_at']
+);
+
+    unset(
+    $baru['id'],
+    $baru['id_kelas'],
+    $baru['password'],
+    $baru['token_qr'],
+    $baru['foto'],
+    $baru['rfid_uid'],
+    $baru['created_at'],
+    $baru['status_verval'],
+    $baru['catatan_verval'],
+    $baru['verval_by'],
+    $baru['verval_at']
+);
+    $payload = [
+        'lama' => $lama,
+        'baru' => $baru
+    ];
+
+    $ch = curl_init($this->sheet_url);
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json'
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+
+    curl_exec($ch);
+    curl_close($ch);
 }
 private function hari_ini()
 {
-    $map = [
+    $hari = [
+        'Sunday'    => 'Minggu',
         'Monday'    => 'Senin',
         'Tuesday'   => 'Selasa',
         'Wednesday' => 'Rabu',
         'Thursday'  => 'Kamis',
         'Friday'    => 'Jumat',
-        'Saturday'  => 'Sabtu',
-        'Sunday'    => 'Minggu',
+        'Saturday'  => 'Sabtu'
     ];
 
-    return $map[date('l')];
+    return $hari[date('l')];
 }
-
-
 }
 
 ?>
