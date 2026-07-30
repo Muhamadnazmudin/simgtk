@@ -43,9 +43,10 @@ class Dashboard extends CI_Controller {
             redirect('guru_dashboard');
         }
 
-        if (!in_array($role, ['admin', 'kesiswaan'])) {
+        if (!in_array($role, ['admin', 'kesiswaan', 'operator'])) {
     show_error('Akses ditolak', 403);
 }
+
         // ===============================
         //  DASHBOARD ADMIN
         // ===============================

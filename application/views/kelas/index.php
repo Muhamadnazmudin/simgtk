@@ -1,16 +1,29 @@
+<?php
+$isOperator = ($this->session->userdata('role_name') == 'operator');
+?>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h4>Data Kelas</h4>
-  <div>
-    <a href="<?= site_url('kelas/export_excel') ?>" class="btn btn-success btn-sm">
-      <i class="fas fa-file-excel"></i> Export
-    </a>
-    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importModal">
-      <i class="fas fa-upload"></i> Import
-    </button>
-    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addModal">
-      <i class="fas fa-plus"></i> Tambah
-    </button>
-  </div>
+    <h4>Data Kelas</h4>
+
+    <div>
+
+        <a href="<?= site_url('kelas/export_excel') ?>" class="btn btn-success btn-sm">
+            <i class="fas fa-file-excel"></i> Export
+        </a>
+
+        <?php if (!$isOperator): ?>
+
+            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importModal">
+                <i class="fas fa-upload"></i> Import
+            </button>
+
+            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addModal">
+                <i class="fas fa-plus"></i> Tambah
+            </button>
+
+        <?php endif; ?>
+
+    </div>
 </div>
 
 <?php if ($this->session->flashdata('success')): ?>
@@ -128,39 +141,41 @@
 
             <td class="text-center">
 
-                <?php if($k->is_active == 1): ?>
+<?php if (!$isOperator): ?>
 
-                    <a href="<?= site_url('kelas/edit/'.$k->id) ?>"
-                       class="btn btn-warning btn-sm"
-                       title="Edit">
+    <?php if($k->is_active == 1): ?>
 
-                        <i class="fas fa-edit"></i>
+        <a href="<?= site_url('kelas/edit/'.$k->id) ?>"
+           class="btn btn-warning btn-sm"
+           title="Edit">
+            <i class="fas fa-edit"></i>
+        </a>
 
-                    </a>
+        <a href="<?= site_url('kelas/nonaktif/'.$k->id) ?>"
+           class="btn btn-danger btn-sm"
+           title="Nonaktifkan"
+           onclick="return confirm('Yakin ingin menonaktifkan kelas <?= $k->nama ?> ?')">
+            <i class="fas fa-ban"></i>
+        </a>
 
-                    <a href="<?= site_url('kelas/nonaktif/'.$k->id) ?>"
-                       class="btn btn-danger btn-sm"
-                       title="Nonaktifkan"
-                       onclick="return confirm('Yakin ingin menonaktifkan kelas <?= $k->nama ?> ?')">
+    <?php else: ?>
 
-                        <i class="fas fa-ban"></i>
+        <a href="<?= site_url('kelas/aktif/'.$k->id) ?>"
+           class="btn btn-success btn-sm"
+           title="Aktifkan"
+           onclick="return confirm('Aktifkan kembali kelas <?= $k->nama ?> ?')">
+            <i class="fas fa-check"></i>
+        </a>
 
-                    </a>
+    <?php endif; ?>
 
-                <?php else: ?>
+<?php else: ?>
 
-                    <a href="<?= site_url('kelas/aktif/'.$k->id) ?>"
-                       class="btn btn-success btn-sm"
-                       title="Aktifkan"
-                       onclick="return confirm('Aktifkan kembali kelas <?= $k->nama ?> ?')">
+    <span class="badge badge-secondary">View Only</span>
 
-                        <i class="fas fa-check"></i>
+<?php endif; ?>
 
-                    </a>
-
-                <?php endif; ?>
-
-            </td>
+</td>
 
         </tr>
 

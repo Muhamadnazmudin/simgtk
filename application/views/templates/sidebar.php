@@ -2,6 +2,9 @@
 <?php 
 $role  = $this->session->userdata('role_name'); 
 $role_id = $this->session->userdata('role_id');
+$isAdmin      = ($role == 'admin');
+$isOperator   = ($role == 'operator');
+$isKesiswaan  = ($role == 'kesiswaan');
 if (!isset($active)) $active = ''; 
 ?>
 
@@ -77,7 +80,7 @@ $group_tutorial = in_array($active, [
 <!-- ==============================
      ROLE: ADMIN
 ================================= -->
-<?php if ($role == 'admin'): ?>
+<?php if ($isAdmin || $isOperator): ?>
 
 <div class="sidebar-heading">Manajemen Data</div>
 
@@ -117,6 +120,7 @@ $group_tutorial = in_array($active, [
 <!-- ==============================
      GURU (ADMIN)
 ================================= -->
+<?php if($isAdmin): ?>
 <li class="nav-item <?= $group_guru ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mGuruAdmin">
         <i class="fas fa-chalkboard-teacher"></i>
@@ -176,9 +180,11 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
 <!-- ==============================
      KURIKULUM (ADMIN)
 ================================= -->
+<?php if($isAdmin): ?>
 <li class="nav-item <?= $group_kurikulum ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mKurikulumAdmin">
         <i class="fas fa-book-open"></i>
@@ -218,29 +224,45 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
 <!-- ==============================
-     NILAI RAPOR (ADMIN)
+     NILAI RAPOR
 ================================= -->
 <li class="nav-item <?= $group_rapor ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mNilaiRapor">
         <i class="fas fa-clipboard-list"></i>
         <span>Nilai Rapor</span>
     </a>
+
     <div id="mNilaiRapor" class="collapse <?= $group_rapor ? 'show' : '' ?>">
         <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item <?= $active=='nilai_input'?'active':'' ?>"
-               href="<?= site_url('Nilairapor_admin') ?>">
-               Input Nilai
-            </a>
-            <a class="collapse-item <?= $active=='nilai_import'?'active':'' ?>"
-   href="<?= site_url('Nilairapor_admin/import') ?>">
-   Import Nilai (Excel)
-</a>
 
-            <a class="collapse-item <?= $active=='nilai_daftar'?'active':'' ?>"
-               href="<?= site_url('Nilairapor_admin/rekap') ?>">
-               Daftar Nilai
-            </a>
+            <?php if ($isOperator): ?>
+
+                <a class="collapse-item <?= $active=='nilai_daftar'?'active':'' ?>"
+                   href="<?= site_url('Nilairapor_admin/rekap') ?>">
+                    Daftar Nilai
+                </a>
+
+            <?php else: ?>
+
+                <a class="collapse-item <?= $active=='nilai_input'?'active':'' ?>"
+                   href="<?= site_url('Nilairapor_admin') ?>">
+                    Input Nilai
+                </a>
+
+                <a class="collapse-item <?= $active=='nilai_import'?'active':'' ?>"
+                   href="<?= site_url('Nilairapor_admin/import') ?>">
+                    Import Nilai (Excel)
+                </a>
+
+                <a class="collapse-item <?= $active=='nilai_daftar'?'active':'' ?>"
+                   href="<?= site_url('Nilairapor_admin/rekap') ?>">
+                    Daftar Nilai
+                </a>
+
+            <?php endif; ?>
+
         </div>
     </div>
 </li>
@@ -266,6 +288,7 @@ $group_tutorial = in_array($active, [
 <!-- ==============================
      TUTORIAL (ADMIN)
 ================================= -->
+<?php if($isAdmin): ?>
 <li class="nav-item <?= $group_tutorial ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mTutorialAdmin">
         <i class="fas fa-video"></i>
@@ -285,8 +308,10 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
 
 <!-- Mutasi -->
+ <?php if($isAdmin): ?>
 <li class="nav-item <?= $group_mutasi ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mMutasiAdmin">
         <i class="fas fa-random"></i>
@@ -302,8 +327,11 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
+
 
 <!-- Absensi -->
+ <?php if($isAdmin): ?>
 <li class="nav-item <?= $group_absen ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mAbsensiAdmin">
         <i class="fas fa-user-check"></i>
@@ -316,7 +344,8 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
-
+<?php endif; ?>
+<?php if($isAdmin): ?>
 <!-- Absensi QR -->
 <li class="nav-item <?= $group_qr ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mQRAdmin">
@@ -330,8 +359,10 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
 
 <!-- Izin -->
+ <?php if($isAdmin): ?>
 <li class="nav-item <?= $group_izin ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mIzinAdmin">
         <i class="fas fa-door-open"></i>
@@ -346,10 +377,12 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
 
 <!-- ==============================
      VERVAl DATA (ADMIN)
 ================================= -->
+<?php if($isAdmin): ?>
 <li class="nav-item <?= $group_verval ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mVervalAdmin">
         <i class="fas fa-check-double"></i>
@@ -368,6 +401,7 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
 <!-- ==============================
      BUKU TAMU (ADMIN)
 ================================= -->
@@ -379,6 +413,7 @@ $group_tutorial = in_array($active, [
 </li>
 
 <!-- Pengaturan -->
+ <?php if($isAdmin): ?>
 <li class="nav-item <?= $group_setting ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mSettingAdmin">
         <i class="fas fa-cog"></i>
@@ -395,7 +430,7 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
-
+<?php endif; ?>
 <?php endif; ?>
 
 

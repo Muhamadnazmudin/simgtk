@@ -70,13 +70,13 @@ class Buku_tamu extends CI_Controller {
         // ===============================
         // REDIRECT SESUAI AKSES
         // ===============================
-        if ($this->session->userdata('role_name') === 'admin') {
-            // ADMIN input manual
-            redirect('buku_tamu');
-        } else {
-            // TAMU PUBLIC
-            redirect('buku_tamu/daftar_hari_ini');
-        }
+        $role = $this->session->userdata('role_name');
+
+if (in_array($role, ['admin', 'operator'])) {
+    redirect('buku_tamu');
+} else {
+    redirect('buku_tamu/daftar_hari_ini');
+}
     }
 
     // jika GET (public buka form)
@@ -141,13 +141,15 @@ class Buku_tamu extends CI_Controller {
        PRIVATE FUNCTIONS
        ===================================================== */
 
-    private function _cek_admin()
-    {
-        if ($this->session->userdata('role_name') !== 'admin') {
-            redirect('dashboard');
-            exit;
-        }
+   private function _cek_admin()
+{
+    $role = $this->session->userdata('role_name');
+
+    if (!in_array($role, ['admin', 'operator'])) {
+        redirect('dashboard');
+        exit;
     }
+}
 
     private function _upload_foto($field, $folder)
     {

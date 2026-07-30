@@ -1,3 +1,7 @@
+<?php
+$isOperator = ($this->session->userdata('role_name') == 'operator');
+?>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h4>Data Siswa</h4>
   <div>
@@ -9,14 +13,20 @@
     <i class="fas fa-file-archive"></i> Cetak Semua ID Card (ZIP)
 </a>
     <a href="<?= site_url('siswa/export_excel') ?>" class="btn btn-success btn-sm">
-      <i class="fas fa-file-excel"></i> Export
-    </a>
-    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importModal">
-      <i class="fas fa-upload"></i> Import
-    </button>
-    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addModal">
-      <i class="fas fa-plus"></i> Tambah
-    </button>
+  <i class="fas fa-file-excel"></i> Export
+</a>
+
+<?php if (!$isOperator): ?>
+
+<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importModal">
+  <i class="fas fa-upload"></i> Import
+</button>
+
+<button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addModal">
+  <i class="fas fa-plus"></i> Tambah
+</button>
+
+<?php endif; ?>
   </div>
 </div>
 
@@ -121,30 +131,38 @@
           <?php endif; ?>
         </td>
         <td class="text-center">
-  <a href="<?= site_url('siswa/edit/'.$s->id) ?>" class="btn btn-warning btn-sm" title="Edit">
-    <i class="fas fa-edit"></i>
-  </a>
 
-  <a href="<?= site_url('siswa/delete/'.$s->id) ?>" 
-     onclick="return confirm('Hapus data ini?')" 
-     class="btn btn-danger btn-sm"
-     title="Hapus">
-    <i class="fas fa-trash"></i>
-  </a>
+<?php if (!$isOperator): ?>
 
-  <a href="<?= site_url('siswa/cetak/'.$s->id) ?>" 
-     class="btn btn-info btn-sm" 
-     target="_blank"
-     title="Cetak Formulir">
-    <i class="fas fa-print"></i>
-  </a>
+    <a href="<?= site_url('siswa/edit/'.$s->id) ?>"
+       class="btn btn-warning btn-sm"
+       title="Edit">
+        <i class="fas fa-edit"></i>
+    </a>
 
-  <!-- 🔹 Tombol Cetak ID Card -->
-  <a href="<?= site_url('idcard/cetak/'.$s->id) ?>" 
-   class="btn btn-primary btn-sm"
-   title="Download ID Card JPG">
-   <i class="fas fa-id-card"></i>
-</a>
+    <a href="<?= site_url('siswa/delete/'.$s->id) ?>"
+       onclick="return confirm('Hapus data ini?')"
+       class="btn btn-danger btn-sm"
+       title="Hapus">
+        <i class="fas fa-trash"></i>
+    </a>
+
+<?php endif; ?>
+
+    <a href="<?= site_url('siswa/cetak/'.$s->id) ?>"
+       class="btn btn-info btn-sm"
+       target="_blank"
+       title="Cetak Formulir">
+        <i class="fas fa-print"></i>
+    </a>
+
+    <a href="<?= site_url('idcard/cetak/'.$s->id) ?>"
+       class="btn btn-primary btn-sm"
+       title="Download ID Card JPG">
+        <i class="fas fa-id-card"></i>
+    </a>
+
+
 <!-- 🔹 Tombol Cetak Surat Pernyataan -->
 <!-- <a href="<?= site_url('siswa/surat_pernyataan/'.$s->id) ?>"
    class="btn btn-info btn-sm"
@@ -152,7 +170,6 @@
    title="Cetak Surat Pernyataan">
    <i class="fas fa-print"></i>
 </a> -->
-
 
 </td>
 

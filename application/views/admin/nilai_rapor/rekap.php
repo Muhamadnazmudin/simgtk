@@ -1,3 +1,7 @@
+<?php
+$isOperator = ($this->session->userdata('role_name') == 'operator');
+?>
+
 <style>
 
 :root{
@@ -441,27 +445,28 @@
 
     <div class="toolbar-right">
 
-        <a href="<?= site_url('Nilairapor_admin/export_rekap_excel?kelas='.$this->input->get('kelas')) ?>"
-           class="btn btn-success btn-sm">
+    <a href="<?= site_url('Nilairapor_admin/export_rekap_excel?kelas='.$this->input->get('kelas')) ?>"
+       class="btn btn-success btn-sm">
+        <i class="fas fa-file-excel"></i>
+        Export Excel
+    </a>
 
-            <i class="fas fa-file-excel"></i>
+    <?php if (!$isOperator): ?>
 
-            Export Excel
+    <button
+        class="btn btn-danger btn-sm"
+        data-toggle="modal"
+        data-target="#modalHapusNilai">
 
-        </a>
+        <i class="fas fa-trash"></i>
 
-        <button
-            class="btn btn-danger btn-sm"
-            data-toggle="modal"
-            data-target="#modalHapusNilai">
+        Hapus Nilai
 
-            <i class="fas fa-trash"></i>
+    </button>
 
-            Hapus Nilai
+    <?php endif; ?>
 
-        </button>
-
-    </div>
+</div>
 
 </div>
 
@@ -703,6 +708,7 @@ foreach($rekap as $r):
 
 </div>
 <!-- /.container-fluid -->
+ <?php if (!$isOperator): ?>
 <div class="modal fade" id="modalHapusNilai" tabindex="-1">
 
     <div class="modal-dialog">
@@ -822,3 +828,4 @@ foreach($rekap as $r):
     </div>
 
 </div>
+<?php endif; ?>

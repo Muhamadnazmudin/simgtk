@@ -50,7 +50,7 @@ $role = $this->session->userdata('role_name');
 
 $role = $this->session->userdata('role_name');
 
-if (!in_array($role, ['admin','kesiswaan','guru','wakakur'])) {
+if (!in_array($role, ['admin','kesiswaan','guru','wakakur','operator'])) {
     show_error('Akses ditolak',403);
 }
         $limit = (int)$this->input->get('limit');

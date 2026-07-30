@@ -14,7 +14,7 @@ class Nilairapor_admin extends CI_Controller {
     is_logged_in();
 
     // Admin atau Wakakur
-    if (!in_array($this->session->userdata('role_id'), [1, 4])) {
+    if (!in_array($this->session->userdata('role_id'), [1, 4, 5])) {
         show_error('Akses ditolak', 403);
     }
 

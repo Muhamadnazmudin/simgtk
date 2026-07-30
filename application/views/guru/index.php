@@ -1,23 +1,36 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
+<?php
+$isOperator = ($this->session->userdata('role_name') == 'operator');
+?>
+  <div class="d-flex justify-content-between align-items-center mb-3">
   <h4>Data Guru</h4>
+
   <div>
+
     <a href="<?= base_url('assets/templates/templateimporguru.xlsx') ?>"
-   class="btn btn-outline-success btn-sm"
-   download>
-  <i class="fas fa-download"></i> Template Excel
-</a>
+       class="btn btn-outline-success btn-sm"
+       download>
+      <i class="fas fa-download"></i> Template Excel
+    </a>
 
     <a href="<?= site_url('guru/export_excel') ?>" class="btn btn-success btn-sm">
       <i class="fas fa-file-excel"></i> Export
     </a>
-    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importModal">
-      <i class="fas fa-upload"></i> Import
-    </button>
-    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addModal">
-      <i class="fas fa-plus"></i> Tambah
-    </button>
+
+    <?php if (!$isOperator): ?>
+
+      <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importModal">
+        <i class="fas fa-upload"></i> Import
+      </button>
+
+      <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addModal">
+        <i class="fas fa-plus"></i> Tambah
+      </button>
+
+    <?php endif; ?>
+
   </div>
-</div>
+    </div>
+    
 
 <?php if ($this->session->flashdata('success')): ?>
   <div class="alert alert-success alert-dismissible fade show" role="alert">
