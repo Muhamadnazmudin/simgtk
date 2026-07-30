@@ -1,5 +1,7 @@
 <div class="container-fluid">
-
+<?php
+$isOperator = ($this->session->userdata('role_name') == 'operator');
+?>
     <!-- ========================= -->
     <!-- HEADER -->
     <!-- ========================= -->
@@ -38,14 +40,18 @@
 
             </a>
 
-            <a href="<?= site_url('siswa/edit/'.$siswa->id) ?>"
-               class="btn btn-warning shadow-sm">
+            <?php if (!$isOperator): ?>
 
-                <i class="fas fa-edit"></i>
+<a href="<?= site_url('siswa/edit/'.$siswa->id) ?>"
+   class="btn btn-warning shadow-sm">
 
-                Edit
+    <i class="fas fa-edit"></i>
 
-            </a>
+    Edit
+
+</a>
+
+<?php endif; ?>
 
         </div>
 
