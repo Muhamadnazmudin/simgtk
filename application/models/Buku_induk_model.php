@@ -151,12 +151,13 @@ if (!empty($filter['kelas_id'])) {
      * ==========================================================
      */
     public function getKelas()
-    {
-        return $this->db
-            ->order_by('nama', 'ASC')
-            ->get('kelas')
-            ->result();
-    }
+{
+    return $this->db
+        ->where('is_active', 1)
+        ->order_by('nama', 'ASC')
+        ->get('kelas')
+        ->result();
+}
 public function getRiwayatTahun($siswa_id)
 {
     return $this->db

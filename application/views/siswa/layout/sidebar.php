@@ -182,6 +182,13 @@
 <?php $active = isset($active) ? $active : ''; ?>
 <?php
 $siswa_id = $this->session->userdata('siswa_id');
+$siswa = $this->db
+    ->select('status')
+    ->where('id', $siswa_id)
+    ->get('siswa')
+    ->row();
+
+$is_lulus = ($siswa && strtolower($siswa->status) == 'lulus');
 
 $ketua_kelas = $this->db
     ->select('id, nama')
@@ -199,7 +206,9 @@ $ketua_kelas = $this->db
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-user-graduate"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">SISWA</div>
+        <div class="sidebar-brand-text mx-3">
+    <?= $is_lulus ? 'ALUMNI' : 'SISWA'; ?>
+</div>
     </a>
 
     <hr class="sidebar-divider my-0">
@@ -212,14 +221,20 @@ $ketua_kelas = $this->db
         </a>
     </li>
 
-    <hr class="sidebar-divider">
+    <?php if(!$is_lulus): ?>
+
+<hr class="sidebar-divider">
 <li class="nav-item <?= ($active=='jadwal'?'active':''); ?>">
     <a class="nav-link" href="<?= site_url('SiswaJadwal'); ?>">
         <i class="fas fa-calendar-alt"></i>
         <span>Jadwal Pelajaran</span>
     </a>
 </li>
-<?php if (!empty($ketua_kelas)): ?>
+
+<?php endif; ?>
+
+<?php if(!$is_lulus && !empty($ketua_kelas)): ?>
+
 <hr class="sidebar-divider">
 
 <li class="nav-item <?= ($active=='laporan_pembelajaran'?'active':''); ?>">
@@ -228,6 +243,7 @@ $ketua_kelas = $this->db
         <span>Laporan Pembelajaran</span>
     </a>
 </li>
+
 <?php endif; ?>
 
 <hr class="sidebar-divider">
@@ -264,13 +280,21 @@ $ketua_kelas = $this->db
         </a>
     </li>
 
-    <li class="nav-item <?= ($active=='edit_biodata'?'active':''); ?>">
-        <a class="nav-link" href="<?= site_url('SiswaDashboard/edit_biodata'); ?>">
-            <i class="fas fa-edit"></i>
-            <span>Edit Biodata</span>
-        </a>
-    </li>
+    <?php if(!$is_lulus): ?>
+
+<li class="nav-item <?= ($active=='edit_biodata'?'active':''); ?>">
+    <a class="nav-link" href="<?= site_url('SiswaDashboard/edit_biodata'); ?>">
+        <i class="fas fa-edit"></i>
+        <span>Edit Biodata</span>
+    </a>
+</li>
+
+<?php endif; ?>
     <hr class="sidebar-divider">
+
+<?php if(!$is_lulus): ?>
+
+<hr class="sidebar-divider">
 
 <li class="nav-item <?= ($active=='akun_belajar'?'active':''); ?>">
     <a class="nav-link" href="<?= site_url('SiswaAkunBelajar'); ?>">
@@ -278,6 +302,8 @@ $ketua_kelas = $this->db
         <span>Akun BelajarID</span>
     </a>
 </li>
+
+<?php endif; ?>
 
     <!-- <li class="nav-item <?= ($active=='cetak'?'active':''); ?>">
         <a class="nav-link" href="<?= site_url('SiswaDashboard/cetak'); ?>">
@@ -287,19 +313,23 @@ $ketua_kelas = $this->db
     </li> -->
 
     <!-- Kartu -->
-    <li class="nav-item <?= ($active=='kartu'?'active':''); ?>">
-        <a class="nav-link" href="<?= site_url('SiswaDashboard/kartu'); ?>">
-            <i class="fas fa-id-badge"></i>
-            <span>Kartu Siswa</span>
-        </a>
-    </li>
+    <?php if(!$is_lulus): ?>
 
-    <li class="nav-item <?= ($active=='idcard'?'active':''); ?>">
-        <a class="nav-link" href="<?= site_url('SiswaDashboard/idcard'); ?>">
-            <i class="fas fa-address-card"></i>
-            <span>ID Card Siswa</span>
-        </a>
-    </li>
+<li class="nav-item <?= ($active=='kartu'?'active':''); ?>">
+    <a class="nav-link" href="<?= site_url('SiswaDashboard/kartu'); ?>">
+        <i class="fas fa-id-badge"></i>
+        <span>Kartu Siswa</span>
+    </a>
+</li>
+
+<li class="nav-item <?= ($active=='idcard'?'active':''); ?>">
+    <a class="nav-link" href="<?= site_url('SiswaDashboard/idcard'); ?>">
+        <i class="fas fa-address-card"></i>
+        <span>ID Card Siswa</span>
+    </a>
+</li>
+
+<?php endif; ?>
 
     <hr class="sidebar-divider d-none d-md-block">
 
