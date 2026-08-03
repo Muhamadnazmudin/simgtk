@@ -166,38 +166,6 @@ html, body{
 
 /* ================= MOBILE ================= */
 
-@media (max-width:768px){
-
-    #accordionSidebar{
-        transform:translateX(-100%);
-        width:190px;
-    }
-
-    #accordionSidebar.show{
-        transform:translateX(0);
-    }
-
-    #content-wrapper{
-        margin-left:0 !important;
-        padding-top:70px;
-    }
-
-    .topbar{
-        left:0 !important;
-    }
-
-    .sidebar-overlay{
-        display:none;
-        position:fixed;
-        inset:0;
-        background:rgba(0,0,0,.45);
-        z-index:9000;
-    }
-
-    .sidebar-overlay.show{
-        display:block;
-    }
-}
 
 /* ================= DARK MODE ================= */
 
@@ -281,36 +249,21 @@ body.dark-mode .topbar{
     </a>
 </li>
 
- <!-- ================= ABSENSI ================= -->
-
-<div class="sidebar-heading">
-    Absensi
-</div>
-
-<!-- Rekap Absensi QR -->
-<li class="nav-item <?= ($active=='wk_absensi_qr')?'active':'' ?>">
+  <!-- Rekap Absensi -->
+  <li class="nav-item <?= ($active=='wk_absensi')?'active':'' ?>">
     <a class="nav-link" href="<?= site_url('walikelas/absensi') ?>">
-        <i class="fas fa-qrcode"></i>
-        <span>Rekap Absensi QR</span>
+      <i class="fas fa-clipboard-check"></i>
+      <span>Rekap Absensi</span>
     </a>
-</li>
+  </li>
 
-<!-- Rekap Absensi Manual -->
-<li class="nav-item <?= ($active=='wk_absensi_manual')?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('walikelas_laporan') ?>">
-        <i class="fas fa-clipboard-list"></i>
-        <span>Rekap Absensi Manual</span>
-        <span class="badge badge-warning ml-auto">V2</span>
-    </a>
-</li>
-
-<!-- Rekap Izin -->
-<li class="nav-item <?= ($active=='wk_izin')?'active':'' ?>">
+  <!-- Rekap Izin -->
+  <li class="nav-item <?= ($active=='wk_izin')?'active':'' ?>">
     <a class="nav-link" href="<?= site_url('walikelas/izin') ?>">
-        <i class="fas fa-door-open"></i>
-        <span>Rekap Izin Siswa</span>
+      <i class="fas fa-door-open"></i>
+      <span>Rekap Izin Siswa</span>
     </a>
-</li>
+  </li>
 
   <hr class="sidebar-divider d-none d-md-block">
 
@@ -327,7 +280,7 @@ body.dark-mode .topbar{
     </button>
   </div>
 </ul>
-</ul>
+
 
 <!-- ========== TOPBAR ========== -->
 <nav class="navbar navbar-expand navbar-dark topbar mb-4 static-top shadow">
@@ -370,54 +323,58 @@ body.dark-mode .topbar{
         <div class="container-fluid">
 
 <script>
-const btnToggleSidebar = document.getElementById('btnToggleSidebar');
-const sidebar = document.getElementById('accordionSidebar');
-const overlay = document.getElementById('sidebarOverlay');
 
-if (btnToggleSidebar) {
-  btnToggleSidebar.addEventListener('click', () => {
-    sidebar.classList.toggle('show');
-    overlay.classList.toggle('show');
-  });
-}
+/* ================= Desktop ================= */
 
-if (overlay) {
-  overlay.addEventListener('click', () => {
-    sidebar.classList.remove('show');
-    overlay.classList.remove('show');
-  });
-}
-</script>
-
-<script>
-
-/* ===== Desktop Toggle ===== */
 const sidebarToggle = document.getElementById('sidebarToggle');
 
 if(sidebarToggle){
-    sidebarToggle.addEventListener('click', function(){
+    sidebarToggle.onclick = function(){
         document.body.classList.toggle('sidebar-toggled');
-    });
+    }
 }
 
-/* ===== Mobile Sidebar ===== */
-const btnToggleSidebar = document.getElementById('btnToggleSidebar');
-const sidebar = document.getElementById('accordionSidebar');
-const overlay = document.getElementById('sidebarOverlay');
 
-if (btnToggleSidebar) {
-    btnToggleSidebar.addEventListener('click', () => {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-    });
+/* ================= Mobile ================= */
+
+const btnToggleSidebar = document.getElementById("btnToggleSidebar");
+const sidebar = document.getElementById("accordionSidebar");
+const overlay = document.getElementById("sidebarOverlay");
+
+function openSidebar(){
+    sidebar.classList.add("show");
+    overlay.classList.add("show");
 }
 
-if (overlay) {
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-    });
+function closeSidebar(){
+    sidebar.classList.remove("show");
+    overlay.classList.remove("show");
 }
 
+btnToggleSidebar.addEventListener("click", function(e){
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if(sidebar.classList.contains("show")){
+        closeSidebar();
+    }else{
+        openSidebar();
+    }
+
+});
+
+overlay.addEventListener("click", closeSidebar);
+document.querySelectorAll("#accordionSidebar .nav-link").forEach(function(el){
+
+    el.addEventListener("click", function(){
+
+        if(window.innerWidth <= 768){
+            closeSidebar();
+        }
+
+    });
+
+});
 </script>
 

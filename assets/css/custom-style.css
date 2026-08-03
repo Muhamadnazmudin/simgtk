@@ -1,148 +1,111 @@
-/* =====================================================
-   SB ADMIN 2 CUSTOM STYLE
-   LIGHT MODE = DEFAULT SB ADMIN 2
-   DARK MODE = CUSTOM
-===================================================== */
+/* ======================================================
+   CUSTOM STYLE
+   Basis: SB ADMIN 2 DEFAULT
+   Hanya untuk Dark Mode & sedikit kosmetik
+====================================================== */
 
-/* =====================================================
+/* ======================================================
    GLOBAL
-===================================================== */
+====================================================== */
 
 html,
 body {
-	height: 100%;
 	font-family: "Nunito", sans-serif;
-	scroll-behavior: smooth;
 }
 
-body {
-	transition:
-		background-color 0.3s ease,
-		color 0.3s ease;
+/* ======================================================
+   BUTTON
+====================================================== */
+
+.btn {
+	border-radius: 0.45rem;
 }
 
-/* =====================================================
-   LIGHT MODE
-   BIARKAN DEFAULT SB ADMIN 2
-===================================================== */
-
-body:not(.dark-mode) {
-	background-color: #f8f9fc;
-}
-
-/* =====================================================
+/* ======================================================
    DARK MODE
-===================================================== */
+====================================================== */
 
 body.dark-mode {
-	background-color: #1e1e2f;
-	color: #e0e0e0;
+	background: #1e1e2f;
+	color: #e2e2e2;
 }
 
 /* Wrapper */
+
+body.dark-mode,
 body.dark-mode #wrapper,
 body.dark-mode #content-wrapper,
 body.dark-mode #content {
-	background-color: #1e1e2f !important;
+	background: #1e1e2f !important;
 }
 
-/* =====================================================
+/* ======================================================
    SIDEBAR
-===================================================== */
+====================================================== */
 
 body.dark-mode .sidebar {
-	background: linear-gradient(180deg, #2b2b3c 10%, #23232e 100%) !important;
+	background: #252536 !important;
 }
 
-body.dark-mode .sidebar .nav-item .nav-link {
-	color: #c9c9d1 !important;
-	transition: all 0.2s ease;
+body.dark-mode .sidebar .nav-link {
+	color: #d7d7d7 !important;
 }
 
-body.dark-mode .sidebar .nav-item .nav-link i {
-	color: #a5a5b1 !important;
+body.dark-mode .sidebar .nav-link i {
+	color: #b8b8b8 !important;
 }
 
-body.dark-mode .sidebar .nav-item.active .nav-link,
-body.dark-mode .sidebar .nav-item .nav-link:hover {
-	background-color: #34344a !important;
+body.dark-mode .sidebar .nav-link:hover {
+	background: #34344a !important;
+}
+
+body.dark-mode .sidebar .nav-item.active .nav-link {
+	background: #40405b !important;
 	color: #fff !important;
 }
 
 body.dark-mode .sidebar .sidebar-heading {
-	color: #9fa0b3 !important;
-	font-weight: 700;
+	color: #9f9f9f !important;
 }
 
-/* =====================================================
-   SUBMENU
-===================================================== */
-
-body.dark-mode .sidebar .collapse-inner {
-	background-color: #2c2f48 !important;
-}
-
-body.dark-mode .sidebar .collapse-inner .collapse-item {
-	color: #d1d1d1 !important;
-}
-
-body.dark-mode .sidebar .collapse-inner .collapse-item:hover {
-	background-color: #3a3d5c !important;
-	color: #fff !important;
-}
-
-body.dark-mode .sidebar .collapse-inner .collapse-item.active {
-	background-color: #4c5177 !important;
-	color: #fff !important;
-}
-
-/* =====================================================
+/* ======================================================
    TOPBAR
-===================================================== */
+====================================================== */
 
 body.dark-mode .topbar {
-	background-color: #2b2b3c !important;
-	border-bottom: 1px solid #38384a;
+	background: #2b2b3c !important;
 }
 
-body.dark-mode .topbar .nav-link,
-body.dark-mode .topbar .navbar-nav .nav-item .nav-link {
-	color: #ddd !important;
-}
-
-body.dark-mode .topbar .nav-link:hover {
+body.dark-mode .topbar .nav-link {
 	color: #fff !important;
 }
 
-/* =====================================================
+/* ======================================================
    CARD
-===================================================== */
+====================================================== */
 
 body.dark-mode .card {
-	background-color: #2b2b3c !important;
-	border: 1px solid #38384a;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
-	color: #e0e0e0;
+	background: #2b2b3c !important;
+	border: 1px solid #404050 !important;
+	color: #fff !important;
 }
 
 body.dark-mode .card-header {
-	background-color: #34344a !important;
+	background: #34344a !important;
 	color: #fff !important;
-	font-weight: 600;
 }
 
-/* =====================================================
+/* ======================================================
    TABLE
-===================================================== */
+====================================================== */
 
 body.dark-mode .table {
 	color: #ddd !important;
 }
 
 body.dark-mode .table thead th {
-	background-color: #34344a !important;
+	background: #34344a !important;
 	color: #fff !important;
-	border-color: #444 !important;
 }
 
 body.dark-mode .table td,
@@ -150,71 +113,51 @@ body.dark-mode .table th {
 	border-color: #444 !important;
 }
 
-body.dark-mode .table-striped tbody tr:nth-of-type(odd) {
-	background-color: #2e2e40 !important;
-}
-
-body.dark-mode .table-hover tbody tr:hover {
-	background-color: #3a3a52 !important;
-}
-
-/* =====================================================
+/* ======================================================
    FORM
-===================================================== */
+====================================================== */
 
 body.dark-mode input,
 body.dark-mode select,
 body.dark-mode textarea {
-	background-color: #2b2b3c !important;
-	border: 1px solid #444 !important;
+	background: #2b2b3c !important;
+	border: 1px solid #555 !important;
 	color: #fff !important;
 }
 
 body.dark-mode input:focus,
 body.dark-mode select:focus,
 body.dark-mode textarea:focus {
-	background-color: #2b2b3c !important;
+	background: #2b2b3c !important;
 	color: #fff !important;
-	border-color: #5a5ad1 !important;
 	box-shadow: none !important;
 }
 
-/* =====================================================
+/* ======================================================
    DATATABLE
-===================================================== */
+====================================================== */
 
 body.dark-mode .dataTables_wrapper .dataTables_filter input,
 body.dark-mode .dataTables_wrapper .dataTables_length select {
-	background-color: #2b2b3c !important;
-	border: 1px solid #444 !important;
-	color: #ddd !important;
+	background: #2b2b3c !important;
+	color: #fff !important;
 }
 
-/* =====================================================
-   BUTTON
-===================================================== */
-
-.btn {
-	border-radius: 8px;
-	transition: all 0.2s ease;
-}
-
-/* =====================================================
+/* ======================================================
    FOOTER
-===================================================== */
+====================================================== */
 
-body.dark-mode footer.sticky-footer {
-	background-color: #2b2b3c !important;
-	color: #bbb !important;
-	border-top: 1px solid #38384a;
+body.dark-mode footer {
+	background: #2b2b3c !important;
+	color: #ccc !important;
 }
 
-/* =====================================================
+/* ======================================================
    SWEET ALERT
-===================================================== */
+====================================================== */
 
 body.dark-mode .swal-modal {
-	background-color: #2b2b3c !important;
+	background: #2b2b3c !important;
 }
 
 body.dark-mode .swal-title {
@@ -222,189 +165,18 @@ body.dark-mode .swal-title {
 }
 
 body.dark-mode .swal-text {
-	color: #ccc !important;
+	color: #ddd !important;
 }
 
-/* =====================================================
-   DROPDOWN PENCARIAN
-===================================================== */
-
-body.dark-mode #hasilCari {
-	background: #2d2f3f !important;
-	border: 1px solid #444 !important;
-}
-
-body.dark-mode #hasilCari .item-siswa {
-	color: #ffffff !important;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-body.dark-mode #hasilCari .item-id {
-	color: #6bb6ff !important;
-}
-
-body.dark-mode #hasilCari .item-kelas {
-	color: #ffcc8a !important;
-}
-
-body.dark-mode #hasilCari .item-siswa:hover {
-	background: #3b3d52 !important;
-}
-
-/* =====================================================
+/* ======================================================
    SCROLLBAR
-===================================================== */
+====================================================== */
 
 ::-webkit-scrollbar {
 	width: 8px;
-	height: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: #666;
-	border-radius: 10px;
-}
-
-/* =====================================================
-   LAYOUT DESKTOP
-===================================================== */
-
-@media (min-width: 768px) {
-	html,
-	body {
-		overflow: hidden;
-	}
-
-	.sidebar {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 224px;
-		height: 100vh;
-		overflow-y: auto;
-		z-index: 1030;
-	}
-
-	.topbar {
-		position: fixed;
-		top: 0;
-		left: 224px;
-		right: 0;
-		z-index: 1040;
-		height: 70px;
-	}
-
-	#content-wrapper {
-		margin-left: 224px;
-		padding-top: 70px;
-		height: 100vh;
-		overflow-y: auto;
-	}
-
-	/* Collapse */
-	.sidebar.toggled {
-		width: 80px !important;
-	}
-
-	.sidebar.toggled ~ #content-wrapper {
-		margin-left: 80px !important;
-	}
-}
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-/* =====================================================
-   MOBILE FIX SB ADMIN 2
-===================================================== */
-@media (max-width: 767px) {
-	html,
-	body {
-		height: auto !important;
-		overflow-x: hidden !important;
-	}
-
-	.topbar {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 70px;
-		z-index: 1050;
-	}
-
-	#content-wrapper {
-		margin-left: 0 !important;
-		padding-top: 70px;
-		height: auto !important;
-		overflow: visible !important;
-	}
-
-	.sidebar {
-		z-index: 1040 !important;
-		height: 100vh;
-		overflow-y: auto;
-	}
-
-	#sidebarToggleTop {
-		position: relative;
-		z-index: 9999 !important;
-		pointer-events: auto !important;
-	}
-}
-/* =====================================================
-   MODAL FIX
-===================================================== */
-
-.modal {
-	-webkit-overflow-scrolling: touch;
-}
-
-.modal-dialog {
-	margin: 1rem auto !important;
-}
-
-body.modal-open .sidebar,
-body.modal-open .topbar {
-	pointer-events: none !important;
-}
-
-body.modal-open .modal,
-body.modal-open .modal * {
-	pointer-events: auto !important;
-}
-
-body.modal-open {
-	overflow: visible !important;
-}
-/* ===================================
-   MOBILE SIDEBAR RESPONSIVE
-=================================== */
-@media (max-width: 767.98px) {
-	#accordionSidebar {
-		position: fixed !important;
-		top: 0 !important;
-		left: -85% !important;
-		width: 75% !important;
-		max-width: 220px !important;
-		min-width: 200px !important;
-		height: 100vh !important;
-		overflow-y: auto !important;
-		z-index: 99999 !important;
-		transition: left 0.3s ease !important;
-	}
-
-	#accordionSidebar.mobile-open {
-		left: 0 !important;
-	}
-
-	.topbar {
-		z-index: 100000 !important;
-	}
-
-	#sidebarToggleTop {
-		position: relative !important;
-		z-index: 100001 !important;
-	}
+	background: #666;
+	border-radius: 20px;
 }

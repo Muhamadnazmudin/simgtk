@@ -1019,7 +1019,7 @@ Menu Cepat BP/BK
 
 <div class="col-md-3 col-6 mb-3">
 
-<a href="<?= site_url('bpbk/absensi_manual') ?>" class="text-decoration-none">
+<a href="<?= site_url('absensi/absensi') ?>" class="text-decoration-none">
 
 <div class="p-3 rounded shadow-sm bg-light">
 
@@ -1041,7 +1041,7 @@ Absensi Manual
 
 <div class="col-md-3 col-6 mb-3">
 
-<a href="<?= site_url('bpbk/absensi_qr') ?>" class="text-decoration-none">
+<a href="<?= site_url('bpbk') ?>" class="text-decoration-none">
 
 <div class="p-3 rounded shadow-sm bg-light">
 
@@ -1063,7 +1063,7 @@ Absensi QR
 
 <div class="col-md-3 col-6 mb-3">
 
-<a href="<?= site_url('bpbk/izin') ?>" class="text-decoration-none">
+<a href="<?= site_url('izin') ?>" class="text-decoration-none">
 
 <div class="p-3 rounded shadow-sm bg-light">
 

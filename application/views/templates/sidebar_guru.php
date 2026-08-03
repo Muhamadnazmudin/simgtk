@@ -1,600 +1,396 @@
+<style>
 
-<!-- ================= SIDEBAR GURU ================= -->
-<style> 
-html, body {
-    height: 100%;
-    margin: 0;
+/* ===============================
+   SIDEBAR GURU
+=============================== */
+
+#accordionSidebar{
+    background:linear-gradient(180deg,#28a745,#1e7e34);
 }
 
-/* ================= SIDEBAR ================= */
-#accordionSidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 224px;
-    overflow-y: auto;
-    z-index: 1032;
-    transition: all .3s ease;
+.sidebar-brand{
+    height:70px;
 }
 
-/* ================= CONTENT ================= */
-#content-wrapper {
-    margin-left: 224px;
-    min-height: 100vh;
-    padding-top: 70px;
-    transition: all .3s ease;
+.sidebar-brand-text{
+    font-size:1rem;
+    font-weight:700;
 }
 
-/* LIGHT MODE */
-body:not(.dark-mode) #content-wrapper {
-    background-color: #f8f9fc;
+.sidebar .nav-link{
+    font-size:.9rem;
 }
 
-/* DARK MODE */
-body.dark-mode #content-wrapper {
-    background-color: #1e1e2f !important;
-}
-/* =========================================================
-   DARK MODE CONTENT GURU
-========================================================= */
-
-body.dark-mode {
-    background-color: #1e1e2f !important;
-    color: #e0e0e0 !important;
+.sidebar .nav-link i{
+    width:20px;
+    text-align:center;
 }
 
-/* Wrapper */
-body.dark-mode #wrapper,
-body.dark-mode #content,
-body.dark-mode .container-fluid {
-    background-color: #1e1e2f !important;
+.sidebar-heading{
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.08rem;
 }
 
-/* Card */
-body.dark-mode .card {
-    background-color: #2b2b3c !important;
-    border: 1px solid #38384a !important;
-    color: #e0e0e0 !important;
+body.dark-mode #accordionSidebar{
+    background:linear-gradient(180deg,#1f2d27,#121a17);
 }
 
-/* Card header */
-body.dark-mode .card-header {
-    background-color: #34344a !important;
-    color: #fff !important;
+body.dark-mode .topbar{
+    background:#23232e!important;
 }
 
-/* Table */
-body.dark-mode .table {
-    color: #ddd !important;
+body.dark-mode #content-wrapper{
+    background:#1e1e2f;
 }
 
-body.dark-mode .table thead th {
-    background-color: #34344a !important;
-    color: #fff !important;
+body.dark-mode .sidebar .nav-link{
+    color:#ddd!important;
 }
 
-/* Text */
-body.dark-mode h1,
-body.dark-mode h2,
-body.dark-mode h3,
-body.dark-mode h4,
-body.dark-mode h5,
-body.dark-mode p,
-body.dark-mode span,
-body.dark-mode label,
-body.dark-mode small,
-body.dark-mode div {
-    color: #e0e0e0 !important;
+body.dark-mode .sidebar .nav-link:hover{
+    background:#34344a!important;
 }
 
-/* Form */
-body.dark-mode input,
-body.dark-mode textarea,
-body.dark-mode select {
-    background-color: #2b2b3c !important;
-    border: 1px solid #444 !important;
-    color: #fff !important;
+body.dark-mode .sidebar .nav-item.active .nav-link{
+    background:#40405b!important;
+}
+/* ==========================
+   TOPBAR GURU
+========================== */
+
+.topbar{
+    min-height:70px;
 }
 
-/* Topbar */
-body.dark-mode .topbar {
-    background: #23232e !important;
-}
-/* ================= TOPBAR ================= */
-.topbar {
-    position: fixed;
-    top: 0;
-    left: 224px;
-    right: 0;
-    z-index: 1031;
-    background-color: #28a745 !important;
-    transition: all .3s ease;
+.topbar .navbar-nav{
+    align-items:center;
 }
 
-/* ===== DESKTOP TOGGLE ===== */
-.sidebar-toggled #accordionSidebar {
-    width: 80px;
+.topbar .nav-item{
+    display:flex;
+    align-items:center;
 }
 
-.sidebar-toggled #content-wrapper {
-    margin-left: 80px;
+#toggleMode{
+    width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:10px;
+    margin-top:0;
 }
 
-.sidebar-toggled .topbar {
-    left: 80px;
+.topbar .nav-link{
+    height:70px;
+    display:flex;
+    align-items:center;
 }
-
-/* ================= MOBILE ================= */
-@media (max-width: 768px) {
-
-    #accordionSidebar {
-        transform: translateX(-100%);
-        transition: transform .3s ease;
-    }
-
-    #accordionSidebar.show {
-        transform: translateX(0);
-    }
-
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,.5);
-        z-index: 1030;
-    }
-
-    .sidebar-overlay.show {
-        display: block;
-    }
-    /* ===== FORCE SIDEBAR ABOVE OVERLAY (FIX FINAL) ===== */
-#accordionSidebar {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 180px !important;
-    height: 100vh !important;
-    z-index: 9999 !important;
-    background: linear-gradient(180deg, #28a745, #1e7e34);
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
-
-    #accordionSidebar {
-        transform: translateX(-100%);
-        transition: transform .3s ease;
-    }
-
-    #accordionSidebar.show {
-        transform: translateX(0);
-    }
-
-    .sidebar-overlay {
-        z-index: 9000 !important;
-    }
-}
-/* ===== PREVENT TEXT WRAP SIDEBAR MENU ===== */
-#accordionSidebar .nav-link span {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
-    max-width: 130px;
-}
-
-/* Rapatkan tinggi menu */
-#accordionSidebar .nav-link {
-    line-height: 1.2;
-}
-/* ================= MENU LIST FIX ================= */
-
-/* Heading menu */
-#accordionSidebar .sidebar-heading {
-    margin-top: 12px;
-    margin-bottom: 8px;
-    padding-left: 18px;
-    font-size: .75rem;
-    font-weight: 600;
-    letter-spacing: .08em;
-    color: rgba(255,255,255,.85);
-}
-
-/* Item wrapper */
-#accordionSidebar .nav-item {
-    margin: 4px 12px;
-}
-
-/* Link menu */
-#accordionSidebar .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: .9rem;
-    font-weight: 500;
-    color: #f1fff1;
-    line-height: 1.4;
-    transition: all .2s ease;
-}
-
-/* Icon menu */
-#accordionSidebar .nav-link i {
-    width: 20px;
-    min-width: 20px;
-    text-align: center;
-    font-size: .95rem;
-    opacity: .95;
-}
-
-/* Hover */
-#accordionSidebar .nav-link:hover {
-    background: rgba(255,255,255,.15);
-}
-
-/* Active */
-#accordionSidebar .nav-item.active .nav-link {
-    background: rgba(255,255,255,.22);
-    font-weight: 600;
-}
-
-/* Divider dirapikan */
-#accordionSidebar .sidebar-divider {
-    margin: 10px 16px;
-    border-top: 1px solid rgba(255,255,255,.15);
-}
-
-/* Logout biar konsisten */
-#accordionSidebar .btn-danger {
-    margin-top: 8px;
-    border-radius: 12px;
-    font-size: .85rem;
-}
-/* ================= FIX TEKS MENU ================= */
-#accordionSidebar .nav-link span {
-    white-space: normal;        /* BOLEH TURUN BARIS */
-    overflow: visible;
-    text-overflow: unset;
-    max-width: none;
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;      /* maksimal 2 baris */
-    -webkit-box-orient: vertical;
-}
-
-    }
-/* ================= FIX TOPBAR MOBILE ================= */
-@media (max-width: 768px) {
-
-    .topbar {
-        left: 0 !important;   /* ⬅️ INI KUNCI UTAMA */
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-
-}
-/* =========================================================
-   OVERRIDE WARNA SIDEBAR GURU (LEBIH ADEM, MIRIP SISWA)
-   ========================================================= */
-
-/* Background sidebar */
-/* =========================================================
-   SIDEBAR GURU — LIGHT MODE
-========================================================= */
-
-body:not(.dark-mode) #accordionSidebar {
-    background: linear-gradient(
-        180deg,
-        #28a745,
-        #1e7e34
-    ) !important;
-}
-
-/* Brand */
-body:not(.dark-mode) #accordionSidebar .sidebar-brand-text,
-body:not(.dark-mode) #accordionSidebar .sidebar-brand-icon i {
-    color: #ffffff !important;
-}
-
-/* Menu */
-body:not(.dark-mode) #accordionSidebar .nav-link {
-    color: #f8fff8 !important;
-}
-
-body:not(.dark-mode) #accordionSidebar .nav-link i {
-    color: #d8ffe3 !important;
-}
-
-/* Hover */
-body:not(.dark-mode) #accordionSidebar .nav-link:hover {
-    background: rgba(255,255,255,.12) !important;
-}
-
-/* Active */
-body:not(.dark-mode) #accordionSidebar .nav-item.active .nav-link {
-    background: rgba(255,255,255,.18) !important;
-    box-shadow: inset 3px 0 0 #ffffff;
-}
-
-/* Heading */
-body:not(.dark-mode) #accordionSidebar .sidebar-heading {
-    color: rgba(255,255,255,.7) !important;
-}
-
-/* Divider */
-body:not(.dark-mode) #accordionSidebar .sidebar-divider {
-    border-top: 1px solid rgba(255,255,255,.1) !important;
-}
-
-/* =========================================================
-   SIDEBAR GURU — DARK MODE
-========================================================= */
-
-body.dark-mode #accordionSidebar {
-    background: linear-gradient(
-        180deg,
-        #1f2d27,
-        #121a17
-    ) !important;
-}
-
-/* Brand */
-body.dark-mode #accordionSidebar .sidebar-brand-text,
-body.dark-mode #accordionSidebar .sidebar-brand-icon i {
-    color: #e6f4ec !important;
-}
-
-/* Menu */
-body.dark-mode #accordionSidebar .nav-link {
-    color: #d9efe4 !important;
-}
-
-body.dark-mode #accordionSidebar .nav-link i {
-    color: #9fd5bb !important;
-}
-
-/* Hover */
-body.dark-mode #accordionSidebar .nav-link:hover {
-    background: rgba(255,255,255,.08) !important;
-}
-
-/* Active */
-body.dark-mode #accordionSidebar .nav-item.active .nav-link {
-    background: rgba(255,255,255,.12) !important;
-    box-shadow: inset 3px 0 0 #5fd19f;
-    font-weight: 600;
-}
-
-/* Heading */
-body.dark-mode #accordionSidebar .sidebar-heading {
-    color: rgba(217,239,228,.7) !important;
-}
-
-/* Divider */
-body.dark-mode #accordionSidebar .sidebar-divider {
-    border-top: 1px solid rgba(255,255,255,.08) !important;
-}
-
-/* ================= MOBILE ================= */
-@media (max-width: 768px) {
-    #accordionSidebar {
-        background: linear-gradient(180deg, #1f2d27, #121a17) !important;
-    }
-}
-
 </style>
 
-<ul class="navbar-nav bg-gradient-success sidebar sidebar-dark accordion" id="accordionSidebar">
+<!-- ===========================
+     SIDEBAR
+=========================== -->
 
-  <!-- Brand -->
-  <a class="sidebar-brand d-flex align-items-center justify-content-center"
-     href="<?= site_url('guru_dashboard') ?>">
-    <div class="sidebar-brand-icon rotate-n-15">
-      <i class="fas fa-chalkboard-teacher"></i>
-    </div>
-    <div class="sidebar-brand-text mx-3">GURU</div>
-  </a>
+<ul class="navbar-nav sidebar sidebar-dark accordion"
+    id="accordionSidebar">
 
-  <hr class="sidebar-divider my-0">
+    <!-- Brand -->
 
-  <!-- Dashboard -->
-  <li class="nav-item <?= ($active=='guru_dashboard')?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('guru_dashboard') ?>">
-      <i class="fas fa-fw fa-tachometer-alt"></i>
-      <span>Dashboard</span>
+    <a class="sidebar-brand d-flex align-items-center justify-content-center"
+       href="<?= site_url('guru_dashboard') ?>">
+
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+
+        <div class="sidebar-brand-text mx-2">
+            GURU
+        </div>
+
     </a>
-  </li>
-  <hr class="sidebar-divider">
-  <li class="nav-item <?= ($active=='guru_account')?'active':'' ?>">
-  <a class="nav-link" href="<?= site_url('guru_account') ?>">
-    <i class="fas fa-id-badge"></i>
-    <span>Profile</span>
-  </a>
+
+    <hr class="sidebar-divider my-0">
+
+    <!-- Dashboard -->
+
+    <li class="nav-item <?= ($active=='guru_dashboard')?'active':'' ?>">
+
+        <a class="nav-link"
+           href="<?= site_url('guru_dashboard') ?>">
+
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+
+            <span>Dashboard</span>
+
+        </a>
+
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <!-- Profile -->
+
+    <li class="nav-item <?= ($active=='guru_account')?'active':'' ?>">
+
+        <a class="nav-link"
+           href="<?= site_url('guru_account') ?>">
+
+            <i class="fas fa-id-badge"></i>
+
+            <span>Profile</span>
+
+        </a>
+
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-heading">
+        Menu Guru
+    </div>
+
+    <!-- ===========================
+     DATA GURU
+=========================== -->
+
+<li class="nav-item <?= ($active=='guru_profile')?'active':'' ?>">
+
+    <a class="nav-link"
+       href="<?= site_url('guru_profile') ?>">
+
+        <i class="fas fa-user"></i>
+
+        <span>Data Guru</span>
+
+    </a>
+
 </li>
 
-  <hr class="sidebar-divider">
-
-  <div class="sidebar-heading">
-    Menu Guru
-  </div>
-
-  <li class="nav-item <?= ($active=='guru_profile')?'active':'' ?>">
-  <a class="nav-link" href="<?= site_url('guru_profile') ?>">
-    <i class="fas fa-user"></i>
-    <span>Data Guru</span>
-  </a>
-</li>
+<!-- ===========================
+     CEK JJM
+=========================== -->
 
 <li class="nav-item <?= ($active=='cek_jjm')?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('cek_jjm') ?>">
+
+    <a class="nav-link"
+       href="<?= site_url('cek_jjm') ?>">
+
         <i class="fas fa-file-pdf"></i>
+
         <span>Cek JJM</span>
+
     </a>
+
 </li>
+
+<!-- ===========================
+     JADWAL
+=========================== -->
 
 <li class="nav-item <?= ($active=='guru_jadwal')?'active':'' ?>">
-  <a class="nav-link" href="<?= site_url('guru_jadwal') ?>">
-    <i class="fas fa-calendar-alt"></i>
-    <span>Jadwal Mengajar</span>
-  </a>
+
+    <a class="nav-link"
+       href="<?= site_url('guru_jadwal') ?>">
+
+        <i class="fas fa-calendar-alt"></i>
+
+        <span>Jadwal Mengajar</span>
+
+    </a>
+
 </li>
 
-<li class="nav-item <?= ($active=='laporan_guru') ? 'active' : '' ?>">
-    <a class="nav-link" href="<?= site_url('laporan_guru') ?>">
+<!-- ===========================
+     LAPORAN
+=========================== -->
+
+<li class="nav-item <?= ($active=='laporan_guru')?'active':'' ?>">
+
+    <a class="nav-link"
+       href="<?= site_url('laporan_guru') ?>">
+
         <i class="fas fa-file-pdf"></i>
+
         <span>Laporan Mengajar</span>
+
     </a>
+
 </li>
+
+<!-- ===========================
+     SERTIFIKASI
+=========================== -->
 
 <li class="nav-item <?= ($active=='guru_sertifikasi')?'active':'' ?>">
-  <a class="nav-link" href="<?= site_url('guru_sertifikasi_guru') ?>">
-    <i class="fas fa-certificate"></i>
-    <span>Riwayat Sertifikasi</span>
-  </a>
+
+    <a class="nav-link"
+       href="<?= site_url('guru_sertifikasi_guru') ?>">
+
+        <i class="fas fa-certificate"></i>
+
+        <span>Riwayat Sertifikasi</span>
+
+    </a>
+
 </li>
 
+<?php if($this->session->userdata('is_walikelas')): ?>
 
+<hr class="sidebar-divider">
 
-  <!-- <li class="nav-item">
-    <a class="nav-link" href="#">
-      <i class="fas fa-graduation-cap"></i>
-      <span>Riwayat Pendidikan Formal</span>
-    </a>
-  </li>
+<div class="sidebar-heading">
 
-  <li class="nav-item">
-    <a class="nav-link" href="#">
-      <i class="fas fa-child"></i>
-      <span>Anak</span>
-    </a>
-  </li>
+    Akses Tambahan
 
-  <li class="nav-item">
-    <a class="nav-link" href="#">
-      <i class="fas fa-tasks"></i>
-      <span>Tugas Tambahan</span>
-    </a>
-  </li>
+</div>
 
-  <li class="nav-item">
-    <a class="nav-link" href="#">
-      <i class="fas fa-money-bill-wave"></i>
-      <span>Riwayat Gaji Berkala</span>
-    </a>
-  </li>
+<li class="nav-item">
 
-  <li class="nav-item">
-    <a class="nav-link" href="#">
-      <i class="fas fa-level-up-alt"></i>
-      <span>Riwayat Kepangkatan</span>
-    </a>
-  </li>
+    <a class="nav-link"
+       href="<?= site_url('walikelas') ?>">
 
-  <li class="nav-item">
-    <a class="nav-link" href="#">
-      <i class="fas fa-briefcase"></i>
-      <span>Riwayat Karir Guru</span>
-    </a>
-  </li> -->
+        <i class="fas fa-users text-warning"></i>
 
-  <?php if ($this->session->userdata('is_walikelas')): ?>
-    <hr class="sidebar-divider">
-    <div class="sidebar-heading">
-      Akses Tambahan
-    </div>
-
-    <li class="nav-item">
-      <a class="nav-link text-warning" href="<?= site_url('walikelas') ?>">
-        <i class="fas fa-users"></i>
         <span>Menu Wali Kelas</span>
-      </a>
-    </li>
-<?php endif; ?>
 
-
-<?php if ($this->session->userdata('role_id') == 4): ?>
-    <hr class="sidebar-divider">
-    <div class="sidebar-heading">
-        Akses Wakakur
-    </div>
-
-    <li class="nav-item <?= ($active=='wakakur_report_siswa')?'active':'' ?>">
-    <a class="nav-link text-info"
-       href="<?= site_url('WakakurLaporanPembelajaran') ?>">
-        <i class="fas fa-chart-line"></i>
-        <span>Report Siswa</span>
     </a>
+
 </li>
 
-
-<li class="nav-item <?= ($active=='nilai_daftar') ? 'active' : '' ?>">
-        <a class="nav-link text-primary"
-           href="<?= site_url('Nilairapor_admin/rekap') ?>">
-            <i class="fas fa-book"></i>
-            <span>Rekap Nilai</span>
-        </a>
-    </li>
-    
 <?php endif; ?>
 
 
-  <hr class="sidebar-divider d-none d-md-block">
+<?php if($this->session->userdata('role_id') == 4): ?>
 
-  <!-- Logout -->
-  <div class="text-center mb-2">
-    <a href="<?= site_url('auth/logout') ?>" class="btn btn-danger btn-sm w-75 shadow-sm">
-      <i class="fas fa-sign-out-alt"></i> Logout
+<hr class="sidebar-divider">
+
+<div class="sidebar-heading">
+
+    Akses Wakakur
+
+</div>
+
+<li class="nav-item <?= ($active=='wakakur_report_siswa')?'active':'' ?>">
+
+    <a class="nav-link"
+       href="<?= site_url('WakakurLaporanPembelajaran') ?>">
+
+        <i class="fas fa-chart-line text-info"></i>
+
+        <span>Report Siswa</span>
+
     </a>
-  </div>
 
-  <div class="text-center d-none d-md-inline mb-3">
-    <button class="rounded-circle border-0 bg-white shadow-sm" id="sidebarToggle">
-      <i class="fas fa-angle-double-left text-success"></i>
+</li>
+
+<li class="nav-item <?= ($active=='nilai_daftar')?'active':'' ?>">
+
+    <a class="nav-link"
+       href="<?= site_url('Nilairapor_admin/rekap') ?>">
+
+        <i class="fas fa-book text-primary"></i>
+
+        <span>Rekap Nilai</span>
+
+    </a>
+
+</li>
+
+<?php endif; ?>
+
+
+<hr class="sidebar-divider d-none d-md-block">
+
+<!-- Desktop Sidebar Toggle -->
+
+<div class="text-center d-none d-md-inline">
+
+    <button
+        class="rounded-circle border-0"
+        id="sidebarToggle">
     </button>
-  </div>
+
+</div>
 
 </ul>
 
-<nav class="navbar navbar-expand navbar-dark topbar mb-4 static-top shadow">
+<!-- ===========================
+     CONTENT WRAPPER
+=========================== -->
 
-    <!-- LEFT : HAMBURGER -->
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item d-md-none">
-            <button class="btn btn-sm btn-outline-light"
-                    id="btnToggleSidebar"
-                    type="button">
-                <i class="fas fa-bars"></i>
-            </button>
-        </li>
-    </ul>
-
-    <!-- RIGHT -->
-    <ul class="navbar-nav ml-auto align-items-center">
-
-        <li class="nav-item mr-3">
-            <button id="toggleMode" class="btn btn-sm btn-outline-light">
-                <i class="fas fa-moon"></i>
-            </button>
-        </li>
-
-        <li class="nav-item dropdown no-arrow">
-            <span class="nav-link text-white">
-                <?= $this->session->userdata('nama'); ?> |
-                <strong>Guru</strong>
-                <?php if ($this->session->userdata('is_walikelas')): ?>
-                    <span class="badge badge-warning ml-1">Wali Kelas</span>
-                <?php endif; ?>
-            </span>
-        </li>
-
-    </ul>
-</nav>
-
-
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
 <div id="content-wrapper" class="d-flex flex-column">
 
+    <!-- Main Content -->
+    <div id="content">
 
+        <!-- ===========================
+             TOPBAR
+        =========================== -->
 
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+            <!-- Sidebar Toggle (Mobile) -->
+
+            <button id="sidebarToggleTop"
+                    class="btn btn-link d-md-none rounded-circle mr-3">
+
+                <i class="fa fa-bars"></i>
+
+            </button>
+
+            <!-- Right Navbar -->
+
+            <ul class="navbar-nav ml-auto">
+
+                <!-- Dark Mode -->
+
+                <li class="nav-item mr-3">
+
+                    <button id="toggleMode"
+                            class="btn btn-sm btn-outline-secondary">
+
+                        <i class="fas fa-moon"></i>
+
+                    </button>
+
+                </li>
+
+                <!-- User -->
+
+                <li class="nav-item no-arrow">
+
+                    <span class="nav-link">
+
+                        <?= $this->session->userdata('nama'); ?>
+
+                        |
+
+                        <strong>Guru</strong>
+
+                        <?php if($this->session->userdata('is_walikelas')): ?>
+
+                            <span class="badge badge-warning">
+
+                                Wali Kelas
+
+                            </span>
+
+                        <?php endif; ?>
+
+                    </span>
+
+                </li>
+
+            </ul>
+
+        </nav>
+
+        <!-- ===========================
+             PAGE CONTENT
+        =========================== -->
+
+        <div class="container-fluid px-2">
