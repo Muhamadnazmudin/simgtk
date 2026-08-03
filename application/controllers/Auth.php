@@ -105,7 +105,7 @@ if ($user->role_id == 5) {
 // 🔵 BP/BK
 // ======================================================
 if ($user->role_id == 6) {
-    redirect('dashboard');
+    redirect('bpbk');
 }
 
         } else {

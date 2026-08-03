@@ -12,8 +12,11 @@ if (!isset($active)) $active = '';
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
   <!-- Brand -->
-  <a class="sidebar-brand d-flex align-items-center justify-content-center" 
-     href="<?= ($role_id == 3) ? site_url('walikelas') : site_url('dashboard') ?>">
+  <a class="sidebar-brand d-flex align-items-center justify-content-center"
+href="<?=
+($role_id == 3) ? site_url('walikelas') :
+(($role_id == 6) ? site_url('bpbk') : site_url('dashboard'))
+?>">
     <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-exchange-alt"></i></div>
     <div class="sidebar-brand-text mx-3">SimSGTK</div>
   </a>
@@ -23,7 +26,15 @@ if (!isset($active)) $active = '';
   <!-- Dashboard -->
   <li class="nav-item <?= $active=='dashboard'?'active':'' ?>">
     <a class="nav-link"
-       href="<?= ($role_id == 3) ? site_url('walikelas') : site_url('dashboard') ?>">
+       href="<?=
+       ($role_id == 3)
+            ? site_url('walikelas')
+            : (
+                ($role_id == 6)
+                    ? site_url('bpbk')
+                    : site_url('dashboard')
+              )
+       ?>">
       <i class="fas fa-fw fa-tachometer-alt"></i>
       <span>Dashboard</span>
     </a>
