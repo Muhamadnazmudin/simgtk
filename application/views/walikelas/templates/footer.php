@@ -138,25 +138,24 @@ $(document).ready(function() {
     // EXPORT PDF
     // ============================
     $("#btnPdf").click(function(){
-        window.open(
-            "<?= site_url('walikelas/absensi_pdf') ?>?dari="+$("#dari").val()+
-            "&sampai="+$("#sampai").val()+
-            "&nama="+$("#nama").val()+
-            "&status="+$("#keterangan").val(),
-            "_blank"
-        );
-    });
 
+    window.open(
+        "<?= site_url('Walikelas_laporan/pdf') ?>?dari="+$("#dari").val()+
+        "&sampai="+$("#sampai").val(),
+        "_blank"
+    );
+
+});
     // ============================
     // EXPORT EXCEL
     // ============================
     $("#btnExcel").click(function(){
-        window.location.href =
-            "<?= site_url('walikelas/absensi_excel') ?>?dari="+$("#dari").val()+
-            "&sampai="+$("#sampai").val()+
-            "&nama="+$("#nama").val()+
-            "&status="+$("#keterangan").val();
-    });
+
+    window.location.href =
+        "<?= site_url('Walikelas_laporan/excel') ?>?dari="+$("#dari").val()+
+        "&sampai="+$("#sampai").val();
+
+});
 
 });
 </script>

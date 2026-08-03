@@ -45,7 +45,7 @@
 
                 <div class="col-md-3">
                     <label>Tahun Ajaran</label>
-                    <input id="tahun" type="text" name="tahun" class="form-control" value="2025/2026">
+                    <input id="tahun" type="text" name="tahun" class="form-control" value="2026/2027">
                 </div>
 
                 <div class="col-md-3">

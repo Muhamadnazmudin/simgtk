@@ -281,21 +281,36 @@ body.dark-mode .topbar{
     </a>
 </li>
 
-  <!-- Rekap Absensi -->
-  <li class="nav-item <?= ($active=='wk_absensi')?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('walikelas/absensi') ?>">
-      <i class="fas fa-clipboard-check"></i>
-      <span>Rekap Absensi</span>
-    </a>
-  </li>
+ <!-- ================= ABSENSI ================= -->
 
-  <!-- Rekap Izin -->
-  <li class="nav-item <?= ($active=='wk_izin')?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('walikelas/izin') ?>">
-      <i class="fas fa-door-open"></i>
-      <span>Rekap Izin Siswa</span>
+<div class="sidebar-heading">
+    Absensi
+</div>
+
+<!-- Rekap Absensi QR -->
+<li class="nav-item <?= ($active=='wk_absensi_qr')?'active':'' ?>">
+    <a class="nav-link" href="<?= site_url('walikelas/absensi') ?>">
+        <i class="fas fa-qrcode"></i>
+        <span>Rekap Absensi QR</span>
     </a>
-  </li>
+</li>
+
+<!-- Rekap Absensi Manual -->
+<li class="nav-item <?= ($active=='wk_absensi_manual')?'active':'' ?>">
+    <a class="nav-link" href="<?= site_url('walikelas_laporan') ?>">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Rekap Absensi Manual</span>
+        <span class="badge badge-warning ml-auto">V2</span>
+    </a>
+</li>
+
+<!-- Rekap Izin -->
+<li class="nav-item <?= ($active=='wk_izin')?'active':'' ?>">
+    <a class="nav-link" href="<?= site_url('walikelas/izin') ?>">
+        <i class="fas fa-door-open"></i>
+        <span>Rekap Izin Siswa</span>
+    </a>
+</li>
 
   <hr class="sidebar-divider d-none d-md-block">
 
