@@ -73,6 +73,111 @@ body.light-mode .row > [class^="col-"] {
 .bg-rombel {
   background: linear-gradient(135deg,#f6c23e,#c69500);
 }
+
+
+
+
+/* ======================================================
+   ADMIN DASHBOARD - DARK MODE
+====================================================== */
+
+body.dark-mode .dashboard-card{
+    color:#fff;
+}
+
+body.dark-mode .bg-guru{
+    background:linear-gradient(135deg,#1cc88a,#13855c)!important;
+}
+
+body.dark-mode .bg-siswa{
+    background:linear-gradient(135deg,#36b9cc,#258391)!important;
+}
+
+body.dark-mode .bg-rombel{
+    background:linear-gradient(135deg,#f6c23e,#c69500)!important;
+}
+
+body.dark-mode .dashboard-card .card-icon{
+    opacity:.18;
+    color:#fff;
+}
+
+body.dark-mode .border-left-primary{
+
+    border-left:4px solid #4e73df!important;
+
+}
+
+body.dark-mode .border-left-success{
+
+    border-left:4px solid #1cc88a!important;
+
+}
+
+body.dark-mode .border-left-info{
+
+    border-left:4px solid #36b9cc!important;
+
+}
+
+body.dark-mode .border-left-warning{
+
+    border-left:4px solid #f6c23e!important;
+
+}
+
+body.dark-mode .border-left-danger{
+
+    border-left:4px solid #e74a3b!important;
+
+}
+
+
+body.dark-mode .card .table{
+
+    color:#ddd;
+
+}
+
+body.dark-mode .card .table thead{
+
+    background:#353549;
+
+}
+
+body.dark-mode .card .table thead th{
+
+    color:#fff;
+    background:#353549;
+
+}
+
+body.dark-mode .card .table td{
+
+    border-color:#4a4a5f;
+
+}
+
+body.dark-mode .card .table-secondary{
+
+    background:#40405b!important;
+    color:#fff!important;
+
+}
+
+body.dark-mode .text-muted{
+
+    color:#b5b5c5!important;
+
+}
+
+body.dark-mode .table-secondary,
+body.dark-mode .table-secondary td,
+body.dark-mode .table-secondary th{
+
+    color:#212529 !important;
+
+}
 </style>
 
 <?php if ($this->session->userdata('logged_in')): ?>
