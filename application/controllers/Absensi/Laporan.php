@@ -229,8 +229,9 @@ public function excel()
     $sampai = date('Y-m-d', strtotime($sampai_raw));
 
     // load PHPExcel wrapper & buat object
-    $this->load->library('PHPExcel_Lib');
-    $excel = new PHPExcel();
+    $this->load->library('Spreadsheet_Lib');
+
+$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
     // 1) daftar kelas
     if ($kelas_param == "" || $kelas_param == "all") {
@@ -396,10 +397,12 @@ public function excel()
 
                     // jika L beri warna ringan merah
                     if ($val == 'L') {
-                        $sheet->getStyle($col . $row)->getFill()->applyFromArray(array(
-                            'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                            'startcolor' => array('rgb' => 'FF9999')
-                        ));
+                        $sheet->getStyle($col . $row)->getFill()->applyFromArray([
+    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+    'startColor' => [
+        'rgb' => 'FF9999'
+    ]
+]);
                     }
 
                     $col++;
@@ -431,8 +434,8 @@ public function excel()
     header('Content-Disposition: attachment;filename="' . $filename . '"');
     header('Cache-Control: max-age=0');
 
-    $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
-    $writer->save('php://output');
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($excel);
+$writer->save('php://output');
     exit;
 }
 
