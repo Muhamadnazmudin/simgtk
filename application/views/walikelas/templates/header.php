@@ -1,107 +1,49 @@
-<!-- ================= HEADER WALIKELAS ================= -->
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= isset($title) ? $title.' - Mutases' : 'Mutases - Wali Kelas' ?></title>
-    <link rel="icon" type="image/png" href="<?= base_url('assets/img/logobonti.png'); ?>">
-  <!-- FontAwesome -->
-  <link href="<?= base_url('assets/sbadmin2/vendor/fontawesome-free/css/all.min.css') ?>" rel="stylesheet">
 
-  <!-- Bootstrap -->
-  <link href="<?= base_url('assets/sbadmin2/vendor/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <!-- SB Admin 2 -->
-  <link href="<?= base_url('assets/sbadmin2/css/sb-admin-2.min.css') ?>" rel="stylesheet">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <!-- Custom CSS -->
-  <link href="<?= base_url('assets/css/custom-style.css') ?>" rel="stylesheet">
+    <meta name="description"
+          content="Sistem Informasi Siswa dan GTK">
 
-  <style>
-/* ===============================
-   LIGHT MODE
-   =============================== */
-body.light-mode {
-    background-color: #e0f5e0ff !important;
-    color: #1a1a1a !important;
-}
+    <meta name="author"
+          content="M. Nazmudin">
 
-body.light-mode .card {
-    background: white !important;
-    border: 1px solid #0e86f6ff !important;
-}
+    <title>
+        <?= isset($title) ? $title.' - SimSGTK' : 'SimSGTK'; ?>
+    </title>
 
-body.light-mode .topbar {
-    background-color: #ffffffff !important;
-}
+    <link rel="icon"
+          href="<?= base_url('assets/img/logobonti.png'); ?>">
 
-body.light-mode .topbar .nav-link {
-    color: #1a1a1a !important;
-}
+    <!-- Font Awesome -->
+    <link href="<?= base_url('assets/sbadmin2/vendor/fontawesome-free/css/all.min.css'); ?>"
+          rel="stylesheet">
 
-body.dark-mode .topbar .nav-link {
-    color: #df480cff!important;
-}
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900"
+          rel="stylesheet">
 
-/* ===============================
-   FIX SIDEBAR & TOPBAR (NORMAL SB ADMIN)
-   =============================== */
+    <!-- Bootstrap -->
+    <link href="<?= base_url('assets/sbadmin2/vendor/bootstrap/css/bootstrap.min.css'); ?>"
+          rel="stylesheet">
 
-.sidebar {
-    height: 100vh;
-}
+    <!-- SB Admin 2 -->
+    <link href="<?= base_url('assets/sbadmin2/css/sb-admin-2.min.css'); ?>"
+          rel="stylesheet">
 
-.topbar {
-    z-index: 1040 !important;
-}
+    <!-- Custom Style (Dark Mode saja) -->
+    <link href="<?= base_url('assets/css/custom-style.css'); ?>"
+          rel="stylesheet">
 
-#content-wrapper {
-    min-height: 100vh;
-    padding-top: 90px;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-/* HILANGKAN semua override yang merusak layout */
-html, body {
-    overflow: auto !important;
-    height: auto !important;
-}
-/* ===============================
-   DASHBOARD SPACING
-   =============================== */
-
-#content .container-fluid{
-    padding-left: 25px;
-    padding-right: 25px;
-    padding-bottom: 25px;
-}
-
-@media (min-width:1200px){
-
-    #content .container-fluid{
-    width:100%;
-    max-width:100%;
-    padding:25px;
-}
-
-}
-
-@media (max-width:768px){
-
-    #content .container-fluid{
-
-        padding-left:15px;
-        padding-right:15px;
-
-    }
-
-}
-  </style>
 </head>
 
 <body id="page-top">
 
-<!-- Page Wrapper -->
 <div id="wrapper">

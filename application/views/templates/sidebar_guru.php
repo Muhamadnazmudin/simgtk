@@ -305,6 +305,23 @@ body.dark-mode .sidebar .nav-item.active .nav-link{
 
 <hr class="sidebar-divider d-none d-md-block">
 
+<hr class="sidebar-divider d-none d-md-block">
+
+<!-- Logout -->
+
+<div class="text-center mb-3">
+
+    <a href="<?= site_url('auth/logout') ?>"
+       class="btn btn-danger btn-sm w-75">
+
+        <i class="fas fa-sign-out-alt"></i>
+
+        Logout
+
+    </a>
+
+</div>
+
 <!-- Desktop Sidebar Toggle -->
 
 <div class="text-center d-none d-md-inline">

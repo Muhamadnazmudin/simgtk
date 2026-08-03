@@ -1,380 +1,301 @@
-<!-- ================= SIDEBAR WALIKELAS ================= -->
 <style>
 
-/* ================= SIDEBAR WALIKELAS ================= */
-
-html, body{
-    height:100%;
-    margin:0;
-    overflow-x:hidden;
-}
-
-/* ================= SIDEBAR ================= */
+/* ===============================
+   SIDEBAR WALI KELAS
+=============================== */
 
 #accordionSidebar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:190px;
-    height:100vh;
-    z-index:9999;
-    overflow-y:auto;
-    overflow-x:hidden;
-    transition:all .3s ease;
-    background:linear-gradient(180deg,#28a745,#1e7e34);
+    background:linear-gradient(180deg,#2563eb,#1d4ed8);
 }
-
-/* Scroll */
-#accordionSidebar::-webkit-scrollbar{
-    width:5px;
-}
-
-#accordionSidebar::-webkit-scrollbar-thumb{
-    background:rgba(255,255,255,.2);
-    border-radius:10px;
-}
-
-/* ================= CONTENT ================= */
-
-#content-wrapper{
-    margin-left:190px;
-    min-height:100vh;
-    padding-top:70px;
-    transition:all .3s ease;
-    background:#f8f9fc;
-}
-
-/* ================= TOPBAR ================= */
-
-.topbar{
-    position:fixed;
-    top:0;
-    left:190px;
-    right:0;
-    z-index:1031;
-    background:#28a745 !important;
-    transition:all .3s ease;
-}
-
-/* ================= BRAND ================= */
 
 .sidebar-brand{
-    height:60px;
+    height:70px;
 }
 
 .sidebar-brand-text{
-    font-size:.95rem;
+    font-size:1rem;
     font-weight:700;
 }
 
-/* ================= MENU ================= */
-
-#accordionSidebar .nav-item{
-    margin:3px 10px;
-}
-
-#accordionSidebar .nav-link{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    border-radius:10px;
-    font-size:.86rem;
-    font-weight:500;
-    color:#f1fff1;
-    line-height:1.3;
-    transition:all .2s ease;
-}
-
-#accordionSidebar .nav-link i{
-    width:18px;
-    min-width:18px;
-    text-align:center;
+.sidebar .nav-link{
     font-size:.9rem;
 }
 
-/* Hover */
-
-#accordionSidebar .nav-link:hover{
-    background:rgba(255,255,255,.12);
+.sidebar .nav-link i{
+    width:20px;
+    text-align:center;
 }
 
-/* Active */
-
-#accordionSidebar .nav-item.active .nav-link{
-    background:rgba(255,255,255,.18);
-    box-shadow:inset 3px 0 0 #ffffff;
-    font-weight:600;
-}
-
-/* Heading */
-
-#accordionSidebar .sidebar-heading{
-    margin-top:10px;
-    margin-bottom:6px;
-    padding-left:16px;
+.sidebar-heading{
     font-size:.72rem;
-    font-weight:600;
-    letter-spacing:.08em;
-    color:rgba(255,255,255,.75);
+    font-weight:700;
+    letter-spacing:.08rem;
 }
 
-/* Divider */
+/* ==========================
+   TOPBAR
+========================== */
 
-#accordionSidebar .sidebar-divider{
-    margin:10px 14px;
-    border-top:1px solid rgba(255,255,255,.12);
+.topbar{
+    min-height:70px;
 }
 
-/* Text menu */
-
-#accordionSidebar .nav-link span{
-    line-height:1.25;
-    white-space:normal;
+.topbar .navbar-nav{
+    align-items:center;
 }
 
-/* Logout */
-
-#accordionSidebar .btn-danger{
-    border-radius:10px;
-    font-size:.83rem;
+.topbar .nav-item{
+    display:flex;
+    align-items:center;
 }
 
-/* ================= DESKTOP TOGGLE ================= */
+#toggleMode{
 
-.sidebar-toggled #accordionSidebar{
-    width:78px;
-}
+    width:42px;
+    height:42px;
 
-.sidebar-toggled #content-wrapper{
-    margin-left:78px;
-}
-
-.sidebar-toggled .topbar{
-    left:78px;
-}
-
-.sidebar-toggled .sidebar-brand-text,
-.sidebar-toggled .nav-link span,
-.sidebar-toggled .sidebar-heading{
-    display:none;
-}
-
-.sidebar-toggled .nav-link{
+    display:flex;
+    align-items:center;
     justify-content:center;
+
+    border-radius:10px;
 }
 
-/* ================= MOBILE ================= */
+.topbar .nav-link{
 
+    height:70px;
 
-/* ================= DARK MODE ================= */
+    display:flex;
+    align-items:center;
+
+}
+
+/* ===============================
+   DARK MODE
+=============================== */
 
 body.dark-mode #accordionSidebar{
-    background:linear-gradient(180deg,#1f2d27,#121a17);
+    background:linear-gradient(180deg,#1f2937,#111827);
+}
+
+body.dark-mode .topbar{
+    background:#23232e!important;
 }
 
 body.dark-mode #content-wrapper{
     background:#1e1e2f;
 }
 
-body.dark-mode .topbar{
-    background:#23232e !important;
+body.dark-mode .sidebar .nav-link{
+    color:#ddd!important;
+}
+
+body.dark-mode .sidebar .nav-link:hover{
+    background:#34344a!important;
+}
+
+body.dark-mode .sidebar .nav-item.active .nav-link{
+    background:#40405b!important;
 }
 
 </style>
 
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-  <!-- Brand -->
-  <a class="sidebar-brand d-flex align-items-center justify-content-center"
-     href="<?= site_url('walikelas') ?>">
-    <div class="sidebar-brand-icon rotate-n-15">
-      <i class="fas fa-exchange-alt"></i>
+<!-- ===========================
+     SIDEBAR
+=========================== -->
+
+<ul class="navbar-nav sidebar sidebar-dark accordion"
+    id="accordionSidebar">
+
+    <a class="sidebar-brand d-flex align-items-center justify-content-center"
+       href="<?= site_url('walikelas') ?>">
+
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+
+        <div class="sidebar-brand-text mx-2">
+            WALI KELAS
+        </div>
+
+    </a>
+
+    <hr class="sidebar-divider my-0">
+
+    <li class="nav-item <?= ($active=='dashboard')?'active':'' ?>">
+        <a class="nav-link" href="<?= site_url('walikelas') ?>">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard QR</span>
+        </a>
+    </li>
+
+    <li class="nav-item <?= ($active=='dashboard_v2')?'active':'' ?>">
+        <a class="nav-link" href="<?= site_url('Walikelas_dashboard_v2') ?>">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard Manual</span>
+        </a>
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <li class="nav-item">
+
+        <a class="nav-link"
+           href="<?= site_url('guru_dashboard') ?>">
+
+            <i class="fas fa-chalkboard-teacher text-warning"></i>
+
+            <span>Kembali ke Menu Guru</span>
+
+        </a>
+
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-heading">
+        Menu Wali Kelas
     </div>
-    <div class="sidebar-brand-text mx-3">WALI KELAS</div>
-  </a>
 
-  <hr class="sidebar-divider my-0">
+    <li class="nav-item <?= ($active=='wk_siswa')?'active':'' ?>">
+        <a class="nav-link" href="<?= site_url('walikelas/siswa') ?>">
+            <i class="fas fa-users"></i>
+            <span>Data Siswa</span>
+        </a>
+    </li>
 
- <!-- Dashboard Lama (QR/RFID) -->
-<li class="nav-item <?= ($active=='dashboard')?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('walikelas') ?>">
-        <i class="fas fa-fw fa-tachometer-alt"></i>
-        <span>Dashboard QR</span>
+    <li class="nav-item <?= ($active=='wk_vervalpd')?'active':'' ?>">
+        <a class="nav-link" href="<?= site_url('hasilverval') ?>">
+            <i class="fas fa-check-circle"></i>
+            <span>Hasil Verval PD</span>
+        </a>
+    </li>
+
+    <li class="nav-item <?= ($active=='wk_buku_induk')?'active':'' ?>">
+        <a class="nav-link" href="<?= site_url('buku_induk') ?>">
+            <i class="fas fa-book"></i>
+            <span>Buku Induk</span>
+        </a>
+    </li>
+
+    <li class="nav-item <?= ($active=='wk_absensi')?'active':'' ?>">
+        <a class="nav-link" href="<?= site_url('walikelas/absensi') ?>">
+            <i class="fas fa-clipboard-check"></i>
+            <span>Rekap Absensi</span>
+        </a>
+    </li>
+<li class="nav-item <?= ($active=='wk_absensi_manual')?'active':'' ?>">
+
+    <a class="nav-link"
+       href="<?= site_url('Walikelas_laporan') ?>">
+
+        <i class="fas fa-clipboard-list"></i>
+
+        <span>Rekap Absensi Manual</span>
+
     </a>
-</li>
 
-<!-- Dashboard Manual V2 -->
-<li class="nav-item <?= ($active=='dashboard_v2')?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('Walikelas_dashboard_v2') ?>">
-        <i class="fas fa-chart-pie"></i>
-        <span>Dashboard Manual</span>
-        <span class="badge badge-warning ml-auto">V2</span>
-    </a>
-</li>
-<hr class="sidebar-divider">
-
-<!-- KEMBALI KE MENU GURU -->
-<li class="nav-item">
-  <a class="nav-link" href="<?= site_url('guru_dashboard') ?>">
-    <i class="fas fa-chalkboard-teacher"></i>
-    <span>Kembali ke Menu Guru</span>
-  </a>
-</li>
-
-  <hr class="sidebar-divider">
-
-  <div class="sidebar-heading">
-    Menu Wali Kelas
-  </div>
-
-  <!-- Data Siswa -->
-  <li class="nav-item <?= ($active=='wk_siswa')?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('walikelas/siswa') ?>">
-      <i class="fas fa-users"></i>
-      <span>Data Siswa</span>
-    </a>
-  </li>
-<!-- Hasil Verval PD -->
-<li class="nav-item <?= ($active=='wk_vervalpd')?'active':'' ?>">
-  <a class="nav-link" href="<?= site_url('hasilverval') ?>">
-    <i class="fas fa-check-circle"></i>
-    <span>Hasil Verval PD</span>
-  </a>
-</li>
-<li class="nav-item <?= ($active=='wk_buku_induk') ? 'active' : '' ?>">
-    <a class="nav-link" href="<?= site_url('buku_induk') ?>">
-        <i class="fas fa-book"></i>
-        <span>Buku Induk</span>
-    </a>
-</li>
-
-  <!-- Rekap Absensi -->
-  <li class="nav-item <?= ($active=='wk_absensi')?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('walikelas/absensi') ?>">
-      <i class="fas fa-clipboard-check"></i>
-      <span>Rekap Absensi</span>
-    </a>
-  </li>
-
-  <!-- Rekap Izin -->
-  <li class="nav-item <?= ($active=='wk_izin')?'active':'' ?>">
+<li class="nav-item <?= ($active=='wk_izin')?'active':'' ?>">
     <a class="nav-link" href="<?= site_url('walikelas/izin') ?>">
-      <i class="fas fa-door-open"></i>
-      <span>Rekap Izin Siswa</span>
+        <i class="fas fa-door-open"></i>
+        <span>Rekap Izin Siswa</span>
     </a>
-  </li>
+</li>
 
-  <hr class="sidebar-divider d-none d-md-block">
+<hr class="sidebar-divider d-none d-md-block">
 
-  <!-- Logout -->
-  <div class="text-center mb-2">
-    <a href="<?= site_url('auth/logout') ?>" class="btn btn-danger btn-sm w-75 shadow-sm">
-      <i class="fas fa-sign-out-alt"></i> Logout
+<!-- Logout -->
+<div class="text-center mb-3">
+
+    <a href="<?= site_url('auth/logout') ?>"
+       class="btn btn-danger btn-sm w-75">
+
+        <i class="fas fa-sign-out-alt"></i>
+
+        Logout
+
     </a>
-  </div>
 
-  <div class="text-center d-none d-md-inline mb-3">
-    <button class="rounded-circle border-0 bg-white shadow-sm" id="sidebarToggle">
-      <i class="fas fa-angle-double-left text-primary"></i>
+</div>
+
+<!-- Desktop Sidebar Toggle -->
+<div class="text-center d-none d-md-inline">
+
+    <button
+        class="rounded-circle border-0"
+        id="sidebarToggle">
     </button>
-  </div>
+
+</div>
+
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <div class="text-center d-none d-md-inline">
+
+        <button
+            class="rounded-circle border-0"
+            id="sidebarToggle">
+        </button>
+
+    </div>
+
 </ul>
 
 
-<!-- ========== TOPBAR ========== -->
-<nav class="navbar navbar-expand navbar-dark topbar mb-4 static-top shadow">
-  <button class="btn btn-sm btn-outline-light me-2 d-md-none" id="btnToggleSidebar">
-    <i class="fas fa-bars"></i>
-</button>
+<!-- ===========================
+     CONTENT WRAPPER
+=========================== -->
 
+<div id="content-wrapper" class="d-flex flex-column">
 
-    <ul class="navbar-nav ml-auto align-items-center">
+<div id="content">
+
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+    <button id="sidebarToggleTop"
+            class="btn btn-link d-md-none rounded-circle mr-3">
+
+        <i class="fa fa-bars"></i>
+
+    </button>
+
+    <ul class="navbar-nav ml-auto">
 
         <li class="nav-item mr-3">
-            <button id="toggleMode" class="btn btn-sm btn-outline-light">
+
+            <button id="toggleMode"
+                    class="btn btn-sm btn-outline-secondary">
+
                 <i class="fas fa-moon"></i>
+
             </button>
+
         </li>
 
-        <li class="nav-item dropdown no-arrow">
-            <span class="nav-link text-white">
-                <?= $this->session->userdata('nama'); ?> |
-                <strong>Wali Kelas <?= $this->session->userdata('kelas_nama'); ?></strong>
+        <li class="nav-item no-arrow">
+
+            <span class="nav-link">
+
+                <?= $this->session->userdata('nama'); ?>
+
+                |
+
+                <strong>
+
+                    Wali Kelas
+
+                    <?= $this->session->userdata('kelas_nama'); ?>
+
+                </strong>
+
             </span>
+
         </li>
 
     </ul>
 
 </nav>
 
-
-<!-- ============================ -->
-
-
- <!-- Content Wrapper -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<div id="content-wrapper" class="d-flex flex-column">
-
-    <!-- Main Content -->
-    <div id="content">
-
-        <div class="container-fluid">
-
-<script>
-
-/* ================= Desktop ================= */
-
-const sidebarToggle = document.getElementById('sidebarToggle');
-
-if(sidebarToggle){
-    sidebarToggle.onclick = function(){
-        document.body.classList.toggle('sidebar-toggled');
-    }
-}
-
-
-/* ================= Mobile ================= */
-
-const btnToggleSidebar = document.getElementById("btnToggleSidebar");
-const sidebar = document.getElementById("accordionSidebar");
-const overlay = document.getElementById("sidebarOverlay");
-
-function openSidebar(){
-    sidebar.classList.add("show");
-    overlay.classList.add("show");
-}
-
-function closeSidebar(){
-    sidebar.classList.remove("show");
-    overlay.classList.remove("show");
-}
-
-btnToggleSidebar.addEventListener("click", function(e){
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    if(sidebar.classList.contains("show")){
-        closeSidebar();
-    }else{
-        openSidebar();
-    }
-
-});
-
-overlay.addEventListener("click", closeSidebar);
-document.querySelectorAll("#accordionSidebar .nav-link").forEach(function(el){
-
-    el.addEventListener("click", function(){
-
-        if(window.innerWidth <= 768){
-            closeSidebar();
-        }
-
-    });
-
-});
-</script>
-
+<div class="container-fluid px-2">
+    

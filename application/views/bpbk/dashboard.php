@@ -99,7 +99,14 @@ $tahun = isset($tahun) ? $tahun : null;
     height:12px;
     border-radius:30px;
 }
+@media (max-width:576px){
 
+    .display-4{
+        font-size:2.5rem;
+        line-height:1;
+    }
+
+}
 </style>
 
 <div class="container-fluid">
@@ -525,53 +532,33 @@ Rekap Bulan Ini
 
 <div class="row text-center">
 
-<div class="col-3">
+    <div class="col-6 col-md-3 mb-3">
+        <div class="display-4 text-success">
+            <?= $bulan_H ?>
+        </div>
+        <small class="text-muted">Hadir</small>
+    </div>
 
-<div class="display-4 text-success">
+    <div class="col-6 col-md-3 mb-3">
+        <div class="display-4 text-info">
+            <?= $bulan_I ?>
+        </div>
+        <small class="text-muted">Izin</small>
+    </div>
 
-<?= $bulan_H ?>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="display-4 text-warning">
+            <?= $bulan_S ?>
+        </div>
+        <small class="text-muted">Sakit</small>
+    </div>
 
-</div>
-
-<small>Hadir</small>
-
-</div>
-
-<div class="col-3">
-
-<div class="display-4 text-info">
-
-<?= $bulan_I ?>
-
-</div>
-
-<small>Izin</small>
-
-</div>
-
-<div class="col-3">
-
-<div class="display-4 text-warning">
-
-<?= $bulan_S ?>
-
-</div>
-
-<small>Sakit</small>
-
-</div>
-
-<div class="col-3">
-
-<div class="display-4 text-danger">
-
-<?= $bulan_A ?>
-
-</div>
-
-<small>Alpa</small>
-
-</div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="display-4 text-danger">
+            <?= $bulan_A ?>
+        </div>
+        <small class="text-muted">Alpa</small>
+    </div>
 
 </div>
 
