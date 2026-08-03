@@ -5,6 +5,7 @@ $role_id = $this->session->userdata('role_id');
 $isAdmin      = ($role == 'admin');
 $isOperator   = ($role == 'operator');
 $isKesiswaan  = ($role == 'kesiswaan');
+$isBPBK       = ($role == 'bpbk');
 if (!isset($active)) $active = ''; 
 ?>
 
@@ -80,7 +81,7 @@ $group_tutorial = in_array($active, [
 <!-- ==============================
      ROLE: ADMIN
 ================================= -->
-<?php if ($isAdmin || $isOperator): ?>
+<?php if ($isAdmin || $isOperator || $isBPBK): ?>
 
 <div class="sidebar-heading">Manajemen Data</div>
 
@@ -99,20 +100,29 @@ $group_tutorial = in_array($active, [
             <a class="collapse-item <?= $active=='kelas'?'active':'' ?>" 
                href="<?= site_url('kelas') ?>">Data Kelas</a>
 
-            <a class="collapse-item <?= $active=='siswa'?'active':'' ?>" 
-               href="<?= site_url('siswa') ?>">Data Siswa</a>
-                <a class="collapse-item <?= $active=='buku_induk'?'active':'' ?>"
+<!-- Data Siswa : Admin, Operator, BPBK -->
+<?php if($isAdmin || $isOperator || $isBPBK): ?>
+<a class="collapse-item <?= $active=='siswa'?'active':'' ?>" 
+   href="<?= site_url('siswa') ?>">
+    Data Siswa
+</a>
+<?php endif; ?>
+
+<!-- Buku Induk : Admin & Operator -->
+<?php if($isAdmin || $isOperator): ?>
+<a class="collapse-item <?= $active=='buku_induk'?'active':'' ?>"
    href="<?= site_url('buku_induk') ?>">
     Buku Induk
 </a>
-            <a class="collapse-item <?= $active=='kartu_osis'?'active':'' ?>" 
-               href="<?= site_url('kartu_osis') ?>">Kartu OSIS</a>
+<?php endif; ?>
 
             <!-- MENU BARU ID CARD PREMIUM -->
-                <a class="collapse-item <?= $active=='idcard_premium'?'active':'' ?>" 
+<?php if($isAdmin || $isOperator): ?>
+            <a class="collapse-item <?= $active=='idcard_premium'?'active':'' ?>" 
                 href="<?= site_url('idcard_premium') ?>">
                 ID Card Premium
             </a>
+            <?php endif; ?>
         </div>
     </div>
 </li>
@@ -228,6 +238,7 @@ $group_tutorial = in_array($active, [
 <!-- ==============================
      NILAI RAPOR
 ================================= -->
+<?php if($isAdmin || $isOperator): ?>
 <li class="nav-item <?= $group_rapor ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mNilaiRapor">
         <i class="fas fa-clipboard-list"></i>
@@ -237,7 +248,7 @@ $group_tutorial = in_array($active, [
     <div id="mNilaiRapor" class="collapse <?= $group_rapor ? 'show' : '' ?>">
         <div class="bg-white py-2 collapse-inner rounded">
 
-            <?php if ($isOperator): ?>
+            <?php if ($isAdmin || $isOperator): ?>
 
                 <a class="collapse-item <?= $active=='nilai_daftar'?'active':'' ?>"
                    href="<?= site_url('Nilairapor_admin/rekap') ?>">
@@ -266,10 +277,14 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
 <!-- ==============================
      AKUN BELAJAR / BELAJARID
 ================================= -->
+<?php if($isAdmin || $isOperator): ?>
 <li class="nav-item <?= $group_belajarid ? 'active' : '' ?>">
+
+
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mBelajarID">
         <i class="fas fa-envelope-open-text"></i>
         <span>Akun Belajar</span>
@@ -285,6 +300,7 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
 <!-- ==============================
      TUTORIAL (ADMIN)
 ================================= -->
@@ -331,7 +347,7 @@ $group_tutorial = in_array($active, [
 
 
 <!-- Absensi -->
- <?php if($isAdmin): ?>
+ <?php if($isAdmin || $isBPBK): ?>
 <li class="nav-item <?= $group_absen ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mAbsensiAdmin">
         <i class="fas fa-user-check"></i>
@@ -362,7 +378,7 @@ $group_tutorial = in_array($active, [
 <?php endif; ?>
 
 <!-- Izin -->
- <?php if($isAdmin): ?>
+ <?php if($isAdmin || $isBPBK): ?>
 <li class="nav-item <?= $group_izin ? 'active' : '' ?>">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mIzinAdmin">
         <i class="fas fa-door-open"></i>

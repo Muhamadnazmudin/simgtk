@@ -101,6 +101,12 @@ class Auth extends CI_Controller {
 if ($user->role_id == 5) {
     redirect('dashboard');
 }
+// ======================================================
+// 🔵 BP/BK
+// ======================================================
+if ($user->role_id == 6) {
+    redirect('dashboard');
+}
 
         } else {
             $this->session->set_flashdata('error', 'Username atau password salah.');

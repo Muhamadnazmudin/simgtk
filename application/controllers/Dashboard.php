@@ -43,7 +43,9 @@ class Dashboard extends CI_Controller {
             redirect('guru_dashboard');
         }
 
-        if (!in_array($role, ['admin', 'kesiswaan', 'operator'])) {
+        $allowed = ['admin', 'kesiswaan', 'operator', 'bpbk'];
+
+if (!in_array($role, $allowed)) {
     show_error('Akses ditolak', 403);
 }
 

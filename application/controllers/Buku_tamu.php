@@ -72,7 +72,7 @@ class Buku_tamu extends CI_Controller {
         // ===============================
         $role = $this->session->userdata('role_name');
 
-if (in_array($role, ['admin', 'operator'])) {
+if (in_array($role, ['admin', 'operator', 'bpbk'])) {
     redirect('buku_tamu');
 } else {
     redirect('buku_tamu/daftar_hari_ini');
@@ -145,7 +145,7 @@ if (in_array($role, ['admin', 'operator'])) {
 {
     $role = $this->session->userdata('role_name');
 
-    if (!in_array($role, ['admin', 'operator'])) {
+    if (!in_array($role, ['admin', 'operator', 'bpbk'])) {
         redirect('dashboard');
         exit;
     }
@@ -317,7 +317,7 @@ public function daftar_bulan_ini($offset = 0)
 public function set_selesai($id)
 {
     // hanya admin
-    if ($this->session->userdata('role_name') !== 'admin') {
+     if (!in_array($role, ['admin', 'operator', 'bpbk'])) {
         redirect('dashboard');
         exit;
     }

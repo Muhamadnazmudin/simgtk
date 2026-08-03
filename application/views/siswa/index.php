@@ -1,5 +1,11 @@
 <?php
-$isOperator = ($this->session->userdata('role_name') == 'operator');
+$role = $this->session->userdata('role_name');
+
+$isOperator = ($role == 'operator');
+$isBPBK     = ($role == 'bpbk');
+
+// Role yang hanya boleh melihat data
+$isViewOnly = in_array($role, ['operator', 'bpbk']);
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -16,7 +22,7 @@ $isOperator = ($this->session->userdata('role_name') == 'operator');
   <i class="fas fa-file-excel"></i> Export
 </a>
 
-<?php if (!$isOperator): ?>
+<?php if (!$isViewOnly): ?>
 
 <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importModal">
   <i class="fas fa-upload"></i> Import
@@ -132,7 +138,7 @@ $isOperator = ($this->session->userdata('role_name') == 'operator');
         </td>
         <td class="text-center">
 
-<?php if (!$isOperator): ?>
+<?php if (!$isViewOnly): ?>
 
     <a href="<?= site_url('siswa/edit/'.$s->id) ?>"
        class="btn btn-warning btn-sm"
