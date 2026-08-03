@@ -228,13 +228,22 @@ body.dark-mode .topbar{
 
   <hr class="sidebar-divider my-0">
 
-  <!-- Dashboard -->
-  <li class="nav-item <?= ($active=='dashboard')?'active':'' ?>">
+ <!-- Dashboard Lama (QR/RFID) -->
+<li class="nav-item <?= ($active=='dashboard')?'active':'' ?>">
     <a class="nav-link" href="<?= site_url('walikelas') ?>">
-      <i class="fas fa-fw fa-tachometer-alt"></i>
-      <span>Dashboard</span>
+        <i class="fas fa-fw fa-tachometer-alt"></i>
+        <span>Dashboard QR</span>
     </a>
-  </li>
+</li>
+
+<!-- Dashboard Manual V2 -->
+<li class="nav-item <?= ($active=='dashboard_v2')?'active':'' ?>">
+    <a class="nav-link" href="<?= site_url('Walikelas_dashboard_v2') ?>">
+        <i class="fas fa-chart-pie"></i>
+        <span>Dashboard Manual</span>
+        <span class="badge badge-warning ml-auto">V2</span>
+    </a>
+</li>
 <hr class="sidebar-divider">
 
 <!-- KEMBALI KE MENU GURU -->
