@@ -443,7 +443,7 @@ if (!in_array($current_method, $public_methods)) {
 // Google Spreadsheet akan disinkronkan oleh Admin.
 // =========================================================
 
-$this->sync_queue->tandai_pending($siswa_id);
+$this->sync_queue->tandai_berkas_pending($siswa_id);
 
 
 // =========================================================
@@ -660,7 +660,7 @@ redirect(
     // Admin akan melakukan Sync nanti.
     // =========================================================
 
-    $this->sync_queue->tandai_pending($siswa_id);
+    $this->sync_queue->tandai_berkas_pending($siswa_id);
 
     // =========================================================
     // PESAN

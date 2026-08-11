@@ -23,25 +23,75 @@ class Sync_google extends CI_Controller
      * Halaman sinkronisasi
      */
     public function index()
-    {
-        $data['active'] = 'sync_google';
-        // Untuk sementara cek dulu jumlah pending
-        $data['pending'] =
-            $this->sync_queue->count_pending();
+{
+    $data['active'] = 'sync_google';
 
-        $data['title'] =
-            'Sinkronisasi Google Spreadsheet';
+    // ==========================================
+    // JUMLAH SISWA PENDING
+    // ==========================================
 
-        
-         $this->load->view('templates/header', $data);
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view(
-            'admin/sync_google',
-            $data
-        );
-        $this->load->view('templates/footer');
+    $data['pending'] =
+        $this->sync_queue->count_pending();
+
+
+    // ==========================================
+    // DETAIL PENDING
+    // ==========================================
+
+    $data['pending_detail'] =
+        $this->sync_queue->get_pending_detail();
+
+
+    // ==========================================
+    // HITUNG RINCIAN
+    // ==========================================
+
+    $data['jumlah_biodata'] = 0;
+    $data['jumlah_berkas']  = 0;
+
+    foreach ($data['pending_detail'] as $item) {
+
+        // Biodata berubah
+        if ((int) $item->biodata_pending === 1) {
+            $data['jumlah_biodata']++;
+        }
+
+        // Berkas berubah
+        if ((int) $item->berkas_pending === 1) {
+
+            $data['jumlah_berkas'] +=
+                (int) $item->jumlah_berkas;
+        }
     }
 
+
+    $data['title'] =
+        'Sinkronisasi Google Spreadsheet';
+
+
+    // ==========================================
+    // VIEW
+    // ==========================================
+
+    $this->load->view(
+        'templates/header',
+        $data
+    );
+
+    $this->load->view(
+        'templates/sidebar',
+        $data
+    );
+
+    $this->load->view(
+        'admin/sync_google',
+        $data
+    );
+
+    $this->load->view(
+        'templates/footer'
+    );
+}
 
     /**
      * Proses sinkronisasi

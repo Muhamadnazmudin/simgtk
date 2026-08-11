@@ -10,7 +10,10 @@ class Sync_queue_model extends CI_Model
      *
      * Kalau sudah pending, tidak membuat record baru.
      */
-    public function tandai_pending($siswa_id)
+    /**
+ * Tandai siswa karena perubahan BIODATA
+ */
+public function tandai_biodata_pending($siswa_id)
 {
     $siswa_id = (int) $siswa_id;
 
@@ -18,36 +21,82 @@ class Sync_queue_model extends CI_Model
         return false;
     }
 
-    // Cek apakah siswa sudah punya queue
     $existing = $this->db
         ->where('siswa_id', $siswa_id)
+        ->where_in('status', ['pending', 'processing'])
         ->get($this->table)
         ->row();
 
-    // Kalau sudah ada
+    // Jika sudah ada queue
     if ($existing) {
 
         return $this->db
             ->where('id', $existing->id)
             ->update($this->table, [
-                'status'        => 'pending',
-                'updated_at'    => date('Y-m-d H:i:s'),
-                'synced_at'     => null,
-                'error_message' => null
+                'biodata_pending' => 1,
+                'status'          => 'pending',
+                'updated_at'      => date('Y-m-d H:i:s'),
+                'synced_at'       => null,
+                'error_message'   => null
             ]);
     }
 
-    // Kalau belum ada
+    // Jika belum ada queue
     return $this->db->insert($this->table, [
-        'siswa_id'       => $siswa_id,
-        'status'         => 'pending',
-        'created_at'     => date('Y-m-d H:i:s'),
-        'updated_at'     => date('Y-m-d H:i:s'),
-        'synced_at'      => null,
-        'error_message'  => null
+        'siswa_id'         => $siswa_id,
+        'biodata_pending'  => 1,
+        'berkas_pending'   => 0,
+        'status'           => 'pending',
+        'created_at'       => date('Y-m-d H:i:s'),
+        'updated_at'       => date('Y-m-d H:i:s'),
+        'synced_at'        => null,
+        'error_message'    => null
     ]);
 }
 
+
+/**
+ * Tandai siswa karena perubahan BERKAS
+ */
+public function tandai_berkas_pending($siswa_id)
+{
+    $siswa_id = (int) $siswa_id;
+
+    if (!$siswa_id) {
+        return false;
+    }
+
+    $existing = $this->db
+        ->where('siswa_id', $siswa_id)
+        ->where_in('status', ['pending', 'processing'])
+        ->get($this->table)
+        ->row();
+
+    // Jika sudah ada queue
+    if ($existing) {
+
+        return $this->db
+            ->where('id', $existing->id)
+            ->set('berkas_pending', 'berkas_pending + 1', false)
+            ->set('status', 'pending')
+            ->set('updated_at', date('Y-m-d H:i:s'))
+            ->set('synced_at', null)
+            ->set('error_message', null)
+            ->update($this->table);
+    }
+
+    // Jika belum ada queue
+    return $this->db->insert($this->table, [
+        'siswa_id'         => $siswa_id,
+        'biodata_pending'  => 0,
+        'berkas_pending'   => 1,
+        'status'           => 'pending',
+        'created_at'       => date('Y-m-d H:i:s'),
+        'updated_at'       => date('Y-m-d H:i:s'),
+        'synced_at'        => null,
+        'error_message'    => null
+    ]);
+}
 
     /**
      * Ambil semua siswa yang menunggu sync
@@ -144,4 +193,46 @@ class Sync_queue_model extends CI_Model
                 'error_message' => null
             ]);
     }
+
+    /**
+ * Ambil detail siswa yang menunggu sinkronisasi
+ */
+public function get_pending_detail()
+{
+    return $this->db
+        ->select('
+            sync_queue.*,
+            siswa.nisn,
+            siswa.nama,
+            kelas.nama AS kelas,
+            COUNT(siswa_berkas.id) AS jumlah_berkas
+        ')
+        ->from($this->table)
+        ->join(
+            'siswa',
+            'siswa.id = sync_queue.siswa_id',
+            'left'
+        )
+        ->join(
+            'kelas',
+            'kelas.id = siswa.id_kelas',
+            'left'
+        )
+        ->join(
+            'siswa_berkas',
+            'siswa_berkas.siswa_id = sync_queue.siswa_id',
+            'left'
+        )
+        ->where(
+            'sync_queue.status',
+            'pending'
+        )
+        ->group_by('sync_queue.id')
+        ->order_by(
+            'sync_queue.updated_at',
+            'ASC'
+        )
+        ->get()
+        ->result();
+}
 }

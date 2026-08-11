@@ -3,14 +3,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class SiswaDashboard extends CI_Controller {
 private $sheet_url = 'https://script.google.com/macros/s/AKfycbySQTOl8EZLnAxYaO5v2PEYwgTUIKgpK2ROeJUlkN2lpbI5UUcfUyUvAT6lc1A5cdtP2A/exec';
-    public function __construct()
-    {
-        parent::__construct();
-        $this->load->model('Siswa_model');
-        $this->load->model('Siswa_jadwal_model');
-        $this->load->model('Sync_queue_model');
-        $this->load->database();
-    }
+   public function __construct()
+{
+    parent::__construct();
+
+    $this->load->model('Siswa_model');
+    $this->load->model('Siswa_jadwal_model');
+
+    $this->load->model(
+        'Sync_queue_model',
+        'sync_queue'
+    );
+
+    $this->load->database();
+}
 
     private function cek_login()
     {
@@ -300,30 +306,46 @@ $this->cek_login();
 
         'no_hp_ortu' => $this->input->post('no_hp_ortu'),
     ];
-$data_lama = $this->db
-    ->select('siswa.*, kelas.nama AS kelas')
-    ->from('siswa')
-    ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
-    ->where('siswa.id', $siswa->id)
-    ->get()
-    ->row_array();
- $this->db->where('id', $siswa->id)->update('siswa', $data);
-
-$data_baru = $this->db
-    ->select('siswa.*, kelas.nama AS kelas')
-    ->from('siswa')
-    ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
-    ->where('siswa.id', $siswa->id)
-    ->get()
-    ->row_array();
-
 // =========================================================
-// TANDAI PERLU SINKRONISASI
-// Data tetap disimpan di MySQL.
-// Google Spreadsheet akan disinkronkan oleh Admin.
+// SIMPAN PERUBAHAN BIODATA
 // =========================================================
 
-$this->Sync_queue_model->tandai_pending($siswa->id);
+$update = $this->db
+    ->where('id', $siswa->id)
+    ->update('siswa', $data);
+
+if (!$update) {
+
+    log_message(
+        'error',
+        'UPDATE BIODATA GAGAL SISWA ID: ' .
+        $siswa->id .
+        ' | ' .
+        $this->db->last_query()
+    );
+
+    return $this->output
+        ->set_status_header(500)
+        ->set_content_type('application/json')
+        ->set_output(json_encode([
+            'status'  => false,
+            'message' => 'Gagal menyimpan biodata.'
+        ]));
+}
+
+
+// =========================================================
+// MASUKKAN KE QUEUE BIODATA
+// =========================================================
+
+$this->sync_queue->tandai_biodata_pending(
+    $siswa->id
+);
+
+
+// =========================================================
+// SELESAI
+// =========================================================
 
 $this->session->set_flashdata(
     'success',
