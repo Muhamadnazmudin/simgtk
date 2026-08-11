@@ -256,4 +256,52 @@ public function get_kelas_aktif()
 
     return $this->db->get()->result();
 }
+
+/**
+ * =========================================================
+ * AMBIL SEMUA BERKAS SISWA
+ * =========================================================
+ *
+ * Digunakan oleh SiswaBerkas.
+ *
+ * Menggunakan tabel yang sama dengan Admin:
+ * siswa_berkas
+ */
+public function get_all_berkas($siswa_id)
+{
+    $rows = $this->db
+        ->where('siswa_id', (int) $siswa_id)
+        ->order_by('id', 'ASC')
+        ->get($this->table)
+        ->result();
+
+    $result = [];
+
+    foreach ($rows as $row) {
+
+        $result[$row->jenis_berkas] = $row;
+
+    }
+
+    return $result;
+}
+
+
+/**
+ * =========================================================
+ * AMBIL BERKAS BERDASARKAN ID + SISWA
+ * =========================================================
+ *
+ * Untuk keamanan siswa:
+ * ID berkas harus sekaligus milik siswa
+ * yang sedang login.
+ */
+public function get_berkas_by_id_siswa($id, $siswa_id)
+{
+    return $this->db
+        ->where('id', (int) $id)
+        ->where('siswa_id', (int) $siswa_id)
+        ->get($this->table)
+        ->row();
+}
 }

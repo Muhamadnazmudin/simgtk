@@ -289,6 +289,15 @@ $ketua_kelas = $this->db
     </a>
 </li>
 
+<hr class="sidebar-divider">
+
+<li class="nav-item <?= ($active=='berkas'?'active':''); ?>">
+    <a class="nav-link" href="<?= site_url('SiswaBerkas'); ?>">
+        <i class="fas fa-folder-open"></i>
+        <span>Upload Berkas</span>
+    </a>
+</li>
+
 <?php endif; ?>
     <hr class="sidebar-divider">
 
