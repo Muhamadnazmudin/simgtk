@@ -8,6 +8,7 @@ private $sheet_url = 'https://script.google.com/macros/s/AKfycbySQTOl8EZLnAxYaO5
         parent::__construct();
         $this->load->model('Siswa_model');
         $this->load->model('Siswa_jadwal_model');
+        $this->load->model('Sync_queue_model');
         $this->load->database();
     }
 
@@ -316,9 +317,19 @@ $data_baru = $this->db
     ->get()
     ->row_array();
 
-$this->syncGoogleSheet($data_lama, $data_baru);
+// =========================================================
+// TANDAI PERLU SINKRONISASI
+// Data tetap disimpan di MySQL.
+// Google Spreadsheet akan disinkronkan oleh Admin.
+// =========================================================
 
-$this->session->set_flashdata('success', 'Biodata berhasil diperbarui!');
+$this->Sync_queue_model->tandai_pending($siswa->id);
+
+$this->session->set_flashdata(
+    'success',
+    'Biodata berhasil diperbarui dan menunggu sinkronisasi.'
+);
+
 redirect('SiswaDashboard/biodata');
 }
 

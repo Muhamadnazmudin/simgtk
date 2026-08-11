@@ -49,6 +49,7 @@ $group_izin    = in_array($active, ['izin','laporan_izin']);
 $group_setting = in_array($active, ['hari_libur','tahun','jadwal_absensi','Sekolah']);
 $group_qr      = in_array($active, ['absensiqr_siswa','laporan_absensiqr']);
 $group_verval = in_array($active, ['verval_siswa','laporan_verval']);
+$group_sync    = in_array($active, ['sync_google']);
 $group_guru = in_array($active, [
     'data_guru',
     'monitoring_mengajar',
@@ -437,6 +438,27 @@ $group_tutorial = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
+<!-- ==============================
+     SINKRONISASI GOOGLE (ADMIN)
+================================= -->
+<?php if($isAdmin): ?>
+
+<li class="nav-item <?= $group_sync ? 'active' : '' ?>">
+
+    <a
+        class="nav-link"
+        href="<?= site_url('Sync_google') ?>"
+    >
+
+        <i class="fas fa-sync-alt"></i>
+
+        <span>Sinkronisasi Google</span>
+
+    </a>
+
+</li>
+
 <?php endif; ?>
 <!-- ==============================
      BUKU TAMU (ADMIN)

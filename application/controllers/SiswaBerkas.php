@@ -33,7 +33,10 @@ class SiswaBerkas extends CI_Controller
             'Berkas_siswa_model',
             'berkas'
         );
-
+        $this->load->model(
+    'Sync_queue_model',
+    'sync_queue'
+);
         // ==========================================
         // CEK LOGIN SISWA
         // ==========================================
@@ -434,10 +437,13 @@ if (!in_array($current_method, $public_methods)) {
         // ==========================================
 
         // =========================================================
-// SYNC KE GOOGLE SHEET
+// TANDAI PERLU SINKRONISASI
+// =========================================================
+// Berkas sudah aman tersimpan di MySQL.
+// Google Spreadsheet akan disinkronkan oleh Admin.
 // =========================================================
 
-$this->syncBerkasGoogleSheet($siswa_id);
+$this->sync_queue->tandai_pending($siswa_id);
 
 
 // =========================================================
@@ -446,7 +452,7 @@ $this->syncBerkasGoogleSheet($siswa_id);
 
 $this->session->set_flashdata(
     'success',
-    $pesan
+    $pesan . ' Data menunggu sinkronisasi Google Spreadsheet.'
 );
 
 redirect(
@@ -594,49 +600,79 @@ redirect(
     // =========================================================
 
     public function hapus($id)
-    {
-        $siswa_id =
-            (int) $this->session->userdata('siswa_id');
+{
+    $siswa_id = (int) $this->session->userdata('siswa_id');
 
-        $id = (int) $id;
+    $id = (int) $id;
 
-        if (!$siswa_id) {
-            redirect('SiswaAuth');
-            return;
-        }
+    // =========================================================
+    // CEK LOGIN
+    // =========================================================
 
-        $berkas =
-            $this->berkas
-                ->get_berkas_by_id_siswa(
-                    $id,
-                    $siswa_id
-                );
+    if (!$siswa_id) {
+        redirect('SiswaAuth');
+        return;
+    }
 
-        if (!$berkas) {
-            show_404();
-            return;
-        }
+    // =========================================================
+    // AMBIL BERKAS
+    // =========================================================
 
-        $file =
-            FCPATH .
-            'uploads/berkas_siswa/' .
-            $siswa_id .
-            '/' .
-            $berkas->nama_file;
-
-        if (is_file($file)) {
-            @unlink($file);
-        }
-
-        $this->berkas->delete($id);
-
-        $this->session->set_flashdata(
-            'success',
-            'Berkas berhasil dihapus.'
+    $berkas = $this->berkas
+        ->get_berkas_by_id_siswa(
+            $id,
+            $siswa_id
         );
 
-        redirect('SiswaBerkas');
+    if (!$berkas) {
+        show_404();
+        return;
     }
+
+    // =========================================================
+    // LOKASI FILE
+    // =========================================================
+
+    $file = FCPATH
+        . 'uploads/berkas_siswa/'
+        . $siswa_id
+        . '/'
+        . $berkas->nama_file;
+
+    // =========================================================
+    // HAPUS FILE FISIK
+    // =========================================================
+
+    if (is_file($file)) {
+        @unlink($file);
+    }
+
+    // =========================================================
+    // HAPUS DATA DARI DATABASE
+    // =========================================================
+
+    $this->berkas->delete($id);
+
+    // =========================================================
+    // TANDAI SISWA PERLU SINKRONISASI
+    // =========================================================
+    // Google Spreadsheet tidak langsung diubah.
+    // Admin akan melakukan Sync nanti.
+    // =========================================================
+
+    $this->sync_queue->tandai_pending($siswa_id);
+
+    // =========================================================
+    // PESAN
+    // =========================================================
+
+    $this->session->set_flashdata(
+        'success',
+        'Berkas berhasil dihapus dan menunggu sinkronisasi Google Spreadsheet.'
+    );
+
+    redirect('SiswaBerkas');
+}
 
 
     // =========================================================
