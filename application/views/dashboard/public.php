@@ -1,1007 +1,3664 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- ===== TITLE ===== -->
-  <title>SimSGTK – Sistem Informasi Siswa & GTK</title>
+    <meta charset="utf-8">
 
-  <!-- ===== BASIC META ===== -->
-  <meta name="description" content="SimSGTK adalah aplikasi manajemen sekolah modern untuk pengelolaan data siswa, guru, absensi, mutasi, dan administrasi pendidikan secara terintegrasi.">
-  <meta name="theme-color" content="#007bff">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
 
-  <!-- ===== OPEN GRAPH (WHATSAPP, FB, TELEGRAM) ===== -->
-  <meta property="og:title" content="SimSGTK – Sistem Informasi Siswa & GTK">
-  <meta property="og:description" content="Aplikasi manajemen sekolah terpadu untuk pengelolaan siswa, guru, absensi, mutasi, dan administrasi pendidikan secara cepat, rapi, dan modern.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="<?= base_url() ?>">
-  <meta property="og:image" content="<?= base_url('assets/pwa/icon-512.png') ?>">
-  <meta property="og:image:width" content="512">
-  <meta property="og:image:height" content="512">
+    <title>SimSGTK – Sistem Informasi Siswa & GTK</title>
 
-  <!-- ===== TWITTER CARD (OPSIONAL) ===== -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SimSGTK – Sistem Informasi Siswa & GTK">
-  <meta name="twitter:description" content="Solusi digital sekolah untuk pengelolaan data siswa dan tenaga kependidikan secara efisien.">
-  <meta name="twitter:image" content="<?= base_url('assets/pwa/icon-512.png') ?>">
+    <meta name="description"
+          content="SimSGTK adalah aplikasi manajemen sekolah modern untuk pengelolaan data siswa, guru, absensi, mutasi, dan administrasi pendidikan secara terintegrasi.">
 
-  <!-- ===== ICON ===== -->
-  <link rel="icon" href="<?= base_url('assets/pwa/favicon.ico') ?>" sizes="any">
-  <link rel="icon" type="image/png" sizes="192x192" href="<?= base_url('assets/pwa/icon-192.png') ?>">
-  <link rel="icon" type="image/png" sizes="512x512" href="<?= base_url('assets/pwa/icon-512.png') ?>">
-  <link rel="apple-touch-icon" href="<?= base_url('assets/pwa/icon-192.png') ?>">
+    <meta name="theme-color"
+          content="#007bff">
 
-  <!-- ===== PWA ===== -->
-  <link rel="manifest" href="<?= base_url('assets/pwa/manifest.json') ?>">
 
-  <!-- ===== CSS ===== -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ================= OPEN GRAPH ================= -->
 
-  <style>
-  :root {
-  /* ===== COLOR SYSTEM ===== */
-  --primary: #0d6efd;
-  --primary-dark: #0b5ed7;
+    <meta property="og:title"
+          content="SimSGTK – Sistem Informasi Siswa & GTK">
 
-  /* Light */
-  --bg-light: #f5f7fb;
-  --card-light: #ffffff;
-  --text-light: #212529;
-  --muted-light: #6c757d;
-  --border-light: #dee2e6;
+    <meta property="og:description"
+          content="Aplikasi manajemen sekolah terpadu untuk pengelolaan siswa, guru, absensi, mutasi, dan administrasi pendidikan.">
 
-  /* Dark */
-  --bg-dark: #12141c;
-  --card-dark: #1c1f2b;
-  --text-dark: #f1f3f5;
-  --muted-dark: #adb5bd;
-  --border-dark: #343a55;
+    <meta property="og:type"
+          content="website">
 
-  --radius: 12px;
-  --shadow: 0 4px 14px rgba(0,0,0,.08);
+    <meta property="og:url"
+          content="<?= base_url() ?>">
+
+    <meta property="og:image"
+          content="<?= base_url('assets/pwa/icon-512.png') ?>">
+
+
+    <!-- ================= ICON ================= -->
+
+    <link rel="icon"
+          href="<?= base_url('assets/pwa/favicon.ico') ?>">
+
+    <link rel="icon"
+          type="image/png"
+          sizes="192x192"
+          href="<?= base_url('assets/pwa/icon-192.png') ?>">
+
+    <link rel="icon"
+          type="image/png"
+          sizes="512x512"
+          href="<?= base_url('assets/pwa/icon-512.png') ?>">
+
+    <link rel="apple-touch-icon"
+          href="<?= base_url('assets/pwa/icon-192.png') ?>">
+
+
+    <!-- ================= PWA ================= -->
+
+    <link rel="manifest"
+          href="<?= base_url('assets/pwa/manifest.json') ?>">
+
+
+    <!-- ================= CSS ================= -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+
+<style>
+
+/* =====================================================
+   ROOT
+===================================================== */
+
+:root {
+
+    --primary: #0d6efd;
+    --primary-dark: #0b5ed7;
+
+    --bg-light: #f5f7fb;
+    --card-light: #ffffff;
+    --text-light: #212529;
+    --muted-light: #6c757d;
+    --border-light: #dee2e6;
+
+    --bg-dark: #12141c;
+    --card-dark: #1c1f2b;
+    --text-dark: #f1f3f5;
+    --muted-dark: #adb5bd;
+    --border-dark: #343a55;
+
+    --radius: 18px;
+
+    --shadow:
+        0 6px 20px rgba(0,0,0,.08);
+
 }
+
+
+/* =====================================================
+   BODY
+===================================================== */
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
+
 
 body {
-  margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: var(--bg-light);
-  color: var(--text-light);
-  transition: background .25s, color .25s;
+
+    margin: 0;
+
+    font-family:
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        sans-serif;
+
+    background: var(--bg-light);
+
+    color: var(--text-light);
+
+    transition:
+        background .25s,
+        color .25s;
+
 }
+
 
 body.dark-mode {
-  background: var(--bg-dark);
-  color: var(--text-dark);
+
+    background: var(--bg-dark);
+
+    color: var(--text-dark);
+
 }
 
-/* ================= HEADER ================= */
-header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  box-shadow: 0 4px 15px rgba(13,110,253,.35);
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.public-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d6efd,
+            #0b5ed7
+        );
+
+    box-shadow:
+        0 4px 18px rgba(13,110,253,.35);
+
 }
 
-.navbar {
-  padding: .8rem 0;
+
+.public-header .navbar {
+
+    padding:
+        .8rem 0;
+
 }
+
 
 .navbar-brand {
-  font-weight: 700;
-  font-size: 1.3rem;
+
+    font-weight: 700;
+
+    font-size: 1.25rem;
+
 }
+
 
 .nav-link {
-  color: rgba(255,255,255,.9) !important;
-  border-radius: 8px;
-  padding: .5rem .9rem !important;
+
+    color:
+        rgba(255,255,255,.9)
+        !important;
+
+    border-radius: 9px;
+
+    padding:
+        .55rem .8rem
+        !important;
+
 }
+
 
 .nav-link:hover {
-  background: rgba(255,255,255,.15);
+
+    background:
+        rgba(255,255,255,.15);
+
 }
 
-/* Toggle */
-.btn-theme-toggle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.4);
-  background: rgba(255,255,255,.2);
-  color: #fff;
-}
 
-/* ================= CONTENT ================= */
-main {
-  padding: 2rem 0;
-}
+/* =====================================================
+   LOGIN
+===================================================== */
 
-.welcome-section h3 {
-  font-weight: 700;
-  color: var(--primary);
-}
+.btn-login {
 
-body.dark-mode .welcome-section h3 {
-  color: #8bb4ff;
-}
+    border: none;
 
-#currentTime {
-  color: var(--muted-light);
-}
+    background: #fff;
 
-body.dark-mode #currentTime {
-  color: var(--muted-dark);
-}
+    color: #0d6efd;
 
-/* ================= CARD ================= */
-.card {
-  border-radius: var(--radius);
-  background: var(--card-light);
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow);
-}
+    padding:
+        9px 16px;
 
-body.dark-mode .card {
-  background: var(--card-dark);
-  border-color: var(--border-dark);
-}
-
-.card h5 {
-  font-weight: 600;
-  color: var(--primary);
-}
-
-body.dark-mode .card h5 {
-  color: #9bbcff;
-}
-
-/* ================= TABLE ================= */
-.table-responsive {
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.table {
-  margin: 0;
-}
-
-.table thead th {
-  background: #eef2ff;
-  font-size: .8rem;
-  text-transform: uppercase;
-  color: #1e293b;
-  border-bottom: 2px solid var(--border-light);
-}
-
-body.dark-mode .table thead th {
-  background: #232844;
-  color: #ffffff;
-  border-bottom-color: var(--border-dark);
-}
-
-.table td {
-  border-bottom: 1px solid var(--border-light);
-}
-
-body.dark-mode .table td {
-  color: var(--text-dark);
-  border-bottom-color: var(--border-dark);
-}
-
-.table tbody tr:hover {
-  background: rgba(13,110,253,.06);
-}
-
-body.dark-mode .table tbody tr:hover {
-  background: rgba(13,110,253,.2);
-}
-
-.table-secondary {
-  background: rgba(13,110,253,.12);
-  font-weight: 600;
-}
-
-body.dark-mode .table-secondary {
-  background: rgba(13,110,253,.3);
-}
-
-/* ================= BUTTON ================= */
-.btn-success {
-  background: var(--primary);
-  border: none;
-}
-
-.btn-success:hover {
-  background: var(--primary-dark);
-}
-
-/* ================= FOOTER ================= */
-footer {
-  margin-top: 4rem;
-  padding: 1.5rem 0;
-  background: var(--card-light);
-  border-top: 1px solid var(--border-light);
-}
-
-body.dark-mode footer {
-  background: var(--card-dark);
-  border-top-color: var(--border-dark);
-}
-
-/* ================= CHATBOT ================= */
-#chatbot {
-  background: var(--card-light);
-  border-radius: var(--radius);
-  border: 1px solid var(--border-light);
-}
-
-body.dark-mode #chatbot {
-  background: var(--card-dark);
-  border-color: var(--border-dark);
-}
-
-#chatbot-header {
-  background: var(--primary);
-  color: #fff;
-}
-
-.bot-msg {
-  background: #e7f1ff;
-  color: #084298;
-}
-
-body.dark-mode .bot-msg {
-  background: #2a3158;
-  color: #dbe4ff;
-}
-
-.user-msg {
-  background: var(--primary);
-}
-/* ================= DARK MODE TABLE FIX ================= */
-body.dark-mode table {
-  background-color: transparent;
-}
-
-body.dark-mode .table {
-  color: #f1f3f5;
-}
-
-body.dark-mode .table thead th {
-  background-color: #1f253a !important;
-  color: #ffffff !important;
-  border-bottom: 2px solid #3d4566 !important;
-}
-
-body.dark-mode .table tbody td {
-  background-color: #161b2e !important;
-  color: #e9ecef !important;
-  border-color: #2f3658 !important;
-}
-
-body.dark-mode .table tbody tr:hover td {
-  background-color: rgba(13,110,253,0.25) !important;
-}
-
-/* Baris TOTAL */
-body.dark-mode .table-secondary td {
-  background-color: #24305e !important;
-  color: #ffffff !important;
-  font-weight: 700;
-}
-
-/* Jika tabel kosong */
-body.dark-mode .table td.text-muted {
-  color: #adb5bd !important;
-}
-
-/* ================= CHATBOT FIX TOTAL ================= */
-#chatbot {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 340px;
-  max-height: 520px;
-  background: var(--card-light);
-  border-radius: 14px;
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 9999;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 12px 30px rgba(0,0,0,.25);
-}
-
-body.dark-mode #chatbot {
-  background: var(--card-dark);
-  border-color: var(--border-dark);
-}
-
-/* HEADER */
-#chatbot-header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: #fff;
-  padding: .7rem 1rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* BODY */
-#chatbot-body {
-  flex: 1;
-  padding: .8rem;
-  overflow-y: auto;
-  background: transparent;
-  font-size: .85rem;
-}
-
-/* FOOTER */
-#chatbot-footer {
-  display: flex;
-  border-top: 1px solid var(--border-light);
-  background: inherit;
-}
-
-body.dark-mode #chatbot-footer {
-  border-top-color: var(--border-dark);
-}
-
-/* INPUT */
-#chatbot-input {
-  flex: 1;
-  border: none;
-  padding: .6rem .8rem;
-  outline: none;
-  background: transparent;
-  color: inherit;
-  font-size: .85rem;
-}
-
-/* SEND BUTTON */
-#chatbot-send {
-  border: none;
-  padding: 0 .9rem;
-  background: var(--primary);
-  color: #fff;
-  cursor: pointer;
-}
-
-/* CHAT BUBBLE */
-.bot-msg {
-  background: #e7f1ff;
-  color: #084298;
-  padding: .55rem .75rem;
-  border-radius: 12px 12px 12px 4px;
-  margin-bottom: .5rem;
-  max-width: 85%;
-}
-
-body.dark-mode .bot-msg {
-  background: #2a3158;
-  color: #dbe4ff;
-}
-
-.user-msg {
-  background: var(--primary);
-  color: #fff;
-  padding: .55rem .75rem;
-  border-radius: 12px 12px 4px 12px;
-  margin-left: auto;
-  margin-bottom: .5rem;
-  max-width: 85%;
-}
-
-/* FLOAT BUTTON */
-#chatbot-toggle {
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  background: var(--primary);
-  border: none;
-  color: #fff;
-  font-size: 1.3rem;
-  box-shadow: 0 8px 20px rgba(13,110,253,.45);
-}
-/* ================= FLOAT CHAT WRAPPER ================= */
-#chatbot-wrapper {
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  z-index: 99999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Label */
-.chatbot-label {
-  background: var(--card-light);
-  color: var(--text-light);
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: .75rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,.15);
-}
-
-body.dark-mode .chatbot-label {
-  background: var(--card-dark);
-  color: var(--text-dark);
-}
-
-.bot-anim {
-  animation: botWave 2s infinite ease-in-out;
-  transform-origin: center;
-}
-
-@keyframes botWave {
-  0%   { transform: rotate(0deg) scale(1); }
-  25%  { transform: rotate(5deg) scale(1.05); }
-  50%  { transform: rotate(0deg) scale(1); }
-  75%  { transform: rotate(-5deg) scale(1.05); }
-  100% { transform: rotate(0deg) scale(1); }
-}
-.bot-anim {
-  color: #fefdffff; /* biru Bootstrap */
-  animation: botWave 2s infinite ease-in-out;
-}
-.bot-anu {
-  color: #fefdffff; /* biru Bootstrap */
-  animation: botWave 2s infinite ease-in-out;
-}
-body:not(.dark-mode) .bot-anim {
-  color: #0d6efd; /* biru */
-}
-body.dark-mode .bot-anim {
-  color: #f7f7f7ff; /* biru terang */
-}
-/* ================= LOGIN DROPDOWN MOBILE FIX ================= */
-@media (max-width: 576px) {
-
-  /* Tombol login lebih nyaman disentuh */
-  .btn-login {
-    width: 100%;
-    text-align: left;
-    padding: 10px 14px;
     border-radius: 10px;
-  }
 
-  /* Dropdown full-width & tidak kepotong */
-  .dropdown-menu {
-    width: 100%;
-    min-width: unset;
-    margin-top: 8px;
-    border-radius: 12px;
-    box-shadow: 0 12px 25px rgba(0,0,0,.25);
-  }
+    font-weight: 600;
 
-  /* Item dropdown lebih tinggi */
-  .dropdown-item {
-    padding: 12px 16px;
-    font-size: 0.95rem;
-  }
-
-  /* Icon & teks sejajar */
-  .dropdown-item i {
-    width: 24px;
-    text-align: center;
-    margin-right: 8px;
-  }
-
-  /* Pastikan dropdown tidak keluar layar */
-  .navbar .dropdown {
-    width: 100%;
-  }
 }
 
-  </style>
+
+.btn-theme-toggle {
+
+    width: 42px;
+
+    height: 42px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        rgba(255,255,255,.4);
+
+    background:
+        rgba(255,255,255,.18);
+
+    color: #fff;
+
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.public-container {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    padding:
+        30px 15px
+        50px;
+
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.public-hero {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 22px;
+
+    padding: 35px;
+
+    margin-bottom: 30px;
+
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4e73df,
+            #224abe
+        );
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.15);
+
+}
+
+
+.public-hero:after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 250px;
+
+    height: 250px;
+
+    right: -80px;
+
+    top: -100px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.08);
+
+}
+
+
+.public-hero h2 {
+
+    font-weight: 700;
+
+    margin-bottom: 10px;
+
+}
+
+
+.public-hero p {
+
+    margin-bottom: 5px;
+
+    opacity: .9;
+
+}
+
+
+.hero-icon {
+
+    position: relative;
+
+    z-index: 2;
+
+    text-align: right;
+
+    opacity: .25;
+
+}
+
+
+/* =====================================================
+   SUMMARY CARD
+===================================================== */
+
+.summary-card {
+
+    border: none;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    transition: .25s;
+
+    background:
+        var(--card-light);
+
+}
+
+
+.summary-card:hover {
+
+    transform:
+        translateY(-5px);
+
+    box-shadow:
+        0 12px 28px rgba(0,0,0,.15);
+
+}
+
+
+.summary-card .card-body {
+
+    padding: 23px;
+
+}
+
+
+.summary-title {
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .5px;
+
+    color: #888;
+
+}
+
+
+.summary-number {
+
+    font-size: 32px;
+
+    font-weight: 700;
+
+    margin:
+        8px 0;
+
+}
+
+
+.summary-desc {
+
+    font-size: 12px;
+
+    color: #999;
+
+}
+
+
+.summary-icon {
+
+    width: 62px;
+
+    height: 62px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #fff;
+
+    font-size: 25px;
+
+}
+
+
+.icon-green {
+    background: #1cc88a;
+}
+
+.icon-blue {
+    background: #4e73df;
+}
+
+.icon-red {
+    background: #e74a3b;
+}
+
+.icon-info {
+    background: #36b9cc;
+}
+
+.icon-warning {
+    background: #f6c23e;
+}
+
+
+/* =====================================================
+   CONTENT CARD
+===================================================== */
+
+.info-card {
+
+    border: none;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    background:
+        var(--card-light);
+
+}
+
+
+.info-card-header {
+
+    padding:
+        18px 22px;
+
+    border-bottom:
+        1px solid #eee;
+
+}
+
+
+.info-card-title {
+
+    font-weight: 700;
+
+    font-size: 17px;
+
+}
+
+
+.info-card-subtitle {
+
+    font-size: 12px;
+
+    color: #999;
+
+    margin-top: 3px;
+
+}
+
+
+.info-card-body {
+
+    padding: 22px;
+
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.public-table {
+
+    margin-bottom: 0;
+
+}
+
+
+.public-table th {
+
+    font-size: 12px;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+}
+
+
+.public-table td {
+
+    vertical-align: middle;
+
+}
+
+
+.public-table tbody tr {
+
+    transition: .15s;
+
+}
+
+
+.public-table tbody tr:hover {
+
+    background:
+        rgba(13,110,253,.05);
+
+}
+
+
+.stat-badge {
+
+    min-width: 42px;
+
+    border-radius: 20px;
+
+    padding:
+        7px 11px;
+
+}
+
+
+/* =====================================================
+   CHART
+===================================================== */
+
+.chart-box {
+
+    height: 320px;
+
+    position: relative;
+
+}
+
+
+/* =====================================================
+   CLOCK
+===================================================== */
+
+.clock {
+
+    font-size: 34px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+}
+
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+
+body.dark-mode .summary-card,
+body.dark-mode .info-card {
+
+    background:
+        var(--card-dark);
+
+    color:
+        var(--text-dark);
+
+}
+
+
+body.dark-mode .info-card-header {
+
+    border-color:
+        var(--border-dark);
+
+}
+
+
+body.dark-mode .public-table {
+
+    color:
+        #ddd;
+
+}
+
+
+body.dark-mode .public-table thead th {
+
+    background:
+        #232844 !important;
+
+    color:
+        #fff !important;
+
+    border-color:
+        #3d4566 !important;
+
+}
+
+
+body.dark-mode .public-table td {
+
+    background:
+        #161b2e !important;
+
+    color:
+        #e9ecef !important;
+
+    border-color:
+        #2f3658 !important;
+
+}
+
+
+body.dark-mode .public-table tbody tr:hover td {
+
+    background:
+        rgba(13,110,253,.18) !important;
+
+}
+
+
+body.dark-mode .table-secondary td {
+
+    background:
+        #24305e !important;
+
+    color:
+        #fff !important;
+
+}
+
+
+body.dark-mode .summary-title {
+
+    color:
+        #aaa;
+
+}
+
+
+body.dark-mode .summary-desc {
+
+    color:
+        #aaa;
+
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.public-footer {
+
+    margin-top: 20px;
+
+    padding:
+        25px 15px;
+
+    text-align: center;
+
+    background:
+        var(--card-light);
+
+    border-top:
+        1px solid
+        var(--border-light);
+
+}
+
+
+body.dark-mode .public-footer {
+
+    background:
+        var(--card-dark);
+
+    border-color:
+        var(--border-dark);
+
+}
+
+
+/* =====================================================
+   CHATBOT
+===================================================== */
+
+#chatbot {
+
+    position: fixed;
+
+    bottom: 90px;
+
+    right: 20px;
+
+    width: 340px;
+
+    max-height: 520px;
+
+    background:
+        var(--card-light);
+
+    border:
+        1px solid
+        var(--border-light);
+
+    border-radius: 14px;
+
+    display: none;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+    z-index: 9999;
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.25);
+
+}
+
+
+body.dark-mode #chatbot {
+
+    background:
+        var(--card-dark);
+
+    border-color:
+        var(--border-dark);
+
+}
+
+
+#chatbot-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d6efd,
+            #0b5ed7
+        );
+
+    color: #fff;
+
+    padding:
+        .7rem 1rem;
+
+    font-weight: 700;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+#chatbot-close {
+
+    border: none;
+
+    background: transparent;
+
+    color: #fff;
+
+    font-size: 22px;
+
+}
+
+
+#chatbot-body {
+
+    flex: 1;
+
+    padding: .8rem;
+
+    overflow-y: auto;
+
+    font-size: .85rem;
+
+}
+
+
+#chatbot-footer {
+
+    display: flex;
+
+    border-top:
+        1px solid
+        var(--border-light);
+
+}
+
+
+#chatbot-input {
+
+    flex: 1;
+
+    border: none;
+
+    padding:
+        .7rem;
+
+    outline: none;
+
+    background: transparent;
+
+    color: inherit;
+
+}
+
+
+#chatbot-send {
+
+    border: none;
+
+    padding:
+        0 15px;
+
+    background:
+        #0d6efd;
+
+    color: #fff;
+
+}
+
+
+.bot-msg {
+
+    background:
+        #e7f1ff;
+
+    color:
+        #084298;
+
+    padding:
+        .6rem .75rem;
+
+    border-radius:
+        12px 12px 12px 4px;
+
+    margin-bottom:
+        .5rem;
+
+    max-width:
+        85%;
+
+}
+
+
+.user-msg {
+
+    background:
+        #0d6efd;
+
+    color: #fff;
+
+    padding:
+        .6rem .75rem;
+
+    border-radius:
+        12px 12px 4px 12px;
+
+    margin-left:
+        auto;
+
+    margin-bottom:
+        .5rem;
+
+    max-width:
+        85%;
+
+}
+
+
+#chatbot-wrapper {
+
+    position: fixed;
+
+    right: 22px;
+
+    bottom: 22px;
+
+    z-index: 9998;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 6px;
+
+}
+
+
+#chatbot-toggle {
+
+    width: 58px;
+
+    height: 58px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background:
+        #0d6efd;
+
+    color: #fff;
+
+    font-size: 21px;
+
+    box-shadow:
+        0 8px 20px
+        rgba(13,110,253,.45);
+
+}
+
+
+.chatbot-label {
+
+    background:
+        var(--card-light);
+
+    color:
+        var(--text-light);
+
+    padding:
+        4px 10px;
+
+    border-radius:
+        20px;
+
+    font-size: 11px;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.15);
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:767px){
+
+    .public-container {
+
+        padding:
+            20px 12px
+            40px;
+
+    }
+
+
+    .public-hero {
+
+        padding:
+            25px 20px;
+
+    }
+
+
+    .public-hero h2 {
+
+        font-size:
+            23px;
+
+    }
+
+
+    .hero-icon {
+
+        display: none;
+
+    }
+
+
+    .summary-number {
+
+        font-size:
+            27px;
+
+    }
+
+
+    .chart-box {
+
+        height:
+            270px;
+
+    }
+
+
+    #chatbot {
+
+        width:
+            calc(100% - 30px);
+
+        right:
+            15px;
+
+    }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
-<!-- ==================== HEADER ==================== -->
-<header>
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
 
-      <!-- Brand -->
-      <a class="navbar-brand" href="#">
-        <i class="fas fa-chart-line"></i> Dashboard Mutasi Siswa
-      </a>
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
-      <!-- Toggle button -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+<header class="public-header">
 
-      <!-- Menu -->
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="<?= base_url('index.php/public_mutasi') ?>">
-              <i class="fas fa-users"></i> Siswa Mutasi
-            </a>
-          </li>
+<nav class="navbar navbar-expand-lg navbar-dark">
 
-             <!-- MENU CARI NISN -->
-    <li class="nav-item">
-      <a class="nav-link" href="<?= base_url('index.php/cari_nisn') ?>">
-        <i class="fas fa-id-card"></i> Cari NISN
-      </a>
-    </li>
-    
-          <li class="nav-item">
-  <a class="nav-link"
-     href="<?= site_url('buku_tamu/daftar_hari_ini') ?>">
-    <i class="fas fa-clipboard-list"></i> Buku Tamu
-  </a>
+<div class="container-fluid px-3">
+
+
+<a class="navbar-brand"
+   href="<?= base_url() ?>">
+
+    <i class="fas fa-chart-line mr-2"></i>
+
+    SimSGTK
+
+</a>
+
+
+<button class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navMenu">
+
+    <span class="navbar-toggler-icon"></span>
+
+</button>
+
+
+<div class="collapse navbar-collapse"
+     id="navMenu">
+
+
+<ul class="navbar-nav me-auto">
+
+
+<li class="nav-item">
+
+<a class="nav-link"
+   href="<?= base_url('index.php/public_mutasi') ?>">
+
+    <i class="fas fa-users mr-1"></i>
+
+    Siswa Mutasi
+
+</a>
+
 </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?= base_url('index.php/izin/scan') ?>">
-              <i class="fas fa-qrcode"></i> Izin Keluar
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?= base_url('index.php/AbsensiQR/scan') ?>">
-              <i class="fas fa-qrcode"></i> Absensi QR
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?= base_url('index.php/DashboardMBG?tanggal='.date('Y-m-d')) ?>">
-              <i class="fas fa-chart-bar"></i> Dashboard MBG
-            </a>
-          </li>
-          
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="<?= base_url('index.php/scrapijazah') ?>">
-              <i class="fas fa-graduation-cap"></i> Scrap Ijazah PDF
-            </a>
-          </li> -->
-        </ul>
 
-        <!-- Right side actions -->
-        <div class="d-flex align-items-center gap-2">
 
-          <!-- Dark Mode Toggle -->
-          <button class="btn-theme-toggle" id="toggleDark" title="Ganti Tema">
-            <i class="fas fa-moon"></i>
-          </button>
+<li class="nav-item">
 
-          <!-- Login dropdown -->
-          <div class="dropdown">
-            <button class="btn-login dropdown-toggle" type="button" data-bs-toggle="dropdown">
-              <i class="fas fa-sign-in-alt"></i> Login
-            </button>
+<a class="nav-link"
+   href="<?= base_url('index.php/cari_nisn') ?>">
 
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li>
-                <a class="dropdown-item" href="<?= base_url('index.php/auth/login') ?>">
-                  <i class="fas fa-user-shield text-primary"></i> Login Admin
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="<?= base_url('index.php/SiswaAuth') ?>">
-                  <i class="fas fa-user-graduate text-success"></i> Login Siswa
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="<?= base_url('index.php/auth/login') ?>">
-                  <i class="fas fa-chalkboard-teacher text-warning"></i> Login Guru/Wali Kelas
-                </a>
-              </li>
-            </ul>
-          </div>
+    <i class="fas fa-id-card mr-1"></i>
 
-        </div>
-      </div>
+    Cari NISN
 
-    </div>
-  </nav>
+</a>
+
+</li>
+
+
+<li class="nav-item">
+
+<a class="nav-link"
+   href="<?= site_url('buku_tamu/daftar_hari_ini') ?>">
+
+    <i class="fas fa-clipboard-list mr-1"></i>
+
+    Buku Tamu
+
+</a>
+
+</li>
+
+
+<li class="nav-item">
+
+<a class="nav-link"
+   href="<?= base_url('index.php/izin/scan') ?>">
+
+    <i class="fas fa-qrcode mr-1"></i>
+
+    Izin Keluar
+
+</a>
+
+</li>
+
+
+<li class="nav-item">
+
+<a class="nav-link"
+   href="<?= base_url('index.php/AbsensiQR/scan') ?>">
+
+    <i class="fas fa-qrcode mr-1"></i>
+
+    Absensi QR
+
+</a>
+
+</li>
+
+
+<li class="nav-item">
+
+<a class="nav-link"
+   href="<?= base_url(
+       'index.php/DashboardMBG?tanggal='
+       . date('Y-m-d')
+   ) ?>">
+
+    <i class="fas fa-chart-bar mr-1"></i>
+
+    Dashboard MBG
+
+</a>
+
+</li>
+
+
+</ul>
+
+
+<div class="d-flex align-items-center gap-2">
+
+
+<button
+    class="btn-theme-toggle"
+    id="toggleDark"
+    title="Ganti Tema">
+
+    <i class="fas fa-moon"></i>
+
+</button>
+
+
+<div class="dropdown">
+
+
+<button
+    class="btn-login dropdown-toggle"
+    type="button"
+    data-bs-toggle="dropdown">
+
+    <i class="fas fa-sign-in-alt mr-1"></i>
+
+    Login
+
+</button>
+
+
+<ul class="dropdown-menu dropdown-menu-end">
+
+
+<li>
+
+<a class="dropdown-item"
+   href="<?= base_url('index.php/auth/login') ?>">
+
+    <i class="fas fa-user-shield text-primary mr-2"></i>
+
+    Login Admin
+
+</a>
+
+</li>
+
+
+<li>
+
+<a class="dropdown-item"
+   href="<?= base_url('index.php/SiswaAuth') ?>">
+
+    <i class="fas fa-user-graduate text-success mr-2"></i>
+
+    Login Siswa
+
+</a>
+
+</li>
+
+
+<li>
+
+<a class="dropdown-item"
+   href="<?= base_url('index.php/auth/login') ?>">
+
+    <i class="fas fa-chalkboard-teacher text-warning mr-2"></i>
+
+    Login Guru / Wali Kelas
+
+</a>
+
+</li>
+
+
+</ul>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+</nav>
+
 </header>
 
-<!-- ==================== MAIN CONTENT ==================== -->
-<!-- ==================== MAIN CONTENT ==================== -->
-<main class="container my-5">
 
-    <!-- HEADER -->
-    <div class="text-center mb-5">
+<!-- =====================================================
+     MAIN
+===================================================== -->
 
-        <div class="welcome-section">
+<main class="public-container">
 
-            <h3 class="fw-bold">
-                Selamat Datang di Sistem Mutasi Siswa 👋
-            </h3>
 
-            <p id="currentTime">
-                Data per <strong>-</strong>
-            </p>
+<!-- HERO -->
 
-        </div>
+<div class="public-hero">
 
-        <h2 class="section-title mt-4 mb-2">
+<div class="row align-items-center">
 
-            Statistik Mutasi Siswa
 
-        </h2>
+<div class="col-lg-9">
 
-        <h5 class="text-primary fw-semibold">
 
-            Tahun Ajaran
-            <?= $tahun_aktif->tahun ?>
+<h2>
 
-        </h5>
+Selamat Datang di Sistem Mutasi Siswa 👋
 
-        <p class="text-muted">
+</h2>
 
-            Menampilkan statistik mutasi siswa berdasarkan
-            <strong>Tahun Ajaran Aktif</strong>.
 
-        </p>
+<p>
 
-    </div>
+Dashboard informasi siswa dan mutasi sekolah
 
-    <?php
+</p>
 
-    $this->load->view('dashboard/index', [
 
-        'rombel'  => $rombel,
-        'aktif'   => $aktif,
-        'keluar'  => $keluar,
-        'lulus'   => $lulus
+<small>
 
-    ]);
+<i class="fas fa-calendar-alt mr-1"></i>
 
-    ?>
+Tahun Ajaran Aktif:
 
-</main>
-<!-- ===============================
- Siswa Aktif Berdasarkan Jenis Kelamin
-=============================== -->
-<div class="card shadow-sm mt-4">
-  <div class="card-body">
-    <h5>
-      <i class="fas fa-venus-mars"></i>
-      Siswa Aktif Berdasarkan Jenis Kelamin
-    </h5>
+<strong>
 
-    <div class="table-responsive mt-3">
-      <table class="table table-sm align-middle mb-0">
-        <thead>
-          <tr>
-            <th>Tingkat</th>
-            <th>Laki-laki</th>
-            <th>Perempuan</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php 
-          $label = ['x'=>'X', 'xi'=>'XI', 'xii'=>'XII'];
-          foreach ($label as $k => $nama): ?>
-          <tr>
-            <td><strong>Kelas <?= $nama ?></strong></td>
-            <td><?= $gender_tingkat[$k]['l'] ?></td>
-            <td><?= $gender_tingkat[$k]['p'] ?></td>
-            <td class="fw-bold"><?= $gender_tingkat[$k]['total'] ?></td>
-          </tr>
-          <?php endforeach; ?>
+<?= isset($tahun_aktif) && $tahun_aktif
+    ? htmlspecialchars($tahun_aktif->tahun)
+    : '-'
+?>
 
-          <tr class="table-secondary">
-            <td class="text-end">Total</td>
-            <td><?= $gender_tingkat['total']['l'] ?></td>
-            <td><?= $gender_tingkat['total']['p'] ?></td>
-            <td><?= $gender_tingkat['total']['total'] ?></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+</strong>
+
+</small>
+
+
 </div>
 
-  <!-- Tabel Jumlah Siswa per Rombel -->
-  <div class="card shadow-sm mt-5">
-    <div class="card-body">
-      <h5>
-        <i class="fas fa-users"></i> Jumlah Siswa per Rombongan Belajar
-      </h5>
 
-      <div class="table-responsive">
-        <table class="table table-sm mb-0 align-middle">
-          <thead>
-            <tr>
-              <th style="width:50px">No</th>
-              <th>Nama Kelas</th>
-              <th>L</th>
-              <th>P</th>
-              <th>Total</th>
-              <th>Download</th>
-              <th>Jumlah Download</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php 
-              $no = 1; 
-              $sumL = 0;
-              $sumP = 0;
-              $sumTotal = 0;
-              
-              if (!empty($per_rombel)):
-                foreach($per_rombel as $r):
-                  $sumL += $r->laki;
-                  $sumP += $r->perempuan;
-                  $sumTotal += $r->total;
+<div class="col-lg-3 hero-icon">
 
-                  $kelas = $this->db->get_where('kelas', ['nama' => $r->nama_kelas])->row();
-                  $kelas_id = $kelas ? $kelas->id : 0;
-                  $count = isset($kelas->download_count) ? (int)$kelas->download_count : 0;
-            ?>
-              <tr>
-                <td><?= $no++; ?></td>
-                <td class="text-start"><?= $r->nama_kelas; ?></td>
-                <td><?= $r->laki; ?></td>
-                <td><?= $r->perempuan; ?></td>
-                <td class="fw-bold"><?= $r->total; ?></td>
-                <td>
-                  <?php if ($kelas_id): ?>
-                    <a href="<?= base_url('index.php/dashboard/download_excel/'.$kelas_id) ?>" 
-                       class="btn btn-sm btn-success">
-                       <i class="fas fa-file-excel"></i> Download
-                    </a>
-                  <?php else: ?>
-                    <span class="text-muted">-</span>
-                  <?php endif; ?>
-                </td>
-                <td><?= $count > 0 ? $count . 'x download' : '-' ?></td>
-              </tr>
-            <?php 
-                endforeach;
-            ?>
-              <!-- Baris Total -->
-              <tr class="table-secondary">
-                <td colspan="2" class="text-end">Jumlah Keseluruhan</td>
-                <td><?= $sumL; ?></td>
-                <td><?= $sumP; ?></td>
-                <td><?= $sumTotal; ?></td>
-                <td colspan="2"></td>
-              </tr>
-            <?php else: ?>
-              <tr>
-                <td colspan="7" class="text-center text-muted">Belum ada data siswa aktif.</td>
-              </tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+<i class="fas fa-chart-line fa-5x"></i>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     SUMMARY
+===================================================== -->
+
+<div class="row">
+
+
+<!-- AKTIF -->
+
+<div class="col-xl-3 col-md-6 mb-4">
+
+<div class="card summary-card shadow h-100">
+
+<div class="card-body">
+
+
+<div class="d-flex justify-content-between align-items-center">
+
+
+<div>
+
+<div class="summary-title">
+
+Siswa Aktif
+
+</div>
+
+
+<div class="summary-number text-success">
+
+<?= number_format(
+    isset($aktif['total'])
+        ? $aktif['total']
+        : 0,
+    0,
+    ',',
+    '.'
+) ?>
+
+</div>
+
+
+<div class="summary-desc">
+
+Tahun ajaran aktif
+
+</div>
+
+</div>
+
+
+<div class="summary-icon icon-green">
+
+<i class="fas fa-user-graduate"></i>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- MASUK -->
+
+<div class="col-xl-3 col-md-6 mb-4">
+
+<div class="card summary-card shadow h-100">
+
+<div class="card-body">
+
+
+<div class="d-flex justify-content-between align-items-center">
+
+
+<div>
+
+<div class="summary-title">
+
+Siswa Masuk
+
+</div>
+
+
+<div class="summary-number text-info">
+
+<?= number_format(
+    isset($masuk['total'])
+        ? $masuk['total']
+        : 0,
+    0,
+    ',',
+    '.'
+) ?>
+
+</div>
+
+
+<div class="summary-desc">
+
+Mutasi masuk
+
+</div>
+
+</div>
+
+
+<div class="summary-icon icon-info">
+
+<i class="fas fa-door-open"></i>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- KELUAR -->
+
+<div class="col-xl-3 col-md-6 mb-4">
+
+<div class="card summary-card shadow h-100">
+
+<div class="card-body">
+
+
+<div class="d-flex justify-content-between align-items-center">
+
+
+<div>
+
+<div class="summary-title">
+
+Siswa Keluar
+
+</div>
+
+
+<div class="summary-number text-danger">
+
+<?= number_format(
+    isset($keluar['total'])
+        ? $keluar['total']
+        : 0,
+    0,
+    ',',
+    '.'
+) ?>
+
+</div>
+
+
+<div class="summary-desc">
+
+Mutasi keluar
+
+</div>
+
+</div>
+
+
+<div class="summary-icon icon-red">
+
+<i class="fas fa-door-closed"></i>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ROMBEL -->
+
+<div class="col-xl-3 col-md-6 mb-4">
+
+<div class="card summary-card shadow h-100">
+
+<div class="card-body">
+
+
+<div class="d-flex justify-content-between align-items-center">
+
+
+<div>
+
+<div class="summary-title">
+
+Jumlah Rombel
+
+</div>
+
+
+<div class="summary-number text-warning">
+
+<?= isset($rombel['total'])
+    ? $rombel['total']
+    : 0
+?>
+
+</div>
+
+
+<div class="summary-desc">
+
+Rombel aktif
+
+</div>
+
+</div>
+
+
+<div class="summary-icon icon-warning">
+
+<i class="fas fa-school"></i>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     ROMBEL + SISWA AKTIF
+===================================================== -->
+
+<div class="row">
+
+
+<div class="col-lg-6 mb-4">
+
+<div class="card info-card shadow h-100">
+
+
+<div class="info-card-header">
+
+
+<div class="info-card-title text-primary">
+
+<i class="fas fa-school mr-2"></i>
+
+Jumlah Rombel / Kelas
+
+</div>
+
+
+<div class="info-card-subtitle">
+
+Distribusi rombel berdasarkan tingkat
+
+</div>
+
+
+</div>
+
+
+<div class="info-card-body">
+
+
+<div class="table-responsive">
+
+
+<table class="table table-bordered public-table">
+
+
+<thead>
+
+<tr>
+
+<th>Tingkat</th>
+
+<th class="text-center">Jumlah</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+<tr>
+
+<td>Kelas X</td>
+
+<td class="text-center">
+
+<?= isset($rombel['x'])
+    ? $rombel['x']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>Kelas XI</td>
+
+<td class="text-center">
+
+<?= isset($rombel['xi'])
+    ? $rombel['xi']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>Kelas XII</td>
+
+<td class="text-center">
+
+<?= isset($rombel['xii'])
+    ? $rombel['xii']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<tr class="table-secondary">
+
+<td>
+
+<strong>Total</strong>
+
+</td>
+
+<td class="text-center">
+
+<strong>
+
+<?= isset($rombel['total'])
+    ? $rombel['total']
+    : 0
+?>
+
+</strong>
+
+</td>
+
+</tr>
+
+
+</tbody>
+
+</table>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="col-lg-6 mb-4">
+
+<div class="card info-card shadow h-100">
+
+
+<div class="info-card-header">
+
+
+<div class="info-card-title text-success">
+
+<i class="fas fa-user-graduate mr-2"></i>
+
+Siswa Aktif
+
+</div>
+
+
+<div class="info-card-subtitle">
+
+Peserta didik berdasarkan tingkat
+
+</div>
+
+
+</div>
+
+
+<div class="info-card-body">
+
+
+<div class="table-responsive">
+
+
+<table class="table table-bordered public-table">
+
+
+<thead>
+
+<tr>
+
+<th>Tingkat</th>
+
+<th class="text-center">Jumlah</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+<tr>
+
+<td>Kelas X</td>
+
+<td class="text-center">
+
+<?= isset($aktif['x'])
+    ? $aktif['x']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>Kelas XI</td>
+
+<td class="text-center">
+
+<?= isset($aktif['xi'])
+    ? $aktif['xi']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>Kelas XII</td>
+
+<td class="text-center">
+
+<?= isset($aktif['xii'])
+    ? $aktif['xii']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<tr class="table-secondary">
+
+<td>
+
+<strong>Total</strong>
+
+</td>
+
+<td class="text-center">
+
+<strong>
+
+<?= isset($aktif['total'])
+    ? $aktif['total']
+    : 0
+?>
+
+</strong>
+
+</td>
+
+</tr>
+
+
+</tbody>
+
+</table>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     MUTASI
+===================================================== -->
+
+<div class="row">
+
+
+<?php foreach ([
+
+    [
+        'title' => 'Siswa Masuk',
+        'icon'  => 'fa-sign-in-alt',
+        'color' => 'info',
+        'data'  => $masuk
+    ],
+
+    [
+        'title' => 'Siswa Keluar',
+        'icon'  => 'fa-sign-out-alt',
+        'color' => 'danger',
+        'data'  => $keluar
+    ]
+
+] as $mutasi): ?>
+
+
+<div class="col-lg-6 mb-4">
+
+
+<div class="card info-card shadow h-100">
+
+
+<div class="info-card-header">
+
+
+<div class="info-card-title text-<?= $mutasi['color'] ?>">
+
+<i class="fas <?= $mutasi['icon'] ?> mr-2"></i>
+
+<?= $mutasi['title'] ?>
+
+</div>
+
+
+<div class="info-card-subtitle">
+
+Rekap berdasarkan tingkat
+
+</div>
+
+
+</div>
+
+
+<div class="info-card-body">
+
+
+<table class="table table-bordered public-table">
+
+
+<thead>
+
+<tr>
+
+<th>Tingkat</th>
+
+<th class="text-center">Jumlah</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+<tr>
+
+<td>Kelas X</td>
+
+<td class="text-center">
+
+<?= isset($mutasi['data']['x'])
+    ? $mutasi['data']['x']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>Kelas XI</td>
+
+<td class="text-center">
+
+<?= isset($mutasi['data']['xi'])
+    ? $mutasi['data']['xi']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>Kelas XII</td>
+
+<td class="text-center">
+
+<?= isset($mutasi['data']['xii'])
+    ? $mutasi['data']['xii']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<tr class="table-secondary">
+
+<td>
+
+<strong>Total</strong>
+
+</td>
+
+<td class="text-center">
+
+<strong>
+
+<?= isset($mutasi['data']['total'])
+    ? $mutasi['data']['total']
+    : 0
+?>
+
+</strong>
+
+</td>
+
+</tr>
+
+
+</tbody>
+
+</table>
+
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<?php endforeach; ?>
+
+
+</div>
+
+
+<!-- =====================================================
+     GENDER
+===================================================== -->
+
+<div class="card info-card shadow mb-4">
+
+
+<div class="info-card-header">
+
+
+<div class="info-card-title text-primary">
+
+<i class="fas fa-venus-mars mr-2"></i>
+
+Siswa Aktif Berdasarkan Jenis Kelamin
+
+</div>
+
+
+<div class="info-card-subtitle">
+
+Distribusi siswa laki-laki dan perempuan
+
+</div>
+
+
+</div>
+
+
+<div class="info-card-body">
+
+
+<div class="table-responsive">
+
+
+<table class="table table-bordered public-table">
+
+
+<thead>
+
+<tr>
+
+<th>Tingkat</th>
+
+<th class="text-center">Laki-laki</th>
+
+<th class="text-center">Perempuan</th>
+
+<th class="text-center">Total</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+<?php
+
+$labelTingkat = [
+
+    'x'   => 'X',
+
+    'xi'  => 'XI',
+
+    'xii' => 'XII'
+
+];
+
+?>
+
+
+<?php foreach ($labelTingkat as $key => $label): ?>
+
+
+<tr>
+
+<td>
+
+<strong>
+
+Kelas <?= $label ?>
+
+</strong>
+
+</td>
+
+
+<td class="text-center">
+
+<?= isset($gender_tingkat[$key]['l'])
+    ? $gender_tingkat[$key]['l']
+    : 0
+?>
+
+</td>
+
+
+<td class="text-center">
+
+<?= isset($gender_tingkat[$key]['p'])
+    ? $gender_tingkat[$key]['p']
+    : 0
+?>
+
+</td>
+
+
+<td class="text-center font-weight-bold">
+
+<?= isset($gender_tingkat[$key]['total'])
+    ? $gender_tingkat[$key]['total']
+    : 0
+?>
+
+</td>
+
+</tr>
+
+
+<?php endforeach; ?>
+
+
+<tr class="table-secondary">
+
+
+<td>
+
+<strong>Total</strong>
+
+</td>
+
+
+<td class="text-center">
+
+<?= isset($gender_tingkat['total']['l'])
+    ? $gender_tingkat['total']['l']
+    : 0
+?>
+
+</td>
+
+
+<td class="text-center">
+
+<?= isset($gender_tingkat['total']['p'])
+    ? $gender_tingkat['total']['p']
+    : 0
+?>
+
+</td>
+
+
+<td class="text-center">
+
+<strong>
+
+<?= isset($gender_tingkat['total']['total'])
+    ? $gender_tingkat['total']['total']
+    : 0
+?>
+
+</strong>
+
+</td>
+
+
+</tr>
+
+
+</tbody>
+
+</table>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     SISWA LULUS
+===================================================== -->
+
+<div class="card info-card shadow mb-4">
+
+
+<div class="info-card-header">
+
+
+<div class="info-card-title text-warning">
+
+<i class="fas fa-graduation-cap mr-2"></i>
+
+Siswa Lulus per Tahun Ajaran
+
+</div>
+
+
+<div class="info-card-subtitle">
+
+Riwayat kelulusan siswa
+
+</div>
+
+
+</div>
+
+
+<div class="info-card-body">
+
+
+<div class="table-responsive">
+
+
+<table class="table table-bordered public-table">
+
+
+<thead>
+
+<tr>
+
+<th>Tahun Ajaran</th>
+
+<th class="text-center">
+
+Jumlah Siswa Lulus
+
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+<?php if (!empty($lulus)): ?>
+
+
+<?php foreach ($lulus as $r): ?>
+
+
+<tr>
+
+<td>
+
+<i class="fas fa-calendar-alt text-warning mr-2"></i>
+
+<?= htmlspecialchars($r->tahun) ?>
+
+</td>
+
+
+<td class="text-center">
+
+<span class="badge badge-warning stat-badge">
+
+<?= $r->jumlah ?>
+
+</span>
+
+</td>
+
+</tr>
+
+
+<?php endforeach; ?>
+
+
+<?php else: ?>
+
+
+<tr>
+
+<td colspan="2"
+    class="text-center text-muted py-4">
+
+<i class="fas fa-info-circle mr-1"></i>
+
+Belum ada data siswa lulus.
+
+</td>
+
+</tr>
+
+
+<?php endif; ?>
+
+
+</tbody>
+
+</table>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     PER ROMBEL
+===================================================== -->
+
+<div class="card info-card shadow mb-4">
+
+
+<div class="info-card-header">
+
+
+<div class="info-card-title text-primary">
+
+<i class="fas fa-users mr-2"></i>
+
+Jumlah Siswa per Rombongan Belajar
+
+</div>
+
+
+<div class="info-card-subtitle">
+
+Data siswa aktif berdasarkan kelas
+
+</div>
+
+
+</div>
+
+
+<div class="info-card-body">
+
+
+<div class="table-responsive">
+
+
+<table class="table table-bordered public-table">
+
+
+<thead>
+
+<tr>
+
+<th width="50">No</th>
+
+<th>Nama Kelas</th>
+
+<th class="text-center">L</th>
+
+<th class="text-center">P</th>
+
+<th class="text-center">Total</th>
+
+<th class="text-center">Download</th>
+
+<th class="text-center">
+
+Jumlah Download
+
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+<?php
+
+$no = 1;
+
+$sumL = 0;
+
+$sumP = 0;
+
+$sumTotal = 0;
+
+?>
+
+
+<?php if (!empty($per_rombel)): ?>
+
+
+<?php foreach ($per_rombel as $r): ?>
+
+
+<?php
+
+$sumL += (int)$r->laki;
+
+$sumP += (int)$r->perempuan;
+
+$sumTotal += (int)$r->total;
+
+
+$kelas = $this->db
+    ->get_where(
+        'kelas',
+        ['nama' => $r->nama_kelas]
+    )
+    ->row();
+
+
+$kelas_id = $kelas
+    ? $kelas->id
+    : 0;
+
+
+$count = 0;
+
+if ($kelas && isset($kelas->download_count)) {
+
+    $count = (int)$kelas->download_count;
+
+}
+
+?>
+
+
+<tr>
+
+
+<td>
+
+<?= $no++ ?>
+
+</td>
+
+
+<td>
+
+<strong>
+
+<?= htmlspecialchars(
+    $r->nama_kelas
+) ?>
+
+</strong>
+
+</td>
+
+
+<td class="text-center">
+
+<?= $r->laki ?>
+
+</td>
+
+
+<td class="text-center">
+
+<?= $r->perempuan ?>
+
+</td>
+
+
+<td class="text-center font-weight-bold">
+
+<?= $r->total ?>
+
+</td>
+
+
+<td class="text-center">
+
+
+<?php if ($kelas_id): ?>
+
+
+<a
+    href="<?= base_url(
+        'index.php/dashboard/download_excel/'
+        . $kelas_id
+    ) ?>"
+    class="btn btn-sm btn-success"
+>
+
+
+<i class="fas fa-file-excel mr-1"></i>
+
+Download
+
+
+</a>
+
+
+<?php else: ?>
+
+
+<span class="text-muted">
+
+-
+
+</span>
+
+
+<?php endif; ?>
+
+
+</td>
+
+
+<td class="text-center">
+
+
+<?= $count > 0
+    ? $count . 'x download'
+    : '-'
+?>
+
+
+</td>
+
+
+</tr>
+
+
+<?php endforeach; ?>
+
+
+<tr class="table-secondary">
+
+
+<td colspan="2"
+    class="text-right">
+
+<strong>
+
+Jumlah Keseluruhan
+
+</strong>
+
+</td>
+
+
+<td class="text-center">
+
+<?= $sumL ?>
+
+</td>
+
+
+<td class="text-center">
+
+<?= $sumP ?>
+
+</td>
+
+
+<td class="text-center">
+
+<?= $sumTotal ?>
+
+</td>
+
+
+<td colspan="2"></td>
+
+
+</tr>
+
+
+<?php else: ?>
+
+
+<tr>
+
+<td colspan="7"
+    class="text-center text-muted py-4">
+
+<i class="fas fa-users-slash fa-2x mb-2"></i>
+
+<br>
+
+Belum ada data siswa aktif.
+
+</td>
+
+</tr>
+
+
+<?php endif; ?>
+
+
+</tbody>
+
+</table>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     CHART
+===================================================== -->
+
+<div class="row">
+
+
+<div class="col-lg-8 mb-4">
+
+
+<div class="card info-card shadow h-100">
+
+
+<div class="info-card-header">
+
+
+<div class="info-card-title text-primary">
+
+<i class="fas fa-chart-bar mr-2"></i>
+
+Grafik Siswa per Tingkat
+
+</div>
+
+
+<div class="info-card-subtitle">
+
+Perbandingan siswa aktif dan keluar
+
+</div>
+
+
+</div>
+
+
+<div class="info-card-body">
+
+
+<div class="chart-box">
+
+<canvas id="chartAktifKeluar"></canvas>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<div class="col-lg-4 mb-4">
+
+
+<div class="card info-card shadow h-100">
+
+
+<div class="info-card-header">
+
+
+<div class="info-card-title text-info">
+
+<i class="fas fa-chart-pie mr-2"></i>
+
+Rasio Aktif vs Keluar
+
+</div>
+
+
+<div class="info-card-subtitle">
+
+Perbandingan keseluruhan
+
+</div>
+
+
+</div>
+
+
+<div class="info-card-body">
+
+
+<div class="chart-box">
+
+<canvas id="chartRasio"></canvas>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     CLOCK
+===================================================== -->
+
+<div class="row">
+
+
+<div class="col-lg-5 mb-4">
+
+
+<div class="card info-card shadow h-100">
+
+
+<div class="info-card-body text-center">
+
+
+<div class="text-muted">
+
+Hari Ini
+
+</div>
+
+
+<div id="publicClock"
+     class="clock">
+
+00:00:00
+
+</div>
+
+
+<div id="publicDate"
+     class="text-muted">
+
+-
+
+</div>
+
+
+<hr>
+
+
+<div class="text-muted">
+
+Tahun Ajaran Aktif
+
+</div>
+
+
+<h4 class="text-primary font-weight-bold">
+
+
+<?= isset($tahun_aktif) && $tahun_aktif
+    ? htmlspecialchars($tahun_aktif->tahun)
+    : '-'
+?>
+
+
+</h4>
+
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<div class="col-lg-7 mb-4">
+
+
+<div class="card info-card shadow h-100">
+
+
+<div class="info-card-header">
+
+
+<div class="info-card-title text-primary">
+
+<i class="fas fa-info-circle mr-2"></i>
+
+Informasi
+
+</div>
+
+
+</div>
+
+
+<div class="info-card-body">
+
+
+<div class="alert alert-primary">
+
+<i class="fas fa-chart-line mr-2"></i>
+
+Dashboard menampilkan data berdasarkan
+
+<strong>
+
+Tahun Ajaran Aktif.
+
+</strong>
+
+</div>
+
+
+<div class="alert alert-success">
+
+<i class="fas fa-user-graduate mr-2"></i>
+
+Data siswa aktif mengikuti data siswa
+
+yang berstatus aktif.
+
+</div>
+
+
+<div class="alert alert-info mb-0">
+
+<i class="fas fa-sync-alt mr-2"></i>
+
+Data akan mengikuti perubahan terbaru
+
+pada sistem.
+
+</div>
+
+
+</div>
+
+</div>
+
+
+</div>
+
+
+</div>
+
 
 </main>
 
-<!-- ==================== FOOTER ==================== -->
-<footer class="text-center">
-  <div class="container">
-    © <?= date('Y') ?> <a href="https://www.profilsaya.my.id">SimSGTK </a> — Sistem Informasi Siswa dan GTK <strong>Nazmudin</strong>
-  </div>
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="public-footer">
+
+<div class="container">
+
+© <?= date('Y') ?>
+
+<a href="https://www.profilsaya.my.id">
+
+SimSGTK
+
+</a>
+
+—
+
+Sistem Informasi Siswa dan GTK
+
+<strong>Nazmudin</strong>
+
+</div>
+
 </footer>
 
-<!-- ==================== CHATBOT ==================== -->
+
+<!-- =====================================================
+     CHATBOT
+===================================================== -->
 
 <div id="chatbot">
-  <div id="chatbot-header">
-  <span class="bot-title">
-  <i class="fas fa-robot bot-anu"></i> SiMuMu <i class="fas fa-robot bot-anu"></i><i class="fas fa-robot bot-anu"></i>
+
+
+<div id="chatbot-header">
+
+
+<span>
+
+<i class="fas fa-robot"></i>
+
+SiMuMu
+
 </span>
-<button id="chatbot-close">&times;</button>
-            </div>
 
-<!-- <div id="chatbot">
-  <div id="chatbot-header">
-    <span><i class="fas fa-robot"></i> Asisten Sekolah</span>
-    <span><i class="fas fa-robot"></i> SiMumu</span>
-    <button id="chatbot-close">&times;</button>
-  </div> -->
 
-  <div id="chatbot-body">
-    <div class="bot-msg">
-      👋 Halo! Saya Asisten Mutasi Siswa.<br>
-      Silakan Ketik 'cek' untuk memunculkan list pertanyaan.
-    </div>
-  </div>
+<button id="chatbot-close">
 
-  <div id="chatbot-footer">
-    <input type="text" id="chatbot-input" placeholder="Ketik 'cek' untuk lihat menu..." />
-    <button id="chatbot-send"><i class="fas fa-paper-plane"></i></button>
-  </div>
+&times;
+
+</button>
+
+
 </div>
 
-<!-- Tombol Floating -->
+
+<div id="chatbot-body">
+
+
+<div class="bot-msg">
+
+👋 Halo! Saya Asisten Mutasi Siswa.
+
+<br>
+
+Silakan ketik
+
+<strong>cek</strong>
+
+untuk memunculkan list pertanyaan.
+
+</div>
+
+
+</div>
+
+
+<div id="chatbot-footer">
+
+
+<input
+    type="text"
+    id="chatbot-input"
+    placeholder="Ketik 'cek' untuk lihat menu..."
+>
+
+
+<button id="chatbot-send">
+
+<i class="fas fa-paper-plane"></i>
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
 <div id="chatbot-wrapper">
-  <button id="chatbot-toggle">
-    <i class="fas fa-comments"></i>
-  </button>
-  <div class="chatbot-label">Chat di sini</div>
+
+
+<button id="chatbot-toggle">
+
+<i class="fas fa-comments"></i>
+
+</button>
+
+
+<div class="chatbot-label">
+
+Chat di sini
+
 </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     JS
+===================================================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+
 <script>
-// ==================== REALTIME CLOCK ====================
-function updateTime() {
-  const el = document.getElementById('currentTime');
-  const now = new Date();
-  const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][now.getDay()];
-  const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][now.getMonth()];
-  const jam = now.getHours().toString().padStart(2,'0');
-  const menit = now.getMinutes().toString().padStart(2,'0');
-  const detik = now.getSeconds().toString().padStart(2,'0');
-  el.innerHTML = `Data per <strong>${hari}, ${now.getDate()} ${bulan} ${now.getFullYear()} — ${jam}:${menit}:${detik} WIB</strong>`;
-}
-setInterval(updateTime, 1000);
-updateTime();
 
-// ==================== DARK MODE TOGGLE ====================
-const btnToggle = document.getElementById('toggleDark');
-const icon = btnToggle.querySelector('i');
+/* =====================================================
+   CLOCK
+===================================================== */
 
-btnToggle.addEventListener('click', () => {
-  document.body.classList.toggle('dark-mode');
-  const isDark = document.body.classList.contains('dark-mode');
-  localStorage.setItem('darkMode', isDark);
-  
-  icon.style.opacity = '0';
-  setTimeout(() => {
-    icon.classList.remove('fa-moon', 'fa-sun');
-    icon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
-    icon.style.opacity = '1';
-  }, 200);
-});
+function updatePublicClock() {
 
-// Apply saved theme on load
-if (localStorage.getItem('darkMode') === 'true') {
-  document.body.classList.add('dark-mode');
-  icon.classList.replace('fa-moon', 'fa-sun');
-}
+    var now = new Date();
 
-// ==================== PWA SERVICE WORKER ====================
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/mutases/service-worker.js')
-      .then(reg => console.log('PWA aktif:', reg.scope))
-      .catch(err => console.error('PWA gagal:', err));
-  });
-}
+    var hari = [
+        'Minggu',
+        'Senin',
+        'Selasa',
+        'Rabu',
+        'Kamis',
+        'Jumat',
+        'Sabtu'
+    ];
 
-// ==================== CHATBOT FUNCTIONALITY ====================
-const CHATBOT_URL = "<?= site_url('chatbot/reply') ?>";
-const CSRF_NAME = "<?= $this->security->get_csrf_token_name(); ?>";
-const CSRF_HASH = "<?= $this->security->get_csrf_hash(); ?>";
+    var bulan = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember'
+    ];
 
-const chatbot = document.getElementById('chatbot');
-const toggleBtn = document.getElementById('chatbot-toggle');
-const closeBtn = document.getElementById('chatbot-close');
-const sendBtn = document.getElementById('chatbot-send');
-const input = document.getElementById('chatbot-input');
-const body = document.getElementById('chatbot-body');
+    var jam =
+        String(now.getHours()).padStart(2,'0');
 
-// Toggle open/close
-toggleBtn.onclick = () => {
-  chatbot.style.display = 'flex';
-  input.focus();
-};
+    var menit =
+        String(now.getMinutes()).padStart(2,'0');
 
-closeBtn.onclick = () => {
-  chatbot.style.display = 'none';
-};
+    var detik =
+        String(now.getSeconds()).padStart(2,'0');
 
-// Send message
-sendBtn.onclick = sendMessage;
-input.addEventListener('keypress', e => {
-  if (e.key === 'Enter') sendMessage();
-});
 
-function sendMessage() {
-  const msg = input.value.trim();
-  if (!msg) return;
+    document.getElementById(
+        'publicClock'
+    ).innerHTML =
+        jam + ':' + menit + ':' + detik;
 
-  appendMessage(msg, 'user-msg');
-  input.value = '';
 
-  setTimeout(() => botReply(msg), 600);
+    document.getElementById(
+        'publicDate'
+    ).innerHTML =
+
+        hari[now.getDay()] +
+        ', ' +
+        now.getDate() +
+        ' ' +
+        bulan[now.getMonth()] +
+        ' ' +
+        now.getFullYear();
+
 }
 
-function appendMessage(text, className) {
-  const div = document.createElement('div');
-  div.className = className;
 
-  // Jika bot dan ada list (•)
-  if (className === 'bot-msg' && text.includes('•')) {
-    const lines = text.split('\n');
-    let normalText = '';
-    let buttons = [];
+updatePublicClock();
 
-    lines.forEach(line => {
-      if (line.trim().startsWith('•')) {
-        buttons.push(line.replace('•', '').trim());
-      } else {
-        normalText += line + '<br>';
-      }
-    });
+setInterval(
+    updatePublicClock,
+    1000
+);
 
-    div.innerHTML = normalText;
 
-    if (buttons.length > 0) {
-      const wrap = document.createElement('div');
-      wrap.className = 'quick-list';
+/* =====================================================
+   DARK MODE
+===================================================== */
 
-      buttons.forEach(q => {
-        const btn = document.createElement('button');
-        btn.className = 'quick-btn';
-        btn.innerText = q;
-        btn.onclick = () => {
-          wrap.remove();
-          appendMessage(q, 'user-msg');
+var btnToggle =
+    document.getElementById('toggleDark');
 
-          const lowerQ = q.toLowerCase();
 
-          if (lowerQ === 'kelas') {
-            appendMessage("🏫 Silakan ketik nama kelas.\nContoh: kelas XI KL1", 'bot-msg');
-            input.value = 'kelas ';
-            input.focus();
-          } else if (lowerQ === 'cek nisn') {
-            appendMessage("🆔 Silakan masukkan NISN siswa.\nContoh: cek nisn 1234567890", 'bot-msg');
-            input.value = 'cek nisn ';
-            input.focus();
-          } else {
-            botReply(q);
-          }
-        };
+if (btnToggle) {
 
-        wrap.appendChild(btn);
-      });
 
-      div.appendChild(wrap);
+    var icon =
+        btnToggle.querySelector('i');
+
+
+    if (
+        localStorage.getItem('darkMode')
+        === 'true'
+    ) {
+
+        document.body.classList.add(
+            'dark-mode'
+        );
+
+        icon.classList.remove(
+            'fa-moon'
+        );
+
+        icon.classList.add(
+            'fa-sun'
+        );
+
     }
 
-  } else {
-    div.innerText = text;
-  }
 
-  body.appendChild(div);
-  body.scrollTop = body.scrollHeight;
+    btnToggle.addEventListener(
+        'click',
+        function() {
+
+            document.body.classList.toggle(
+                'dark-mode'
+            );
+
+
+            var dark =
+                document.body.classList.contains(
+                    'dark-mode'
+                );
+
+
+            localStorage.setItem(
+                'darkMode',
+                dark
+            );
+
+
+            icon.classList.remove(
+                'fa-moon',
+                'fa-sun'
+            );
+
+
+            icon.classList.add(
+                dark
+                    ? 'fa-sun'
+                    : 'fa-moon'
+            );
+
+        }
+    );
+
 }
 
-// Bot reply via API
+
+/* =====================================================
+   BAR CHART
+===================================================== */
+
+var barCanvas =
+    document.getElementById(
+        'chartAktifKeluar'
+    );
+
+
+if (barCanvas) {
+
+
+    new Chart(
+
+        barCanvas.getContext('2d'),
+
+        {
+
+            type: 'bar',
+
+            data: {
+
+                labels: [
+                    'Kelas X',
+                    'Kelas XI',
+                    'Kelas XII'
+                ],
+
+                datasets: [
+
+                    {
+
+                        label:
+                            'Siswa Aktif',
+
+                        data: [
+
+                            <?= isset($aktif['x'])
+                                ? (int)$aktif['x']
+                                : 0
+                            ?>,
+
+                            <?= isset($aktif['xi'])
+                                ? (int)$aktif['xi']
+                                : 0
+                            ?>,
+
+                            <?= isset($aktif['xii'])
+                                ? (int)$aktif['xii']
+                                : 0
+                            ?>
+
+                        ],
+
+                        backgroundColor:
+                            'rgba(28,200,138,.75)'
+
+                    },
+
+
+                    {
+
+                        label:
+                            'Siswa Keluar',
+
+                        data: [
+
+                            <?= isset($keluar['x'])
+                                ? (int)$keluar['x']
+                                : 0
+                            ?>,
+
+                            <?= isset($keluar['xi'])
+                                ? (int)$keluar['xi']
+                                : 0
+                            ?>,
+
+                            <?= isset($keluar['xii'])
+                                ? (int)$keluar['xii']
+                                : 0
+                            ?>
+
+                        ],
+
+                        backgroundColor:
+                            'rgba(231,74,59,.75)'
+
+                    }
+
+                ]
+
+            },
+
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                legend: {
+
+                    position: 'top'
+
+                },
+
+                scales: {
+
+                    yAxes: [
+
+                        {
+
+                            ticks: {
+
+                                beginAtZero: true,
+
+                                precision: 0
+
+                            }
+
+                        }
+
+                    ]
+
+                }
+
+            }
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   DOUGHNUT
+===================================================== */
+
+var doughnutCanvas =
+    document.getElementById(
+        'chartRasio'
+    );
+
+
+if (doughnutCanvas) {
+
+
+    new Chart(
+
+        doughnutCanvas.getContext('2d'),
+
+        {
+
+            type: 'doughnut',
+
+            data: {
+
+                labels: [
+                    'Siswa Aktif',
+                    'Siswa Keluar'
+                ],
+
+                datasets: [
+
+                    {
+
+                        data: [
+
+                            <?= isset($aktif['total'])
+                                ? (int)$aktif['total']
+                                : 0
+                            ?>,
+
+                            <?= isset($keluar['total'])
+                                ? (int)$keluar['total']
+                                : 0
+                            ?>
+
+                        ],
+
+                        backgroundColor: [
+
+                            '#1cc88a',
+
+                            '#e74a3b'
+
+                        ],
+
+                        borderWidth: 0
+
+                    }
+
+                ]
+
+            },
+
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                cutoutPercentage: 65,
+
+                legend: {
+
+                    position: 'bottom'
+
+                }
+
+            }
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   CHATBOT
+===================================================== */
+
+var chatbot =
+    document.getElementById('chatbot');
+
+var toggleBtn =
+    document.getElementById(
+        'chatbot-toggle'
+    );
+
+var closeBtn =
+    document.getElementById(
+        'chatbot-close'
+    );
+
+var sendBtn =
+    document.getElementById(
+        'chatbot-send'
+    );
+
+var input =
+    document.getElementById(
+        'chatbot-input'
+    );
+
+var chatBody =
+    document.getElementById(
+        'chatbot-body'
+    );
+
+
+if (toggleBtn) {
+
+    toggleBtn.onclick = function() {
+
+        chatbot.style.display =
+            'flex';
+
+        input.focus();
+
+    };
+
+}
+
+
+if (closeBtn) {
+
+    closeBtn.onclick = function() {
+
+        chatbot.style.display =
+            'none';
+
+    };
+
+}
+
+
+function appendMessage(
+    text,
+    className
+) {
+
+    var div =
+        document.createElement('div');
+
+
+    div.className =
+        className;
+
+
+    div.innerText =
+        text;
+
+
+    chatBody.appendChild(div);
+
+
+    chatBody.scrollTop =
+        chatBody.scrollHeight;
+
+}
+
+
+function sendMessage() {
+
+    var msg =
+        input.value.trim();
+
+
+    if (!msg) {
+
+        return;
+
+    }
+
+
+    appendMessage(
+        msg,
+        'user-msg'
+    );
+
+
+    input.value = '';
+
+
+    setTimeout(
+        function() {
+
+            botReply(msg);
+
+        },
+        500
+    );
+
+}
+
+
+if (sendBtn) {
+
+    sendBtn.onclick =
+        sendMessage;
+
+}
+
+
+if (input) {
+
+    input.addEventListener(
+        'keypress',
+        function(e) {
+
+            if (e.key === 'Enter') {
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+}
+
+
 function botReply(text) {
-  const params =
-    "message=" + encodeURIComponent(text) +
-    "&" + CSRF_NAME + "=" + CSRF_HASH;
 
-  fetch(CHATBOT_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: params
-  })
-  .then(res => {
-    if (!res.ok) throw new Error("HTTP error");
-    return res.json();
-  })
-  .then(data => {
-    appendMessage(data.reply, 'bot-msg');
-  })
-  .catch(err => {
-    console.error(err);
-    appendMessage("⚠️ Server sedang bermasalah.", 'bot-msg');
-  });
+
+    var url =
+        "<?= site_url('chatbot/reply') ?>";
+
+
+    var csrfName =
+        "<?= $this->security->get_csrf_token_name(); ?>";
+
+
+    var csrfHash =
+        "<?= $this->security->get_csrf_hash(); ?>";
+
+
+    var params =
+
+        "message=" +
+        encodeURIComponent(text) +
+
+        "&" +
+        csrfName +
+        "=" +
+        csrfHash;
+
+
+    fetch(
+        url,
+        {
+
+            method: 'POST',
+
+            headers: {
+
+                'Content-Type':
+                    'application/x-www-form-urlencoded'
+
+            },
+
+            body: params
+
+        }
+    )
+
+    .then(
+        function(res) {
+
+            if (!res.ok) {
+
+                throw new Error(
+                    'HTTP Error'
+                );
+
+            }
+
+            return res.json();
+
+        }
+    )
+
+    .then(
+        function(data) {
+
+            appendMessage(
+                data.reply ||
+                'Tidak ada jawaban.',
+                'bot-msg'
+            );
+
+        }
+    )
+
+    .catch(
+        function() {
+
+            appendMessage(
+                '⚠️ Server sedang bermasalah.',
+                'bot-msg'
+            );
+
+        }
+    );
+
 }
+
+
+/* =====================================================
+   SERVICE WORKER
+===================================================== */
+
+if ('serviceWorker' in navigator) {
+
+    window.addEventListener(
+        'load',
+        function() {
+
+            navigator.serviceWorker
+                .register(
+                    '<?= base_url(
+                        'service-worker.js'
+                    ) ?>'
+                )
+                .catch(
+                    function(err) {
+
+                        console.error(
+                            'PWA gagal:',
+                            err
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+}
+
 </script>
 
+
 </body>
+
 </html>
