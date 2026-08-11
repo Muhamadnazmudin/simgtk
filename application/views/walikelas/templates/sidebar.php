@@ -165,6 +165,17 @@ body.dark-mode .sidebar .nav-item.active .nav-link{
         </a>
     </li>
 
+    <li class="nav-item <?= ($active=='wk_berkas')?'active':'' ?>">
+    <a class="nav-link"
+       href="<?= site_url('Walikelas_berkas') ?>">
+
+        <i class="fas fa-folder-open"></i>
+
+        <span>Berkas Siswa</span>
+
+    </a>
+</li>
+
     <li class="nav-item <?= ($active=='wk_vervalpd')?'active':'' ?>">
         <a class="nav-link" href="<?= site_url('hasilverval') ?>">
             <i class="fas fa-check-circle"></i>
@@ -229,16 +240,7 @@ body.dark-mode .sidebar .nav-item.active .nav-link{
 
 </div>
 
-    <hr class="sidebar-divider d-none d-md-block">
-
-    <div class="text-center d-none d-md-inline">
-
-        <button
-            class="rounded-circle border-0"
-            id="sidebarToggle">
-        </button>
-
-    </div>
+   
 
 </ul>
 
