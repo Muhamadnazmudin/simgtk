@@ -36,38 +36,47 @@ class Verval extends CI_Controller {
     $limit    = $this->input->get('limit') ?: 20;
     $page     = $this->input->get('per_page') ?: 0;
 
-    // Query dasar (HANYA SISWA AKTIF)
-$this->db->select('siswa.*, kelas.nama AS nama_kelas');
-$this->db->from('siswa');
-$this->db->join('kelas', 'kelas.id = siswa.id_kelas', 'left');
-$this->db->where('siswa.status', 'aktif');
+    // ===============================
+    // QUERY SISWA
+    // HANYA SISWA AKTIF
+    // ===============================
+    $this->db->select('siswa.*, kelas.nama AS nama_kelas');
+    $this->db->from('siswa');
+    $this->db->join(
+        'kelas',
+        'kelas.id = siswa.id_kelas',
+        'inner'
+    );
 
-if ($kelas_id) {
-    $this->db->where('siswa.id_kelas', $kelas_id);
-}
+    // Hanya siswa aktif
+    $this->db->where('siswa.status', 'aktif');
 
-if ($keyword) {
-    $this->db->group_start()
-             ->like('siswa.nama', $keyword)
-             ->or_like('siswa.nisn', $keyword)
-             ->group_end();
-}
+    // Filter kelas
+    if ($kelas_id) {
+        $this->db->where('siswa.id_kelas', $kelas_id);
+    }
 
+    // Pencarian
+    if ($keyword) {
+        $this->db->group_start()
+                 ->like('siswa.nama', $keyword)
+                 ->or_like('siswa.nisn', $keyword)
+                 ->group_end();
+    }
 
     // ===============================
-    // Hitung total rows
+    // HITUNG TOTAL
     // ===============================
     $total_rows = $this->db->count_all_results('', false);
 
     // ===============================
-    // Pagination config
+    // PAGINATION
     // ===============================
     $config['base_url'] = site_url('verval/siswa');
     $config['total_rows'] = $total_rows;
     $config['per_page'] = $limit;
     $config['page_query_string'] = true;
 
-    // Bootstrap style
     $config['full_tag_open'] = '<ul class="pagination pagination-sm justify-content-end">';
     $config['full_tag_close'] = '</ul>';
     $config['num_tag_open'] = '<li class="page-item">';
@@ -79,7 +88,7 @@ if ($keyword) {
     $this->pagination->initialize($config);
 
     // ===============================
-    // Data siswa
+    // DATA SISWA
     // ===============================
     $data['siswa'] = $this->db
         ->order_by('siswa.nama', 'ASC')
@@ -88,11 +97,30 @@ if ($keyword) {
         ->result();
 
     // ===============================
-    // Data pendukung
+    // DAFTAR KELAS AKTIF
+    // HANYA KELAS YANG MEMILIKI
+    // SISWA STATUS AKTIF
     // ===============================
-    $data['kelas'] = $this->db->order_by('nama','ASC')->get('kelas')->result();
+    $data['kelas'] = $this->db
+        ->select('kelas.id, kelas.nama')
+        ->from('kelas')
+        ->join(
+            'siswa',
+            'siswa.id_kelas = kelas.id',
+            'inner'
+        )
+        ->where('siswa.status', 'aktif')
+        ->group_by('kelas.id')
+        ->order_by('kelas.nama', 'ASC')
+        ->get()
+        ->result();
+
+    // ===============================
+    // DATA LAIN
+    // ===============================
     $data['pagination'] = $this->pagination->create_links();
     $data['total_rows'] = $total_rows;
+
     $this->load->view('templates/header', $data);
     $this->load->view('templates/sidebar', $data);
     $this->load->view('verval/verval_siswa', $data);
@@ -104,42 +132,98 @@ if ($keyword) {
 {
     $data['active'] = 'laporan_verval';
 
-    // filter kelas (optional)
+    // ===============================
+    // FILTER KELAS
+    // ===============================
     $kelas_id = $this->input->get('kelas');
 
     // ===============================
-    // Ambil daftar kelas
+    // DAFTAR KELAS AKTIF
+    // HANYA KELAS YANG MEMILIKI
+    // SISWA STATUS AKTIF
     // ===============================
     $data['kelas'] = $this->db
-        ->order_by('nama', 'ASC')
-        ->get('kelas')
+        ->select('kelas.id, kelas.nama')
+        ->from('kelas')
+        ->join(
+            'siswa',
+            'siswa.id_kelas = kelas.id',
+            'inner'
+        )
+        ->where('siswa.status', 'aktif')
+        ->group_by('kelas.id')
+        ->order_by('kelas.nama', 'ASC')
+        ->get()
         ->result();
 
     // ===============================
-    // Query laporan
+    // QUERY LAPORAN
     // ===============================
     $this->db->select('
         kelas.id,
         kelas.nama AS nama_kelas,
+
         COUNT(siswa.id) AS total_siswa,
-        SUM(CASE WHEN siswa.status_verval = 1 THEN 1 ELSE 0 END) AS valid,
-        SUM(CASE WHEN siswa.status_verval = 2 THEN 1 ELSE 0 END) AS perbaikan,
-        SUM(CASE WHEN siswa.status_verval IN (1,2) THEN 1 ELSE 0 END) AS sudah_verval,
-        SUM(CASE WHEN siswa.status_verval = 0 THEN 1 ELSE 0 END) AS belum_verval
 
+        SUM(
+            CASE
+                WHEN siswa.status_verval = 1
+                THEN 1 ELSE 0
+            END
+        ) AS valid,
+
+        SUM(
+            CASE
+                WHEN siswa.status_verval = 2
+                THEN 1 ELSE 0
+            END
+        ) AS perbaikan,
+
+        SUM(
+            CASE
+                WHEN siswa.status_verval IN (1,2)
+                THEN 1 ELSE 0
+            END
+        ) AS sudah_verval,
+
+        SUM(
+            CASE
+                WHEN siswa.status_verval = 0
+                THEN 1 ELSE 0
+            END
+        ) AS belum_verval
     ');
-    $this->db->from('kelas');
-    $this->db->join('siswa', 'siswa.id_kelas = kelas.id AND siswa.status = "aktif"', 'left');
 
+    $this->db->from('kelas');
+
+    // ===============================
+    // HANYA SISWA AKTIF
+    // ===============================
+    $this->db->join(
+        'siswa',
+        'siswa.id_kelas = kelas.id
+         AND siswa.status = "aktif"',
+        'inner'
+    );
+
+    // ===============================
+    // FILTER KELAS
+    // ===============================
     if ($kelas_id) {
         $this->db->where('kelas.id', $kelas_id);
     }
 
+    // ===============================
+    // GROUP & ORDER
+    // ===============================
     $this->db->group_by('kelas.id');
     $this->db->order_by('kelas.nama', 'ASC');
 
     $data['laporan'] = $this->db->get()->result();
 
+    // ===============================
+    // VIEW
+    // ===============================
     $this->load->view('templates/header', $data);
     $this->load->view('templates/sidebar', $data);
     $this->load->view('verval/laporan_verval', $data);
@@ -149,27 +233,47 @@ public function export_excel()
 {
     $kelas_id = $this->input->get('kelas');
 
-    // ===============================
-    // Ambil kelas
-    // ===============================
+    // ==================================================
+    // AMBIL DAFTAR KELAS AKTIF
+    // HANYA KELAS YANG MEMILIKI SISWA STATUS AKTIF
+    // ==================================================
+    $this->db->select('kelas.id, kelas.nama');
+    $this->db->from('kelas');
+    $this->db->join(
+        'siswa',
+        'siswa.id_kelas = kelas.id',
+        'inner'
+    );
+    $this->db->where('siswa.status', 'aktif');
+
+    // Jika memilih kelas tertentu
     if ($kelas_id) {
-        $kelas_list = $this->db->where('id', $kelas_id)->get('kelas')->result();
-    } else {
-        $kelas_list = $this->db->order_by('nama', 'ASC')->get('kelas')->result();
+        $this->db->where('kelas.id', $kelas_id);
     }
 
+    $this->db->group_by('kelas.id');
+    $this->db->order_by('kelas.nama', 'ASC');
+
+    $kelas_list = $this->db->get()->result();
+
+    // ==================================================
+    // CEK DATA
+    // ==================================================
     if (empty($kelas_list)) {
-        show_error('Data kelas tidak ditemukan');
+        show_error('Data kelas aktif tidak ditemukan');
     }
 
+    // ==================================================
+    // BUAT SPREADSHEET
+    // ==================================================
     $spreadsheet = new Spreadsheet();
     $sheetIndex = 0;
 
     foreach ($kelas_list as $kelas) {
 
-        // ===============================
-        // Ambil siswa aktif per kelas
-        // ===============================
+        // ==================================================
+        // AMBIL SISWA AKTIF PER KELAS
+        // ==================================================
         $siswa = $this->db
             ->select('nisn, nama, status_verval')
             ->where('id_kelas', $kelas->id)
@@ -178,40 +282,62 @@ public function export_excel()
             ->get('siswa')
             ->result();
 
-        // ===============================
-        // HITUNG REKAP (LOGIKA BENAR)
-        // ===============================
-        $total = count($siswa);
-        $valid = 0;
+        // Jika tidak ada siswa aktif, jangan buat sheet
+        if (empty($siswa)) {
+            continue;
+        }
+
+        // ==================================================
+        // HITUNG REKAP
+        // ==================================================
+        $total     = count($siswa);
+        $valid     = 0;
         $perbaikan = 0;
-        $sudah = 0;
-        $belum = 0;
+        $sudah     = 0;
+        $belum     = 0;
 
         foreach ($siswa as $s) {
+
             if ($s->status_verval == 1) {
+
                 $valid++;
                 $sudah++;
+
             } elseif ($s->status_verval == 2) {
+
                 $perbaikan++;
                 $sudah++;
+
             } else {
+
                 $belum++;
             }
         }
 
-        // ===============================
-        // Sheet
-        // ===============================
+        // ==================================================
+        // BUAT SHEET
+        // ==================================================
         $sheet = ($sheetIndex == 0)
             ? $spreadsheet->getActiveSheet()
             : $spreadsheet->createSheet();
 
-        $sheet->setTitle(substr($kelas->nama, 0, 31));
         $sheetIndex++;
 
-        // ===============================
+        // Nama sheet maksimal 31 karakter
+        $sheetName = substr($kelas->nama, 0, 31);
+
+        // Hindari karakter ilegal pada nama sheet Excel
+        $sheetName = str_replace(
+            ['\\', '/', '*', '?', ':', '[', ']'],
+            '-',
+            $sheetName
+        );
+
+        $sheet->setTitle($sheetName);
+
+        // ==================================================
         // HEADER REKAP
-        // ===============================
+        // ==================================================
         $sheet->setCellValue('A1', 'Kelas');
         $sheet->setCellValue('B1', $kelas->nama);
 
@@ -230,33 +356,42 @@ public function export_excel()
         $sheet->setCellValue('A7', 'Belum Verval');
         $sheet->setCellValue('B7', $belum);
 
-        $sheet->getStyle('A1:A7')->getFont()->setBold(true);
+        $sheet->getStyle('A1:A7')
+              ->getFont()
+              ->setBold(true);
 
-        // ===============================
+        // ==================================================
         // HEADER TABEL
-        // ===============================
+        // ==================================================
         $rowStart = 9;
+
         $sheet->setCellValue("A{$rowStart}", 'No');
         $sheet->setCellValue("B{$rowStart}", 'NISN');
         $sheet->setCellValue("C{$rowStart}", 'Nama Siswa');
         $sheet->setCellValue("D{$rowStart}", 'Status');
 
         $sheet->getStyle("A{$rowStart}:D{$rowStart}")
-              ->getFont()->setBold(true);
+              ->getFont()
+              ->setBold(true);
 
-        // ===============================
+        // ==================================================
         // DATA SISWA
-        // ===============================
+        // ==================================================
         $row = $rowStart + 1;
-        $no = 1;
+        $no  = 1;
 
         foreach ($siswa as $s) {
 
             if ($s->status_verval == 1) {
+
                 $status = 'Valid';
+
             } elseif ($s->status_verval == 2) {
+
                 $status = 'Perlu Perbaikan';
+
             } else {
+
                 $status = 'Belum Verval';
             }
 
@@ -264,25 +399,37 @@ public function export_excel()
             $sheet->setCellValue("B{$row}", $s->nisn);
             $sheet->setCellValue("C{$row}", $s->nama);
             $sheet->setCellValue("D{$row}", $status);
+
             $row++;
         }
 
-        foreach (range('A','D') as $col) {
-            $sheet->getColumnDimension($col)->setAutoSize(true);
+        // ==================================================
+        // AUTO SIZE
+        // ==================================================
+        foreach (range('A', 'D') as $col) {
+            $sheet->getColumnDimension($col)
+                  ->setAutoSize(true);
         }
     }
 
-    // ===============================
-    // OUTPUT
-    // ===============================
+    // ==================================================
+    // OUTPUT EXCEL
+    // ==================================================
     $filename = 'Laporan_Verval_Siswa_' . date('Ymd_His') . '.xlsx';
 
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header("Content-Disposition: attachment;filename=\"{$filename}\"");
+    header(
+        'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+
+    header(
+        "Content-Disposition: attachment;filename=\"{$filename}\""
+    );
+
     header('Cache-Control: max-age=0');
 
     $writer = new Xlsx($spreadsheet);
     $writer->save('php://output');
+
     exit;
 }
 
