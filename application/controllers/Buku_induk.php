@@ -209,6 +209,16 @@ if ($this->session->userdata('is_walikelas')) {
     }
 
 }
+
+// ==========================
+// DOKUMEN SISWA
+// ==========================
+
+$data['berkas'] = $this->db
+    ->where('siswa_id', $id)
+    ->order_by('jenis_berkas', 'ASC')
+    ->get('siswa_berkas')
+    ->result();
     // ==========================
     // RAPOR
     // ==========================

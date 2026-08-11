@@ -1244,36 +1244,231 @@ foreach($rapor as $r){
 
 </div>
     <!-- ===================================== -->
-    <!-- DOKUMEN -->
-    <!-- ===================================== -->
+<!-- DOKUMEN -->
+<!-- ===================================== -->
 
-    <div class="tab-pane fade"
-         id="dokumen"
-         role="tabpanel">
+<div class="tab-pane fade"
+     id="dokumen"
+     role="tabpanel">
 
-        <div class="card shadow mb-4">
+    <div class="card shadow mb-4">
 
-            <div class="card-header bg-secondary text-white">
+        <div class="card-header bg-secondary text-white">
 
-                <i class="fas fa-folder-open mr-2"></i>
+            <i class="fas fa-folder-open mr-2"></i>
 
-                Dokumen
+            Dokumen Peserta Didik
+
+        </div>
+
+        <div class="card-body">
+
+            <?php
+
+            /*
+             * Daftar jenis dokumen
+             */
+
+            $jenis_dokumen = [
+
+                'kartu_keluarga' => [
+                    'nama'  => 'Kartu Keluarga',
+                    'icon'  => 'fa-users',
+                    'warna' => 'primary'
+                ],
+
+                'akta_lahir' => [
+                    'nama'  => 'Akta Kelahiran',
+                    'icon'  => 'fa-file-alt',
+                    'warna' => 'success'
+                ],
+
+                'ijazah_sd' => [
+                    'nama'  => 'Ijazah SD',
+                    'icon'  => 'fa-graduation-cap',
+                    'warna' => 'info'
+                ],
+
+                'ijazah_smp' => [
+                    'nama'  => 'Ijazah SMP',
+                    'icon'  => 'fa-graduation-cap',
+                    'warna' => 'warning'
+                ],
+
+                'ktp_ayah' => [
+                    'nama'  => 'KTP Ayah',
+                    'icon'  => 'fa-id-card',
+                    'warna' => 'secondary'
+                ],
+
+                'ktp_ibu' => [
+                    'nama'  => 'KTP Ibu',
+                    'icon'  => 'fa-id-card',
+                    'warna' => 'danger'
+                ]
+
+            ];
+
+
+            /*
+             * Index berkas berdasarkan jenis
+             */
+
+            $dokumen = [];
+
+            if (!empty($berkas)) {
+
+                foreach ($berkas as $b) {
+
+                    $dokumen[$b->jenis_berkas] = $b;
+
+                }
+
+            }
+
+            ?>
+
+
+            <div class="row">
+
+                <?php foreach ($jenis_dokumen as $jenis => $item): ?>
+
+                    <?php
+
+                    $file = isset($dokumen[$jenis])
+                        ? $dokumen[$jenis]
+                        : null;
+
+                    ?>
+
+
+                    <div class="col-md-6 col-lg-4 mb-4">
+
+                        <div class="card h-100 border-left-<?= $item['warna']; ?> shadow-sm">
+
+
+                            <div class="card-body">
+
+
+                                <!-- ICON + JUDUL -->
+
+                                <div class="d-flex align-items-center mb-3">
+
+                                    <div class="mr-3">
+
+                                        <div class="rounded-circle bg-light p-3">
+
+                                            <i class="fas <?= $item['icon']; ?>
+                                               fa-lg text-<?= $item['warna']; ?>">
+                                            </i>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <h6 class="font-weight-bold text-gray-800 mb-1">
+
+                                            <?= $item['nama']; ?>
+
+                                        </h6>
+
+
+                                        <?php if ($file): ?>
+
+                                            <span class="badge badge-success">
+
+                                                <i class="fas fa-check-circle"></i>
+
+                                                Tersedia
+
+                                            </span>
+
+                                        <?php else: ?>
+
+                                            <span class="badge badge-secondary">
+
+                                                Belum tersedia
+
+                                            </span>
+
+                                        <?php endif; ?>
+
+                                    </div>
+
+                                </div>
+
+
+                                <?php if ($file): ?>
+
+
+                                    <!-- NAMA FILE -->
+
+                                    <div class="small text-muted mb-3">
+
+                                        <i class="fas fa-file mr-1"></i>
+
+                                        <?= html_escape(
+                                            $file->nama_file_asli
+                                        ); ?>
+
+                                    </div>
+
+
+                                    <!-- TOMBOL LIHAT -->
+
+                                    <a
+                                        href="<?= site_url(
+                                            'SiswaBerkas/file/' .
+                                            $file->access_token
+                                        ); ?>"
+                                        target="_blank"
+                                        class="btn btn-primary btn-sm">
+
+                                        <i class="fas fa-eye mr-1"></i>
+
+                                        Lihat Dokumen
+
+                                    </a>
+
+
+                                <?php else: ?>
+
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary btn-sm"
+                                        disabled>
+
+                                        <i class="fas fa-file mr-1"></i>
+
+                                        Belum Ada
+
+                                    </button>
+
+
+                                <?php endif; ?>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                <?php endforeach; ?>
 
             </div>
 
-            <div class="card-body text-center text-muted py-5">
-
-                <i class="fas fa-folder-open fa-3x mb-3"></i>
-
-                <br>
-
-                Belum ada dokumen yang diunggah.
-
-            </div>
 
         </div>
 
     </div>
+
+</div>
 
 
     <!-- ===================================== -->
