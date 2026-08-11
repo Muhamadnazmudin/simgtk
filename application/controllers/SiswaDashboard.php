@@ -324,50 +324,223 @@ redirect('SiswaDashboard/biodata');
 
 private function syncGoogleSheet($lama, $baru)
 {
-    unset(
-    $lama['id'],
-    $lama['id_kelas'],
-    $lama['password'],
-    $lama['token_qr'],
-    $lama['foto'],
-    $lama['rfid_uid'],
-    $lama['created_at'],
-    $lama['status_verval'],
-    $lama['catatan_verval'],
-    $lama['verval_by'],
-    $lama['verval_at']
-);
+    // =========================================================
+    // TAMBAHKAN URL BERKAS
+    // =========================================================
+
+    $lama = $this->tambahkanUrlBerkas($lama);
+    $baru = $this->tambahkanUrlBerkas($baru);
+
+
+    // =========================================================
+    // FIELD INTERNAL YANG TIDAK DIKIRIM
+    // =========================================================
 
     unset(
-    $baru['id'],
-    $baru['id_kelas'],
-    $baru['password'],
-    $baru['token_qr'],
-    $baru['foto'],
-    $baru['rfid_uid'],
-    $baru['created_at'],
-    $baru['status_verval'],
-    $baru['catatan_verval'],
-    $baru['verval_by'],
-    $baru['verval_at']
-);
+        $lama['id'],
+        $lama['id_kelas'],
+        $lama['password'],
+        $lama['token_qr'],
+        $lama['foto'],
+        $lama['rfid_uid'],
+        $lama['created_at'],
+        $lama['status_verval'],
+        $lama['catatan_verval'],
+        $lama['verval_by'],
+        $lama['verval_at']
+    );
+
+    unset(
+        $baru['id'],
+        $baru['id_kelas'],
+        $baru['password'],
+        $baru['token_qr'],
+        $baru['foto'],
+        $baru['rfid_uid'],
+        $baru['created_at'],
+        $baru['status_verval'],
+        $baru['catatan_verval'],
+        $baru['verval_by'],
+        $baru['verval_at']
+    );
+
+
+    // =========================================================
+    // PAYLOAD
+    // =========================================================
+
     $payload = [
         'lama' => $lama,
         'baru' => $baru
     ];
 
+
+    // =========================================================
+    // KIRIM KE GOOGLE APPS SCRIPT
+    // =========================================================
+
     $ch = curl_init($this->sheet_url);
 
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json'
-    ]);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt(
+        $ch,
+        CURLOPT_RETURNTRANSFER,
+        true
+    );
+
+    curl_setopt(
+        $ch,
+        CURLOPT_FOLLOWLOCATION,
+        true
+    );
+
+    curl_setopt(
+        $ch,
+        CURLOPT_POST,
+        true
+    );
+
+    curl_setopt(
+        $ch,
+        CURLOPT_HTTPHEADER,
+        [
+            'Content-Type: application/json'
+        ]
+    );
+
+    curl_setopt(
+        $ch,
+        CURLOPT_POSTFIELDS,
+        json_encode($payload)
+    );
 
     curl_exec($ch);
+
     curl_close($ch);
+}
+private function tambahkanUrlBerkas($data)
+{
+    // =========================================================
+    // PASTIKAN ADA ID SISWA
+    // =========================================================
+
+    $siswa_id = isset($data['id'])
+        ? (int) $data['id']
+        : 0;
+
+    if (!$siswa_id) {
+
+        return $data;
+    }
+
+
+    // =========================================================
+    // AMBIL BERKAS
+    // =========================================================
+
+    $berkas = $this->db
+        ->where('siswa_id', $siswa_id)
+        ->get('siswa_berkas')
+        ->result();
+
+
+    // =========================================================
+    // DEFAULT URL
+    // =========================================================
+
+    $url = [
+        'kartu_keluarga_url' => '',
+        'akta_lahir_url'     => '',
+        'ijazah_sd_url'      => '',
+        'ijazah_smp_url'     => '',
+        'ktp_ayah_url'       => '',
+        'ktp_ibu_url'        => ''
+    ];
+
+
+    // =========================================================
+    // BUAT URL
+    // =========================================================
+
+    foreach ($berkas as $b) {
+
+        if (
+            empty($b->access_token)
+        ) {
+            continue;
+        }
+
+
+        $link =
+            base_url(
+                'SiswaBerkas/file/' .
+                $b->access_token
+            );
+
+
+        switch ($b->jenis_berkas) {
+
+            case 'kartu_keluarga':
+
+                $url['kartu_keluarga_url'] =
+                    $link;
+
+                break;
+
+
+            case 'akta_lahir':
+
+                $url['akta_lahir_url'] =
+                    $link;
+
+                break;
+
+
+            case 'ijazah_sd':
+
+                $url['ijazah_sd_url'] =
+                    $link;
+
+                break;
+
+
+            case 'ijazah_smp':
+
+                $url['ijazah_smp_url'] =
+                    $link;
+
+                break;
+
+
+            case 'ktp_ayah':
+
+                $url['ktp_ayah_url'] =
+                    $link;
+
+                break;
+
+
+            case 'ktp_ibu':
+
+                $url['ktp_ibu_url'] =
+                    $link;
+
+                break;
+        }
+    }
+
+
+    // =========================================================
+    // GABUNGKAN KE DATA SISWA
+    // =========================================================
+
+    foreach ($url as $field => $value) {
+
+        $data[$field] = $value;
+
+    }
+
+
+    return $data;
 }
 private function hari_ini()
 {

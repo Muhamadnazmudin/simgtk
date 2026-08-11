@@ -5,23 +5,43 @@ class Berkas_siswa_model extends CI_Model
 {
     private $table = 'siswa_berkas';
 
-    /**
-     * Daftar jenis berkas yang diperbolehkan
-     */
-    public function jenis_berkas()
-{
-    return array(
-        'kartu_keluarga' => 'Kartu Keluarga',
-        'akta_lahir'     => 'Akta Lahir',
-        'ijazah_sd'      => 'Ijazah SD',
-        'ijazah_smp'     => 'Ijazah SMP/MTs',
-        'ktp_ayah'       => 'KTP Ayah',
-        'ktp_ibu'        => 'KTP Ibu'
-    );
-}
 
     /**
-     * Ambil semua siswa
+     * =========================================================
+     * JENIS BERKAS
+     * =========================================================
+     */
+    public function jenis_berkas()
+    {
+        return array(
+            'kartu_keluarga' => 'Kartu Keluarga',
+            'akta_lahir'     => 'Akta Lahir',
+            'ijazah_sd'      => 'Ijazah SD',
+            'ijazah_smp'     => 'Ijazah SMP/MTs',
+            'ktp_ayah'       => 'KTP Ayah',
+            'ktp_ibu'        => 'KTP Ibu'
+        );
+    }
+
+
+    /**
+     * =========================================================
+     * GENERATE ACCESS TOKEN
+     * =========================================================
+     *
+     * Token 64 karakter.
+     * Digunakan untuk URL publik berkas.
+     */
+    public function generate_access_token()
+    {
+        return bin2hex(random_bytes(32));
+    }
+
+
+    /**
+     * =========================================================
+     * AMBIL SEMUA SISWA
+     * =========================================================
      */
     public function get_siswa($keyword = '')
     {
@@ -36,10 +56,13 @@ class Berkas_siswa_model extends CI_Model
         $this->db->from('siswa s');
 
         if ($keyword != '') {
+
             $this->db->group_start();
+
             $this->db->like('s.nama', $keyword);
             $this->db->or_like('s.nis', $keyword);
             $this->db->or_like('s.nisn', $keyword);
+
             $this->db->group_end();
         }
 
@@ -48,260 +71,375 @@ class Berkas_siswa_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    /**
-     * Ambil data siswa berdasarkan ID
-     */
-    public function get_siswa_by_id($id)
-{
-    return $this->db
-        ->where('id', $id)
-        ->where('status', 'aktif')
-        ->get('siswa')
-        ->row();
-}
 
     /**
-     * Ambil semua berkas milik siswa
+     * =========================================================
+     * AMBIL SISWA BERDASARKAN ID
+     * =========================================================
+     */
+    public function get_siswa_by_id($id)
+    {
+        return $this->db
+            ->where('id', (int) $id)
+            ->where('status', 'aktif')
+            ->get('siswa')
+            ->row();
+    }
+
+
+    /**
+     * =========================================================
+     * SEMUA BERKAS SISWA
+     * =========================================================
      */
     public function get_berkas_siswa($siswa_id)
     {
         return $this->db
-            ->where('siswa_id', $siswa_id)
+            ->where('siswa_id', (int) $siswa_id)
             ->get($this->table)
             ->result();
     }
 
+
     /**
-     * Ambil berkas berdasarkan jenis
+     * =========================================================
+     * BERKAS BERDASARKAN JENIS
+     * =========================================================
      */
     public function get_berkas($siswa_id, $jenis_berkas)
     {
         return $this->db
-            ->where('siswa_id', $siswa_id)
+            ->where('siswa_id', (int) $siswa_id)
             ->where('jenis_berkas', $jenis_berkas)
             ->get($this->table)
             ->row();
     }
 
+
     /**
-     * Simpan data berkas
+     * =========================================================
+     * INSERT BERKAS
+     * =========================================================
+     *
+     * Jika access_token belum dikirim,
+     * otomatis dibuat.
      */
     public function insert($data)
     {
-        return $this->db->insert($this->table, $data);
+        if (empty($data['access_token'])) {
+
+            $data['access_token'] =
+                $this->generate_access_token();
+        }
+
+        return $this->db->insert(
+            $this->table,
+            $data
+        );
     }
 
+
     /**
-     * Update data berkas
+     * =========================================================
+     * UPDATE BERKAS
+     * =========================================================
+     *
+     * Token lama TIDAK diubah ketika file diganti.
+     *
+     * Jadi URL Google Spreadsheet tetap sama.
      */
     public function update($id, $data)
     {
         return $this->db
-            ->where('id', $id)
-            ->update($this->table, $data);
+            ->where('id', (int) $id)
+            ->update(
+                $this->table,
+                $data
+            );
     }
 
+
     /**
-     * Hapus data berkas
+     * =========================================================
+     * HAPUS BERKAS
+     * =========================================================
      */
     public function delete($id)
     {
         return $this->db
-            ->where('id', $id)
+            ->where('id', (int) $id)
             ->delete($this->table);
     }
 
+
     /**
-     * Hitung jumlah berkas siswa
+     * =========================================================
+     * JUMLAH BERKAS SISWA
+     * =========================================================
      */
     public function count_berkas($siswa_id)
     {
         return $this->db
-            ->where('siswa_id', $siswa_id)
+            ->where('siswa_id', (int) $siswa_id)
             ->count_all_results($this->table);
     }
 
+
     /**
- * Hitung total siswa aktif
- * berdasarkan filter
- */
-public function count_siswa_aktif($keyword = '', $kelas_id = '')
-{
-    $this->db->from('siswa s');
+     * =========================================================
+     * HITUNG SISWA AKTIF
+     * =========================================================
+     */
+    public function count_siswa_aktif(
+        $keyword = '',
+        $kelas_id = ''
+    ) {
+        $this->db->from('siswa s');
 
-    // Hanya siswa aktif
-    $this->db->where('s.status', 'aktif');
+        $this->db->where(
+            's.status',
+            'aktif'
+        );
 
-    // Filter kelas
-    if (!empty($kelas_id)) {
-        $this->db->where('s.id_kelas', $kelas_id);
+        if (!empty($kelas_id)) {
+
+            $this->db->where(
+                's.id_kelas',
+                $kelas_id
+            );
+        }
+
+        if (!empty($keyword)) {
+
+            $this->db->group_start();
+
+            $this->db->like(
+                's.nama',
+                $keyword
+            );
+
+            $this->db->or_like(
+                's.nis',
+                $keyword
+            );
+
+            $this->db->or_like(
+                's.nisn',
+                $keyword
+            );
+
+            $this->db->group_end();
+        }
+
+        return $this->db->count_all_results();
     }
 
-    // Search
-    if (!empty($keyword)) {
 
-        $this->db->group_start();
+    /**
+     * =========================================================
+     * SISWA AKTIF + JUMLAH BERKAS
+     * =========================================================
+     */
+    public function get_siswa_with_berkas(
+        $keyword = '',
+        $kelas_id = '',
+        $limit = 20,
+        $offset = 0
+    ) {
+        $this->db->select('
+            s.id,
+            s.nis,
+            s.nisn,
+            s.nama,
+            s.id_kelas,
+            k.nama AS nama_kelas,
+            COUNT(sb.id) AS jumlah_berkas
+        ');
 
-        $this->db->like('s.nama', $keyword);
-        $this->db->or_like('s.nis', $keyword);
-        $this->db->or_like('s.nisn', $keyword);
+        $this->db->from('siswa s');
 
-        $this->db->group_end();
+        $this->db->join(
+            'kelas k',
+            'k.id = s.id_kelas',
+            'left'
+        );
+
+        $this->db->join(
+            'siswa_berkas sb',
+            'sb.siswa_id = s.id',
+            'left'
+        );
+
+        $this->db->where(
+            's.status',
+            'aktif'
+        );
+
+        if (!empty($kelas_id)) {
+
+            $this->db->where(
+                's.id_kelas',
+                $kelas_id
+            );
+        }
+
+        if (!empty($keyword)) {
+
+            $this->db->group_start();
+
+            $this->db->like(
+                's.nama',
+                $keyword
+            );
+
+            $this->db->or_like(
+                's.nis',
+                $keyword
+            );
+
+            $this->db->or_like(
+                's.nisn',
+                $keyword
+            );
+
+            $this->db->group_end();
+        }
+
+        $this->db->group_by([
+            's.id',
+            's.nis',
+            's.nisn',
+            's.nama',
+            's.id_kelas',
+            'k.nama'
+        ]);
+
+        $this->db->order_by(
+            's.nama',
+            'ASC'
+        );
+
+        $this->db->limit(
+            $limit,
+            $offset
+        );
+
+        return $this->db
+            ->get()
+            ->result();
     }
 
-    return $this->db->count_all_results();
-}
 
+    /**
+     * =========================================================
+     * KELAS AKTIF
+     * =========================================================
+     */
+    public function get_kelas_aktif()
+    {
+        $this->db->select('
+            k.id,
+            k.nama,
+            COUNT(s.id) AS jumlah_siswa
+        ');
 
-/**
- * Ambil siswa aktif dengan pagination
- */
-public function get_siswa_with_berkas(
-    $keyword = '',
-    $kelas_id = '',
-    $limit = 20,
-    $offset = 0
-) {
-    $this->db->select('
-        s.id,
-        s.nis,
-        s.nisn,
-        s.nama,
-        s.id_kelas,
-        k.nama AS nama_kelas,
-        COUNT(sb.id) AS jumlah_berkas
-    ');
+        $this->db->from('kelas k');
 
-    $this->db->from('siswa s');
+        $this->db->join(
+            'siswa s',
+            "s.id_kelas = k.id
+             AND s.status = 'aktif'",
+            'inner'
+        );
 
-    // Kelas
-    $this->db->join(
-        'kelas k',
-        'k.id = s.id_kelas',
-        'left'
-    );
+        $this->db->group_by([
+            'k.id',
+            'k.nama'
+        ]);
 
-    // Berkas
-    $this->db->join(
-        'siswa_berkas sb',
-        'sb.siswa_id = s.id',
-        'left'
-    );
+        $this->db->order_by(
+            'k.nama',
+            'ASC'
+        );
 
-    // Hanya siswa aktif
-    $this->db->where('s.status', 'aktif');
-
-    // Filter kelas
-    if (!empty($kelas_id)) {
-        $this->db->where('s.id_kelas', $kelas_id);
+        return $this->db
+            ->get()
+            ->result();
     }
 
-    // Search
-    if (!empty($keyword)) {
 
-        $this->db->group_start();
+    /**
+     * =========================================================
+     * SEMUA BERKAS SISWA
+     * =========================================================
+     */
+    public function get_all_berkas($siswa_id)
+    {
+        $rows = $this->db
+            ->where(
+                'siswa_id',
+                (int) $siswa_id
+            )
+            ->order_by(
+                'id',
+                'ASC'
+            )
+            ->get($this->table)
+            ->result();
 
-        $this->db->like('s.nama', $keyword);
-        $this->db->or_like('s.nis', $keyword);
-        $this->db->or_like('s.nisn', $keyword);
+        $result = array();
 
-        $this->db->group_end();
+        foreach ($rows as $row) {
+
+            $result[
+                $row->jenis_berkas
+            ] = $row;
+        }
+
+        return $result;
     }
 
-    // GROUP BY
-    $this->db->group_by([
-        's.id',
-        's.nis',
-        's.nisn',
-        's.nama',
-        's.id_kelas',
-        'k.nama'
-    ]);
 
-    // Urut nama
-    $this->db->order_by('s.nama', 'ASC');
-
-    // Pagination
-    $this->db->limit($limit, $offset);
-
-    return $this->db->get()->result();
-}
-
-
-/**
- * Daftar kelas yang memiliki siswa aktif
- */
-public function get_kelas_aktif()
-{
-    $this->db->select('
-        k.id,
-        k.nama,
-        COUNT(s.id) AS jumlah_siswa
-    ');
-
-    $this->db->from('kelas k');
-
-    $this->db->join(
-        'siswa s',
-        "s.id_kelas = k.id AND s.status = 'aktif'",
-        'inner'
-    );
-
-    $this->db->group_by([
-        'k.id',
-        'k.nama'
-    ]);
-
-    $this->db->order_by('k.nama', 'ASC');
-
-    return $this->db->get()->result();
-}
-
-/**
- * =========================================================
- * AMBIL SEMUA BERKAS SISWA
- * =========================================================
- *
- * Digunakan oleh SiswaBerkas.
- *
- * Menggunakan tabel yang sama dengan Admin:
- * siswa_berkas
- */
-public function get_all_berkas($siswa_id)
-{
-    $rows = $this->db
-        ->where('siswa_id', (int) $siswa_id)
-        ->order_by('id', 'ASC')
-        ->get($this->table)
-        ->result();
-
-    $result = [];
-
-    foreach ($rows as $row) {
-
-        $result[$row->jenis_berkas] = $row;
-
+    /**
+     * =========================================================
+     * BERKAS BERDASARKAN ID + SISWA
+     * =========================================================
+     */
+    public function get_berkas_by_id_siswa(
+        $id,
+        $siswa_id
+    ) {
+        return $this->db
+            ->where(
+                'id',
+                (int) $id
+            )
+            ->where(
+                'siswa_id',
+                (int) $siswa_id
+            )
+            ->get($this->table)
+            ->row();
     }
 
-    return $result;
-}
 
-
-/**
- * =========================================================
- * AMBIL BERKAS BERDASARKAN ID + SISWA
- * =========================================================
- *
- * Untuk keamanan siswa:
- * ID berkas harus sekaligus milik siswa
- * yang sedang login.
- */
-public function get_berkas_by_id_siswa($id, $siswa_id)
-{
-    return $this->db
-        ->where('id', (int) $id)
-        ->where('siswa_id', (int) $siswa_id)
-        ->get($this->table)
-        ->row();
-}
+    /**
+     * =========================================================
+     * BERKAS BERDASARKAN ACCESS TOKEN
+     * =========================================================
+     *
+     * Digunakan untuk membuka file
+     * melalui URL dari Google Spreadsheet.
+     */
+    public function get_berkas_by_token(
+        $access_token
+    ) {
+        return $this->db
+            ->where(
+                'access_token',
+                trim($access_token)
+            )
+            ->get($this->table)
+            ->row();
+    }
 }
