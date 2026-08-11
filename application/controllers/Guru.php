@@ -44,36 +44,118 @@ class Guru extends CI_Controller {
     }
 
     // ================== INDEX ==================
-    public function index($offset = 0) {
+    // ================== INDEX ==================
+public function index($offset = 0)
+{
+    // ==========================================
+    // PAGINATION
+    // ==========================================
 
-        $config['base_url'] = site_url('guru/index');
-        $config['total_rows'] = $this->Guru_model->count_all();
-        $config['per_page'] = 10;
-        $config['uri_segment'] = 3;
+    $config['base_url'] = site_url('guru/index');
+    $config['total_rows'] = $this->Guru_model->count_all();
+    $config['per_page'] = 10;
+    $config['uri_segment'] = 3;
 
-        $config['full_tag_open'] = '<ul class="pagination justify-content-center">';
-        $config['full_tag_close'] = '</ul>';
-        $config['num_tag_open'] = '<li class="page-item"><span class="page-link">';
-        $config['num_tag_close'] = '</span></li>';
-        $config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
-        $config['cur_tag_close'] = '</span></li>';
-        $config['next_link'] = '&raquo;';
-        $config['prev_link'] = '&laquo;';
+    $config['full_tag_open'] = '<ul class="pagination justify-content-center">';
+    $config['full_tag_close'] = '</ul>';
 
-        $this->pagination->initialize($config);
+    $config['num_tag_open'] = '<li class="page-item">';
+    $config['num_tag_close'] = '</li>';
 
-        $data['title'] = 'Data Guru';
-        $data['active'] = 'guru';
-        $data['guru'] = $this->Guru_model->get_all($config['per_page'], $offset);
-        $data['pagination'] = $this->pagination->create_links();
-        $data['start'] = $offset;
+    $config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
+    $config['cur_tag_close'] = '</span></li>';
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view('guru/index', $data);
-        $this->load->view('templates/footer');
-    }
+    $config['attributes'] = [
+        'class' => 'page-link'
+    ];
 
+    $config['next_link'] = '&raquo;';
+    $config['prev_link'] = '&laquo;';
+
+    $this->pagination->initialize($config);
+
+
+    // ==========================================
+    // DATA GURU
+    // ==========================================
+
+    $data['title']  = 'Data Guru';
+    $data['active'] = 'guru';
+
+    $data['guru'] = $this->Guru_model->get_all(
+        $config['per_page'],
+        $offset
+    );
+
+    $data['pagination'] = $this->pagination->create_links();
+    $data['start']      = $offset;
+
+
+    // ==========================================
+    // STATISTIK GURU
+    // SATU QUERY SAJA
+    // ==========================================
+
+    $statistik = $this->db
+        ->select("
+            COUNT(*) AS total_guru,
+
+            SUM(
+                CASE
+                    WHEN UPPER(TRIM(status_kepegawaian)) = 'PPPK'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS guru_pppk,
+
+            SUM(
+                CASE
+                    WHEN UPPER(TRIM(status_kepegawaian)) = 'PNS'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS guru_pns,
+
+            SUM(
+                CASE
+                    WHEN UPPER(TRIM(status_kepegawaian)) = 'PPPKPW'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS guru_pppkpw,
+
+            SUM(
+    CASE
+        WHEN UPPER(TRIM(status_kepegawaian)) = 'HONOR'
+        THEN 1
+        ELSE 0
+    END
+) AS guru_honorer
+        ", false)
+        ->get('guru')
+        ->row();
+
+
+    // ==========================================
+    // KIRIM KE VIEW
+    // ==========================================
+
+    $data['total_guru']  = (int) $statistik->total_guru;
+    $data['guru_pppk']   = (int) $statistik->guru_pppk;
+    $data['guru_pns']    = (int) $statistik->guru_pns;
+    $data['guru_pppkpw'] = (int) $statistik->guru_pppkpw;
+    $data['guru_honorer'] = (int) $statistik->guru_honorer;
+
+
+    // ==========================================
+    // LOAD VIEW
+    // ==========================================
+
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar', $data);
+    $this->load->view('guru/index', $data);
+    $this->load->view('templates/footer');
+}
     // ================== ADD ==================
     public function add() {
 
