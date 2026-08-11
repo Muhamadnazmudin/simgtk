@@ -16,18 +16,16 @@ class Backup extends CI_Controller {
     // ===========================
     // HALAMAN BACKUP DATABASE
     // ===========================
-    public function index()
-    {
-        $data['title'] = "Backup Database";
-        $data['group_setting'] = true;
-        $data['active'] = 'backup_db';
+   public function index()
+{
+    $data['title'] = "Backup Database";
+    $data['active'] = 'backup_db';
 
-        // Jika kamu pakai template header/footer
-        $this->load->view('templates/header', $data);
-        $this->load->view('backup/index', $data);
-        $this->load->view('templates/footer');
-        $this->load->view('templates/sidebar', $data);
-    }
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar', $data);
+    $this->load->view('backup/index', $data);
+    $this->load->view('templates/footer');
+}
 
     public function do_backup()
     {
@@ -46,17 +44,15 @@ class Backup extends CI_Controller {
     // HALAMAN RESTORE DATABASE
     // ===========================
     public function restore()
-    {
-        $data['title'] = "Restore Database";
-        $data['group_setting'] = true;
-        $data['active'] = 'restore_db';
+{
+    $data['title'] = "Restore Database";
+    $data['active'] = 'restore_db';
 
-        // Template
-        $this->load->view('templates/header', $data);
-        $this->load->view('backup/restore', $data);
-        $this->load->view('templates/footer');
-        $this->load->view('templates/sidebar', $data);
-    }
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar', $data);
+    $this->load->view('backup/restore', $data);
+    $this->load->view('templates/footer');
+}
 
     public function do_restore()
 {
