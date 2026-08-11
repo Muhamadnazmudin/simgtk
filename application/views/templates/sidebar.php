@@ -42,6 +42,7 @@ href="<?=
 
 <?php
 $group_data    = in_array($active, ['guru','kelas','siswa','buku_induk','kartu_osis','idcard_premium']);
+$group_berkas  = in_array($active, ['berkas_siswa']);
 $group_mutasi  = in_array($active, ['mutasi','kenaikan','siswa_keluar','siswa_lulus','laporan']);
 $group_absen   = in_array($active, ['absensi','laporan_absensi']);
 $group_izin    = in_array($active, ['izin','laporan_izin']);
@@ -124,6 +125,14 @@ $group_tutorial = in_array($active, [
 <a class="collapse-item <?= $active=='buku_induk'?'active':'' ?>"
    href="<?= site_url('buku_induk') ?>">
     Buku Induk
+</a>
+<?php endif; ?>
+
+<!-- Upload Berkas Siswa : Admin & Operator -->
+<?php if($isAdmin || $isOperator): ?>
+<a class="collapse-item <?= $active=='berkas_siswa'?'active':'' ?>"
+   href="<?= site_url('berkas_siswa') ?>">
+    Upload Berkas
 </a>
 <?php endif; ?>
 
