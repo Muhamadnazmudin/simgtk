@@ -1,262 +1,1599 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Idcard_lib {
-
+class Idcard_lib
+{
     protected $CI;
+
+    /*
+     * Rasio KTP / CR80
+     * 85.60 : 53.98
+     *
+     * 1012 x 638 = rasio ± 1.586
+     */
+    protected $W = 1012;
+    protected $H = 638;
+
 
     public function __construct()
     {
         $this->CI =& get_instance();
     }
 
-    /* ==========================================================
-       CREATE FULL TRANSPARENT CANVAS WITH ROUNDED CORNERS
-       ========================================================== */
-    private function roundedCanvas($w, $h, $radius)
-    {
-        $img = imagecreatetruecolor($w, $h);
-        imagesavealpha($img, true);
-        $transparent = imagecolorallocatealpha($img, 0,0,0,127);
-        imagefill($img, 0, 0, $transparent);
 
-        // Mask
-        $mask = imagecreatetruecolor($w, $h);
-        imagesavealpha($mask, true);
-        $trans = imagecolorallocatealpha($mask, 0,0,0,127);
-        $white = imagecolorallocatealpha($mask, 255,255,255,0);
-        imagefill($mask, 0, 0, $trans);
+    /* =========================================================
+       ROUNDED RECTANGLE
+       ========================================================= */
 
-        // Rounded rectangle
-        imagefilledrectangle($mask, $radius, 0, $w - $radius, $h, $white);
-        imagefilledrectangle($mask, 0, $radius, $w, $h - $radius, $white);
+    private function drawRoundedRect(
+        $img,
+        $x1,
+        $y1,
+        $x2,
+        $y2,
+        $radius,
+        $color
+    ) {
+        imagefilledrectangle(
+            $img,
+            $x1 + $radius,
+            $y1,
+            $x2 - $radius,
+            $y2,
+            $color
+        );
 
-        imagefilledellipse($mask, $radius, $radius, $radius*2, $radius*2, $white);
-        imagefilledellipse($mask, $w - $radius, $radius, $radius*2, $radius*2, $white);
-        imagefilledellipse($mask, $radius, $h - $radius, $radius*2, $radius*2, $white);
-        imagefilledellipse($mask, $w - $radius, $h - $radius, $radius*2, $radius*2, $white);
+        imagefilledrectangle(
+            $img,
+            $x1,
+            $y1 + $radius,
+            $x2,
+            $y2 - $radius,
+            $color
+        );
 
-        // Apply mask
-        for($x=0; $x<$w; $x++){
-            for($y=0; $y<$h; $y++){
-                $alpha = (imagecolorat($mask,$x,$y) >> 24) & 0x7F;
-                $color = imagecolorallocatealpha($img,255,255,255,$alpha);
-                imagesetpixel($img,$x,$y,$color);
+        imagefilledellipse(
+            $img,
+            $x1 + $radius,
+            $y1 + $radius,
+            $radius * 2,
+            $radius * 2,
+            $color
+        );
+
+        imagefilledellipse(
+            $img,
+            $x2 - $radius,
+            $y1 + $radius,
+            $radius * 2,
+            $radius * 2,
+            $color
+        );
+
+        imagefilledellipse(
+            $img,
+            $x1 + $radius,
+            $y2 - $radius,
+            $radius * 2,
+            $radius * 2,
+            $color
+        );
+
+        imagefilledellipse(
+            $img,
+            $x2 - $radius,
+            $y2 - $radius,
+            $radius * 2,
+            $radius * 2,
+            $color
+        );
+    }
+
+
+    /* =========================================================
+       CENTER TEXT
+       ========================================================= */
+
+    private function centerX(
+        $width,
+        $fontSize,
+        $font,
+        $text
+    ) {
+        $box = imagettfbbox(
+            $fontSize,
+            0,
+            $font,
+            $text
+        );
+
+        $textWidth = abs(
+            $box[2] - $box[0]
+        );
+
+        return ($width - $textWidth) / 2;
+    }
+
+
+    /* =========================================================
+       AUTO FIT TEXT
+       ========================================================= */
+
+    private function autoFitText(
+        $maxWidth,
+        $font,
+        $text,
+        $maxSize,
+        $minSize
+    ) {
+        for (
+            $size = $maxSize;
+            $size >= $minSize;
+            $size--
+        ) {
+            $box = imagettfbbox(
+                $size,
+                0,
+                $font,
+                $text
+            );
+
+            $width = abs(
+                $box[2] - $box[0]
+            );
+
+            if ($width <= $maxWidth) {
+                return $size;
             }
         }
 
-        imagedestroy($mask);
-        return $img;
-    }
-
-    /* ==========================================================
-       ROUNDED RECTANGLE
-       ========================================================== */
-    private function drawRoundedRect($img,$x1,$y1,$x2,$y2,$radius,$color)
-    {
-        imagefilledrectangle($img,$x1+$radius,$y1,$x2-$radius,$y2,$color);
-        imagefilledrectangle($img,$x1,$y1+$radius,$x2,$y2-$radius,$color);
-
-        imagefilledellipse($img,$x1+$radius,$y1+$radius,$radius*2,$radius*2,$color);
-        imagefilledellipse($img,$x2-$radius,$y1+$radius,$radius*2,$radius*2,$color);
-        imagefilledellipse($img,$x1+$radius,$y2-$radius,$radius*2,$radius*2,$color);
-        imagefilledellipse($img,$x2-$radius,$y2-$radius,$radius*2,$radius*2,$color);
-    }
-
-    /* ==========================================================
-       CENTER X
-       ========================================================== */
-    private function centerX($W,$fs,$font,$text)
-    {
-        $box = imagettfbbox($fs,0,$font,$text);
-        $w = abs($box[2]-$box[0]);
-        return ($W - $w) / 2;
-    }
-
-    /* ==========================================================
-       AUTO FIT NAME FONT
-       ========================================================== */
-    private function autoFitText($maxWidth,$font,$text,$maxSize,$minSize)
-    {
-        for($s=$maxSize; $s>=$minSize; $s--){
-            $box = imagettfbbox($s,0,$font,$text);
-            $w = abs($box[2]-$box[0]);
-            if ($w <= $maxWidth) return $s;
-        }
         return $minSize;
     }
 
-    /* ==========================================================
-       SPLIT NAME
-       ========================================================== */
-    private function splitNameTwoLines($name,$maxChars=22)
+
+    /* =========================================================
+       LOAD IMAGE
+       JPG / PNG / WEBP
+       ========================================================= */
+
+    private function loadImage($file)
     {
-        $parts = explode(" ",$name);
-
-        if (count($parts)<=1) return [$name,""];
-
-        $l1=""; $l2="";
-        foreach($parts as $p){
-            if (strlen($l1." ".$p) <= $maxChars){
-                $l1 .= ($l1?" ":"").$p;
-            } else {
-                $l2 .= ($l2?" ":"").$p;
-            }
+        if (!file_exists($file)) {
+            return false;
         }
-        return [$l1,$l2];
+
+        $info = @getimagesize($file);
+
+        if (!$info) {
+            return false;
+        }
+
+        switch ($info['mime']) {
+
+            case 'image/jpeg':
+
+                return @imagecreatefromjpeg($file);
+
+            case 'image/png':
+
+                return @imagecreatefrompng($file);
+
+            case 'image/webp':
+
+                if (
+                    function_exists(
+                        'imagecreatefromwebp'
+                    )
+                ) {
+                    return @imagecreatefromwebp($file);
+                }
+
+                break;
+        }
+
+        return false;
     }
 
-    /* ==========================================================
-       MAIN GENERATOR (RETURN PNG BINARY)
-       ========================================================== */
+
+    /* =========================================================
+       CREATE CROPPED PHOTO
+       ========================================================= */
+
+    private function createPhoto(
+        $file,
+        $width,
+        $height
+    ) {
+        $source = $this->loadImage($file);
+
+        if (!$source) {
+            return false;
+        }
+
+        $srcW = imagesx($source);
+        $srcH = imagesy($source);
+
+        $srcRatio = $srcW / $srcH;
+        $dstRatio = $width / $height;
+
+        if ($srcRatio > $dstRatio) {
+
+            /*
+             * Foto terlalu lebar
+             */
+
+            $cropH = $srcH;
+            $cropW = (int) (
+                $srcH * $dstRatio
+            );
+
+            $srcX = (int) (
+                ($srcW - $cropW) / 2
+            );
+
+            $srcY = 0;
+
+        } else {
+
+            /*
+             * Foto terlalu tinggi
+             */
+
+            $cropW = $srcW;
+            $cropH = (int) (
+                $srcW / $dstRatio
+            );
+
+            $srcX = 0;
+
+            $srcY = (int) (
+                ($srcH - $cropH) / 2
+            );
+        }
+
+        $photo = imagecreatetruecolor(
+            $width,
+            $height
+        );
+
+        imagecopyresampled(
+            $photo,
+            $source,
+            0,
+            0,
+            $srcX,
+            $srcY,
+            $width,
+            $height,
+            $cropW,
+            $cropH
+        );
+
+        imagedestroy($source);
+
+        return $photo;
+    }
+
+
+    /* =========================================================
+       GENERATE
+       ========================================================= */
+
     public function generate($id)
     {
-        $s = $this->CI->db->get_where("siswa",["id"=>$id])->row();
-        if (!$s) return null;
+        /*
+         * =====================================================
+         * DATA SISWA
+         * =====================================================
+         */
 
-        /* QR */
-        require_once APPPATH.'libraries/phpqrcode/qrlib.php';
-        $qrF = FCPATH."assets/qrcodes/";
-        if (!is_dir($qrF)) mkdir($qrF);
+        $siswa = $this->CI->db
+    ->select('
+        siswa.*,
+        kelas.nama AS nama_kelas
+    ')
+    ->from('siswa')
+    ->join(
+        'kelas',
+        'kelas.id = siswa.id_kelas',
+        'left'
+    )
+    ->where(
+        'siswa.id',
+        $id
+    )
+    ->get()
+    ->row();
 
-        // if (!$s->token_qr){
-        //     $t = uniqid('qr_');
-        //     $this->CI->db->where("id",$id)->update("siswa",["token_qr"=>$t]);
-        //     $s->token_qr = $t;
-        // }
-
-        $nisn = trim($s->nisn);
-if ($nisn === '') return null;
-
-$qrFile = $qrF.$nisn.".png";
-if (!file_exists($qrFile)) {
-    QRcode::png(
-        $nisn,          // 🔥 ISI QR = NISN
-        $qrFile,
-        QR_ECLEVEL_H,
-        6,
-        2
-    );
-}
-
-
-        /* CANVAS TRANSPARAN */
-        $W=700; $H=1100;
-        $img = $this->roundedCanvas($W,$H,60);
-
-        /* COLORS */
-        $white=imagecolorallocate($img,255,255,255);
-        $blue=imagecolorallocate($img,0,82,164);
-        $blue2=imagecolorallocate($img,0,92,204);
-        $dark=imagecolorallocate($img,30,30,30);
-        $yellow=imagecolorallocate($img,253,195,0);
-
-        /* FONTS */
-        $fontBold=FCPATH."assets/fonts/Roboto-Bold.ttf";
-
-        /* HEADER (melengkung) */
-        imagefilledrectangle($img,60,0,$W-60,240,$blue);
-        imagefilledrectangle($img,0,60,$W,240,$blue);
-        imagefilledellipse($img,60,60,120,120,$blue);
-        imagefilledellipse($img,$W-60,60,120,120,$blue);
-
-        /* LOGO */
-        $logo=FCPATH."assets/img/logobonti.png";
-        if (file_exists($logo)){
-            $lg=imagecreatefrompng($logo);
-            imagecopyresampled($img,$lg,270,20,0,0,160,160,imagesx($lg),imagesy($lg));
+        if (!$siswa) {
+            return null;
         }
 
-        /* SCHOOL NAME */
-        $school="SMK NEGERI 1 CILIMUS";
-        $x=$this->centerX($W,42,$fontBold,$school);
-        imagettftext($img,42,0,$x,230,$white,$fontBold,$school);
 
-        /* ORNAMENT */
-        imagefilledellipse($img,160,290,20,20,$yellow);
-        imagefilledellipse($img,540,290,20,20,$yellow);
+        /*
+         * =====================================================
+         * QR CODE
+         * =====================================================
+         *
+         * Tetap menggunakan NISN sebagai isi QR,
+         * sesuai sistem kamu sekarang.
+         */
 
-        /* PHOTO CIRCLE */
-        $circleD=330;
-        $cx=$W/2;
-        $cy=430;
-        imagefilledellipse($img,$cx,$cy,$circleD,$circleD,$blue2);
+        require_once APPPATH .
+            'libraries/phpqrcode/qrlib.php';
 
-        $photo = (!empty($s->foto) ? FCPATH."uploads/foto/".$s->foto : null);
 
-        if ($photo && file_exists($photo)){
-            $pf=imagecreatefromjpeg($photo);
-            $fw=imagesx($pf); $fh=imagesy($pf);
-            $min=min($fw,$fh);
+        $qrFolder =
+            FCPATH .
+            'assets/qrcodes/';
 
-            $crop=imagecreatetruecolor($circleD,$circleD);
-            imagesavealpha($crop,true);
-            imagefill($crop,0,0,imagecolorallocatealpha($crop,0,0,0,127));
 
-            imagecopyresampled($crop,$pf,0,0,($fw-$min)/2,($fh-$min)/2,$circleD,$circleD,$min,$min);
+        if (!is_dir($qrFolder)) {
 
-            for($x=0;$x<$circleD;$x++){
-                for($y2=0;$y2<$circleD;$y2++){
-                    $dx=$x-$circleD/2; $dy=$y2-$circleD/2;
-                    if ($dx*$dx+$dy*$dy <= ($circleD/2)*($circleD/2)){
-                        $rgb=imagecolorat($crop,$x,$y2);
-                        imagesetpixel($img,$cx-$circleD/2+$x,$cy-$circleD/2+$y2,$rgb);
+            mkdir(
+                $qrFolder,
+                0777,
+                true
+            );
+        }
+
+
+        $nisn = trim(
+            $siswa->nisn
+        );
+
+
+        if ($nisn === '') {
+            return null;
+        }
+
+
+        $qrFile =
+            $qrFolder .
+            $nisn .
+            '.png';
+
+
+        if (!file_exists($qrFile)) {
+
+            QRcode::png(
+                $nisn,
+                $qrFile,
+                QR_ECLEVEL_H,
+                6,
+                2
+            );
+        }
+
+
+        /*
+         * =====================================================
+         * CANVAS
+         * =====================================================
+         */
+
+        $W = $this->W;
+        $H = $this->H;
+
+
+        $img = imagecreatetruecolor(
+            $W,
+            $H
+        );
+
+
+        imagealphablending(
+            $img,
+            true
+        );
+
+
+        imagesavealpha(
+            $img,
+            true
+        );
+
+
+        /*
+         * =====================================================
+         * COLORS
+         * =====================================================
+         */
+
+        $blueDark =
+            imagecolorallocate(
+                $img,
+                7,
+                82,
+                190
+            );
+
+
+        $blue =
+            imagecolorallocate(
+                $img,
+                20,
+                119,
+                232
+            );
+
+
+        $blueLight =
+            imagecolorallocate(
+                $img,
+                76,
+                177,
+                248
+            );
+
+
+        $white =
+            imagecolorallocate(
+                $img,
+                255,
+                255,
+                255
+            );
+
+
+        $whiteSoft =
+            imagecolorallocatealpha(
+                $img,
+                255,
+                255,
+                255,
+                45
+            );
+
+
+        $dark =
+            imagecolorallocate(
+                $img,
+                25,
+                38,
+                55
+            );
+
+
+        $gray =
+            imagecolorallocate(
+                $img,
+                100,
+                116,
+                135
+            );
+
+
+        $yellow =
+            imagecolorallocate(
+                $img,
+                255,
+                204,
+                55
+            );
+
+
+        /*
+         * =====================================================
+         * FONT
+         * =====================================================
+         */
+
+        $fontBold =
+            FCPATH .
+            'assets/fonts/Roboto-Bold.ttf';
+
+
+        $fontRegular =
+            FCPATH .
+            'assets/fonts/Roboto-Regular.ttf';
+
+
+        if (!file_exists($fontRegular)) {
+            $fontRegular = $fontBold;
+        }
+
+
+        /*
+         * =====================================================
+         * BACKGROUND
+         * =====================================================
+         */
+
+        imagefilledrectangle(
+            $img,
+            0,
+            0,
+            $W,
+            $H,
+            $blue
+        );
+
+
+        /*
+         * Header
+         */
+
+        imagefilledrectangle(
+            $img,
+            0,
+            0,
+            $W,
+            145,
+            $blueDark
+        );
+
+
+        /*
+         * Decorative circle kanan atas
+         */
+
+        imagefilledellipse(
+            $img,
+            $W + 30,
+            -20,
+            390,
+            390,
+            $blueLight
+        );
+
+
+        /*
+         * Decorative circle kiri bawah
+         */
+
+        imagefilledellipse(
+            $img,
+            -60,
+            $H + 50,
+            270,
+            270,
+            $blueDark
+        );
+
+
+        /*
+         * Ornamen kecil
+         */
+
+        imagefilledellipse(
+            $img,
+            850,
+            535,
+            18,
+            18,
+            $yellow
+        );
+
+
+        imagefilledellipse(
+            $img,
+            890,
+            500,
+            9,
+            9,
+            $yellow
+        );
+
+
+        /*
+         * =====================================================
+         * LOGO
+         * =====================================================
+         */
+
+        $logo =
+            FCPATH .
+            'assets/img/logobonti.png';
+
+
+        $logoX = 30;
+        $logoY = 22;
+        $logoSize = 92;
+
+
+        if (file_exists($logo)) {
+
+            $logoImg =
+                $this->loadImage(
+                    $logo
+                );
+
+
+            if ($logoImg) {
+
+                /*
+                 * Background logo
+                 */
+
+                $logoBg =
+                    imagecolorallocatealpha(
+                        $img,
+                        255,
+                        255,
+                        255,
+                        100
+                    );
+
+
+                imagefilledellipse(
+                    $img,
+                    $logoX + ($logoSize / 2),
+                    $logoY + ($logoSize / 2),
+                    $logoSize + 8,
+                    $logoSize + 8,
+                    $logoBg
+                );
+
+
+                imagecopyresampled(
+                    $img,
+                    $logoImg,
+                    $logoX,
+                    $logoY,
+                    0,
+                    0,
+                    $logoSize,
+                    $logoSize,
+                    imagesx($logoImg),
+                    imagesy($logoImg)
+                );
+
+
+                imagedestroy(
+                    $logoImg
+                );
+            }
+        }
+
+
+        /*
+         * =====================================================
+         * HEADER TEXT
+         * =====================================================
+         */
+
+        $textX = 145;
+
+
+        /*
+         * Baris 1
+         */
+
+        imagettftext(
+            $img,
+            16,
+            0,
+            $textX,
+            48,
+            $white,
+            $fontBold,
+            'SISTEM INFORMASI AKADEMIK SEKOLAH'
+        );
+
+
+        /*
+         * Baris 2
+         */
+
+        imagettftext(
+            $img,
+            26,
+            0,
+            $textX,
+            82,
+            $white,
+            $fontBold,
+            'SMK NEGERI 1 CILIMUS'
+        );
+
+
+        /*
+         * Baris 3
+         */
+
+        imagettftext(
+            $img,
+            9,
+            0,
+            $textX,
+            108,
+            $whiteSoft,
+            $fontRegular,
+            'KARTU IDENTITAS PESERTA DIDIK'
+        );
+
+
+        /*
+         * =====================================================
+         * STATUS
+         * =====================================================
+         */
+
+        $statusW = 125;
+        $statusH = 36;
+
+        $statusX =
+            $W -
+            $statusW -
+            28;
+
+        $statusY = 28;
+
+
+        $statusBg =
+            imagecolorallocatealpha(
+                $img,
+                255,
+                255,
+                255,
+                100
+            );
+
+
+        $this->drawRoundedRect(
+            $img,
+            $statusX,
+            $statusY,
+            $statusX + $statusW,
+            $statusY + $statusH,
+            18,
+            $statusBg
+        );
+
+
+        $status =
+            'SISWA AKTIF';
+
+
+        $statusSize = 10;
+
+
+        $statusBox =
+            imagettfbbox(
+                $statusSize,
+                0,
+                $fontBold,
+                $status
+            );
+
+
+        $statusTextW =
+            abs(
+                $statusBox[2] -
+                $statusBox[0]
+            );
+
+
+        imagettftext(
+            $img,
+            $statusSize,
+            0,
+            $statusX +
+                (($statusW - $statusTextW) / 2),
+            $statusY + 23,
+            $white,
+            $fontBold,
+            $status
+        );
+
+
+        /*
+         * =====================================================
+         * BODY PANEL
+         * =====================================================
+         */
+
+        $panelX = 25;
+        $panelY = 163;
+        $panelW = $W - 50;
+        $panelH = 350;
+
+
+        $panel =
+            imagecolorallocatealpha(
+                $img,
+                255,
+                255,
+                255,
+                8
+            );
+
+
+        $this->drawRoundedRect(
+            $img,
+            $panelX,
+            $panelY,
+            $panelX + $panelW,
+            $panelY + $panelH,
+            25,
+            $panel
+        );
+
+
+        /*
+         * =====================================================
+         * FOTO
+         * =====================================================
+         */
+
+        $photoX = 48;
+        $photoY = 190;
+
+        $photoW = 190;
+        $photoH = 245;
+
+
+        /*
+         * Border putih
+         */
+
+        $photoBorder =
+            imagecolorallocate(
+                $img,
+                255,
+                255,
+                255
+            );
+
+
+        $this->drawRoundedRect(
+            $img,
+            $photoX - 5,
+            $photoY - 5,
+            $photoX + $photoW + 5,
+            $photoY + $photoH + 5,
+            20,
+            $photoBorder
+        );
+
+
+        /*
+         * Cari foto
+         */
+
+        $photo = null;
+
+
+        if (!empty($siswa->foto)) {
+
+            $foto1 =
+                FCPATH .
+                'uploads/foto/' .
+                $siswa->foto;
+
+
+            $foto2 =
+                FCPATH .
+                'uploads/siswa/' .
+                $siswa->foto;
+
+
+            if (file_exists($foto1)) {
+
+                $photo = $foto1;
+
+            } elseif (file_exists($foto2)) {
+
+                $photo = $foto2;
+            }
+        }
+
+
+        if ($photo) {
+
+            $photoImg =
+                $this->createPhoto(
+                    $photo,
+                    $photoW,
+                    $photoH
+                );
+
+
+            if ($photoImg) {
+
+                /*
+                 * Rounded photo
+                 */
+
+                $rounded =
+                    imagecreatetruecolor(
+                        $photoW,
+                        $photoH
+                    );
+
+
+                imagealphablending(
+                    $rounded,
+                    false
+                );
+
+
+                imagesavealpha(
+                    $rounded,
+                    true
+                );
+
+
+                $transparent =
+                    imagecolorallocatealpha(
+                        $rounded,
+                        0,
+                        0,
+                        0,
+                        127
+                    );
+
+
+                imagefill(
+                    $rounded,
+                    0,
+                    0,
+                    $transparent
+                );
+
+
+                /*
+                 * Copy photo
+                 */
+
+                imagecopy(
+                    $rounded,
+                    $photoImg,
+                    0,
+                    0,
+                    0,
+                    0,
+                    $photoW,
+                    $photoH
+                );
+
+
+                /*
+                 * Mask rounded
+                 */
+
+                $mask =
+                    imagecreatetruecolor(
+                        $photoW,
+                        $photoH
+                    );
+
+
+                imagealphablending(
+                    $mask,
+                    false
+                );
+
+
+                imagesavealpha(
+                    $mask,
+                    true
+                );
+
+
+                $transparentMask =
+                    imagecolorallocatealpha(
+                        $mask,
+                        0,
+                        0,
+                        0,
+                        127
+                    );
+
+
+                $whiteMask =
+                    imagecolorallocatealpha(
+                        $mask,
+                        255,
+                        255,
+                        255,
+                        0
+                    );
+
+
+                imagefill(
+                    $mask,
+                    0,
+                    0,
+                    $transparentMask
+                );
+
+
+                $radius = 18;
+
+
+                imagefilledrectangle(
+                    $mask,
+                    $radius,
+                    0,
+                    $photoW - $radius,
+                    $photoH,
+                    $whiteMask
+                );
+
+
+                imagefilledrectangle(
+                    $mask,
+                    0,
+                    $radius,
+                    $photoW,
+                    $photoH - $radius,
+                    $whiteMask
+                );
+
+
+                imagefilledellipse(
+                    $mask,
+                    $radius,
+                    $radius,
+                    $radius * 2,
+                    $radius * 2,
+                    $whiteMask
+                );
+
+
+                imagefilledellipse(
+                    $mask,
+                    $photoW - $radius,
+                    $radius,
+                    $radius * 2,
+                    $radius * 2,
+                    $whiteMask
+                );
+
+
+                imagefilledellipse(
+                    $mask,
+                    $radius,
+                    $photoH - $radius,
+                    $radius * 2,
+                    $radius * 2,
+                    $whiteMask
+                );
+
+
+                imagefilledellipse(
+                    $mask,
+                    $photoW - $radius,
+                    $photoH - $radius,
+                    $radius * 2,
+                    $radius * 2,
+                    $whiteMask
+                );
+
+
+                /*
+                 * Apply mask
+                 */
+
+                for (
+                    $px = 0;
+                    $px < $photoW;
+                    $px++
+                ) {
+
+                    for (
+                        $py = 0;
+                        $py < $photoH;
+                        $py++
+                    ) {
+
+                        $maskColor =
+                            imagecolorat(
+                                $mask,
+                                $px,
+                                $py
+                            );
+
+
+                        $alpha =
+                            ($maskColor >> 24) & 0x7F;
+
+
+                        $color =
+                            imagecolorat(
+                                $rounded,
+                                $px,
+                                $py
+                            );
+
+
+                        $r =
+                            ($color >> 16) & 0xFF;
+
+                        $g =
+                            ($color >> 8) & 0xFF;
+
+                        $b =
+                            $color & 0xFF;
+
+
+                        imagesetpixel(
+                            $rounded,
+                            $px,
+                            $py,
+                            imagecolorallocatealpha(
+                                $rounded,
+                                $r,
+                                $g,
+                                $b,
+                                $alpha
+                            )
+                        );
                     }
                 }
+
+
+                imagecopy(
+                    $img,
+                    $rounded,
+                    $photoX,
+                    $photoY,
+                    0,
+                    0,
+                    $photoW,
+                    $photoH
+                );
+
+
+                imagedestroy(
+                    $rounded
+                );
+
+                imagedestroy(
+                    $mask
+                );
+
+                imagedestroy(
+                    $photoImg
+                );
             }
 
         } else {
-            $p=explode(" ",strtoupper($s->nama));
-            $init=substr($p[0],0,1).substr(end($p),0,1);
-            $fs=85;
-            $x=$this->centerX($W,$fs,$fontBold,$init);
-            imagettftext($img,$fs,0,$x,$cy+30,$white,$fontBold,$init);
+
+            /*
+             * INISIAL
+             */
+
+            $parts =
+                preg_split(
+                    '/\s+/',
+                    strtoupper(
+                        trim(
+                            $siswa->nama
+                        )
+                    )
+                );
+
+
+            $initial =
+                substr(
+                    $parts[0] ?? 'S',
+                    0,
+                    1
+                );
+
+
+            if (count($parts) > 1) {
+
+                $initial .=
+                    substr(
+                        end($parts),
+                        0,
+                        1
+                    );
+            }
+
+
+            $initialSize = 70;
+
+
+            $initialBox =
+                imagettfbbox(
+                    $initialSize,
+                    0,
+                    $fontBold,
+                    $initial
+                );
+
+
+            $initialW =
+                abs(
+                    $initialBox[2] -
+                    $initialBox[0]
+                );
+
+
+            $initialX =
+                $photoX +
+                (($photoW - $initialW) / 2);
+
+
+            imagettftext(
+                $img,
+                $initialSize,
+                0,
+                $initialX,
+                $photoY + 145,
+                $blue,
+                $fontBold,
+                $initial
+            );
         }
 
-        /* NAME */
-        $full=strtoupper($s->nama);
-        list($n1,$n2)=$this->splitNameTwoLines($full,22);
 
-        $y=$cy+($circleD/2)+45;
+        /*
+         * =====================================================
+         * DATA SISWA
+         * =====================================================
+         */
 
-        $fs1=$this->autoFitText(600,$fontBold,$n1,40,24);
-        $x1=$this->centerX($W,$fs1,$fontBold,$n1);
-        imagettftext($img,$fs1,0,$x1,$y,$dark,$fontBold,$n1);
-        $y += $fs1 + 10;
+        $dataX = 270;
+        $dataY = 205;
 
-        if (trim($n2)!=""){
-            $fs2=$this->autoFitText(600,$fontBold,$n2,36,22);
-            $x2=$this->centerX($W,$fs2,$fontBold,$n2);
-            imagettftext($img,$fs2,0,$x2,$y,$dark,$fontBold,$n2);
-            $y += $fs2 + 25;
-        } else {
-            $y += 15;
+
+        /*
+         * Label section
+         */
+
+        imagettftext(
+            $img,
+            11,
+            0,
+            $dataX,
+            $dataY,
+            $blueDark,
+            $fontBold,
+            'DATA SISWA'
+        );
+
+
+        /*
+         * Garis kecil
+         */
+
+        imageline(
+            $img,
+            $dataX,
+            $dataY + 12,
+            $dataX + 310,
+            $dataY + 12,
+            $blueLight
+        );
+
+
+        /*
+         * Nama
+         */
+
+        $nama =
+            strtoupper(
+                trim(
+                    $siswa->nama
+                )
+            );
+
+
+        $namaSize =
+            $this->autoFitText(
+                315,
+                $fontBold,
+                $nama,
+                30,
+                18
+            );
+
+
+        imagettftext(
+            $img,
+            $namaSize,
+            0,
+            $dataX,
+            $dataY + 55,
+            $dark,
+            $fontBold,
+            $nama
+        );
+
+
+        /*
+         * Detail
+         */
+
+        $detailY =
+            $dataY + 100;
+
+
+        /*
+         * NISN
+         */
+
+        imagettftext(
+            $img,
+            10,
+            0,
+            $dataX,
+            $detailY,
+            $gray,
+            $fontRegular,
+            'NISN'
+        );
+
+
+        imagettftext(
+            $img,
+            10,
+            0,
+            $dataX + 70,
+            $detailY,
+            $dark,
+            $fontBold,
+            ': ' . ($siswa->nisn ?: '-')
+        );
+
+
+        /*
+         * NIS
+         */
+
+        imagettftext(
+            $img,
+            10,
+            0,
+            $dataX,
+            $detailY + 30,
+            $gray,
+            $fontRegular,
+            'NIS'
+        );
+
+
+        imagettftext(
+            $img,
+            10,
+            0,
+            $dataX + 70,
+            $detailY + 30,
+            $dark,
+            $fontBold,
+            ': ' . ($siswa->nis ?: '-')
+        );
+
+
+        /*
+         * Kelas
+         */
+
+        $kelas =
+            isset($siswa->nama_kelas)
+                ? $siswa->nama_kelas
+                : '-';
+
+
+        imagettftext(
+            $img,
+            10,
+            0,
+            $dataX,
+            $detailY + 60,
+            $gray,
+            $fontRegular,
+            'KELAS'
+        );
+
+
+        imagettftext(
+            $img,
+            10,
+            0,
+            $dataX + 70,
+            $detailY + 60,
+            $dark,
+            $fontBold,
+            ': ' . $kelas
+        );
+
+
+        /*
+         * =====================================================
+         * QR
+         * =====================================================
+         */
+
+        $qrX = 670;
+        $qrY = 205;
+        $qrBox = 170;
+
+
+        /*
+         * QR white container
+         */
+
+        $qrWhite =
+            imagecolorallocate(
+                $img,
+                255,
+                255,
+                255
+            );
+
+
+        $this->drawRoundedRect(
+            $img,
+            $qrX,
+            $qrY,
+            $qrX + $qrBox,
+            $qrY + $qrBox,
+            18,
+            $qrWhite
+        );
+
+
+        /*
+         * Load QR
+         */
+
+        $qr =
+            $this->loadImage(
+                $qrFile
+            );
+
+
+        if ($qr) {
+
+            $padding = 13;
+
+
+            imagecopyresampled(
+                $img,
+                $qr,
+                $qrX + $padding,
+                $qrY + $padding,
+                0,
+                0,
+                $qrBox - ($padding * 2),
+                $qrBox - ($padding * 2),
+                imagesx($qr),
+                imagesy($qr)
+            );
+
+
+            imagedestroy(
+                $qr
+            );
         }
 
-        /* NIS BADGE */
-        $badgeW=420; $badgeH=80;
-        $bx=($W-$badgeW)/2;
-        $this->drawRoundedRect($img,$bx,$y,$bx+$badgeW,$y+$badgeH,35,$blue2);
 
-        $xN=$this->centerX($W,38,$fontBold,$s->nis);
-        imagettftext($img,38,0,$xN,$y+55,$white,$fontBold,$s->nis);
+        /*
+         * QR LABEL
+         */
 
-        $y += $badgeH + 40;
+        $qrLabel =
+            'SCAN UNTUK IZIN KELUAR';
 
-        /* QR */
-        $qr=imagecreatefrompng($qrFile);
-        $qrSize=260;
-        $qrX=($W-$qrSize)/2;
-        $qrY=$y-25;
-        imagecopyresampled($img,$qr,$qrX,$qrY,0,0,$qrSize,$qrSize,imagesx($qr),imagesy($qr));
 
-        /* OUTPUT = PNG BINARY */
+        $qrFontSize = 9;
+
+
+        $qrBoxText =
+            imagettfbbox(
+                $qrFontSize,
+                0,
+                $fontBold,
+                $qrLabel
+            );
+
+
+        $qrTextWidth =
+            abs(
+                $qrBoxText[2] -
+                $qrBoxText[0]
+            );
+
+
+        imagettftext(
+            $img,
+            $qrFontSize,
+            0,
+            $qrX +
+                (($qrBox - $qrTextWidth) / 2),
+            $qrY + $qrBox + 21,
+            $white,
+            $fontBold,
+            $qrLabel
+        );
+
+
+        /*
+         * =====================================================
+         * FOOTER
+         * =====================================================
+         */
+
+        $footerY = 570;
+
+
+        imageline(
+            $img,
+            35,
+            $footerY - 16,
+            $W - 35,
+            $footerY - 16,
+            $whiteSoft
+        );
+
+
+        imagettftext(
+            $img,
+            8,
+            0,
+            35,
+            $footerY,
+            $whiteSoft,
+            $fontRegular,
+            'Kartu identitas resmi peserta didik'
+        );
+
+
+        $footer =
+            'ID SISWA';
+
+
+        $footerSize = 8;
+
+
+        $footerBox =
+            imagettfbbox(
+                $footerSize,
+                0,
+                $fontBold,
+                $footer
+            );
+
+
+        $footerWidth =
+            abs(
+                $footerBox[2] -
+                $footerBox[0]
+            );
+
+
+        imagettftext(
+            $img,
+            $footerSize,
+            0,
+            $W - 35 - $footerWidth,
+            $footerY,
+            $whiteSoft,
+            $fontBold,
+            $footer
+        );
+
+
+        /*
+         * =====================================================
+         * OUTPUT PNG BINARY
+         * =====================================================
+         */
+
         ob_start();
-        imagepng($img,null,9);
-        $binary = ob_get_clean();
 
-        imagedestroy($img);
+        imagepng(
+            $img,
+            null,
+            9
+        );
+
+        $binary =
+            ob_get_clean();
+
+
+        imagedestroy(
+            $img
+        );
+
+
         return $binary;
     }
-    
 }
