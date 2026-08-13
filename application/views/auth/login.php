@@ -968,7 +968,7 @@
 
 
                     <h3>
-                        Selamat Datang 👋
+                        Selamat Datang
                     </h3>
 
 

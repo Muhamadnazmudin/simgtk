@@ -761,7 +761,7 @@
                 <div class="login-heading">
 
                     <h3>
-                        Selamat Datang 👋
+                        Selamat Datang
                     </h3>
 
                     <p>
