@@ -165,6 +165,19 @@ body.dark-mode .sidebar .nav-item.active .nav-link{
         </a>
     </li>
 
+<li class="nav-item <?= ($active=='wk_riwayat')?'active':'' ?>">
+
+    <a class="nav-link"
+       href="<?= site_url('riwayat_biodata') ?>">
+
+        <i class="fas fa-history"></i>
+
+        <span>Riwayat Perubahan</span>
+
+    </a>
+
+</li>
+
     <li class="nav-item <?= ($active=='wk_berkas')?'active':'' ?>">
     <a class="nav-link"
        href="<?= site_url('Walikelas_berkas') ?>">

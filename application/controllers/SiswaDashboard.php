@@ -9,6 +9,7 @@ private $sheet_url = 'https://script.google.com/macros/s/AKfycbySQTOl8EZLnAxYaO5
 
     $this->load->model('Siswa_model');
     $this->load->model('Siswa_jadwal_model');
+    $this->load->model('Siswa_biodata_log_model');
 
     $this->load->model(
         'Sync_queue_model',
@@ -248,111 +249,257 @@ public function edit_biodata()
 }
 public function update_biodata()
 {
-
-$this->cek_login();
+    $this->cek_login();
 
     $siswa = $this->getSiswa();
-    if (!$siswa) redirect('SiswaAuth/logout');
+
+    if (!$siswa) {
+        redirect('SiswaAuth/logout');
+    }
+
+
+    // =========================================================
+    // DATA BARU DARI FORM
+    // =========================================================
 
     $data = [
-        'tempat_lahir' => $this->input->post('tempat_lahir'),
-        'tgl_lahir' => $this->input->post('tgl_lahir'),
-        'nomor_kk' => $this->input->post('nomor_kk'),
-        'nik' => $this->input->post('nik'),
-        'anak_keberapa' => $this->input->post('anak_keberapa'),
-        'agama' => $this->input->post('agama'),
-        'alamat' => $this->input->post('alamat'),
-        'rt' => $this->input->post('rt'),
-        'rw' => $this->input->post('rw'),
-        'dusun' => $this->input->post('dusun'),
-        'kecamatan' => $this->input->post('kecamatan'),
-        'kode_pos' => $this->input->post('kode_pos'),
-        'telp' => $this->input->post('telp'),
-        'hp' => $this->input->post('hp'),
-        'email' => $this->input->post('email'),
 
-        'desil'        => $this->input->post('desil'),
-'penerima_kps' => $this->input->post('penerima_kps'),
-'no_kps'       => $this->input->post('no_kps'),
+        'tempat_lahir'      => $this->input->post('tempat_lahir'),
+        'tgl_lahir'         => $this->input->post('tgl_lahir'),
+        'nomor_kk'          => $this->input->post('nomor_kk'),
+        'nik'               => $this->input->post('nik'),
+        'anak_keberapa'     => $this->input->post('anak_keberapa'),
+        'agama'             => $this->input->post('agama'),
 
-        'tinggi_badan' => $this->input->post('tinggi_badan'),
-        'berat_badan' => $this->input->post('berat_badan'),
-        'hobi' => $this->input->post('hobi'),
-        'cita_cita' => $this->input->post('cita_cita'),
+        'alamat'            => $this->input->post('alamat'),
+        'rt'                => $this->input->post('rt'),
+        'rw'                => $this->input->post('rw'),
+        'dusun'             => $this->input->post('dusun'),
+        'kecamatan'         => $this->input->post('kecamatan'),
+        'kode_pos'          => $this->input->post('kode_pos'),
 
-        'sekolah_asal' => $this->input->post('sekolah_asal'),
-        'skhun' => $this->input->post('skhun'),
+        'telp'              => $this->input->post('telp'),
+        'hp'                => $this->input->post('hp'),
+        'email'             => $this->input->post('email'),
 
-        'nama_ayah' => $this->input->post('nama_ayah'),
-        'nik_ayah' => $this->input->post('nik_ayah'),
-        'tahun_lahir_ayah' => $this->input->post('tahun_lahir_ayah'),
-        'pendidikan_ayah' => $this->input->post('pendidikan_ayah'),
-        'pekerjaan_ayah' => $this->input->post('pekerjaan_ayah'),
-        'penghasilan_ayah' => $this->input->post('penghasilan_ayah'),
+        'desil'             => $this->input->post('desil'),
+        'penerima_kps'      => $this->input->post('penerima_kps'),
+        'no_kps'            => $this->input->post('no_kps'),
 
-        'nama_ibu' => $this->input->post('nama_ibu'),
-        'nik_ibu' => $this->input->post('nik_ibu'),
-        'tahun_lahir_ibu' => $this->input->post('tahun_lahir_ibu'),
-        'pendidikan_ibu' => $this->input->post('pendidikan_ibu'),
-        'pekerjaan_ibu' => $this->input->post('pekerjaan_ibu'),
-        'penghasilan_ibu' => $this->input->post('penghasilan_ibu'),
+        'tinggi_badan'      => $this->input->post('tinggi_badan'),
+        'berat_badan'       => $this->input->post('berat_badan'),
+        'hobi'              => $this->input->post('hobi'),
+        'cita_cita'         => $this->input->post('cita_cita'),
 
-        'nama_wali' => $this->input->post('nama_wali'),
-        'nik_wali' => $this->input->post('nik_wali'),
-        'tahun_lahir_wali' => $this->input->post('tahun_lahir_wali'),
-        'pendidikan_wali' => $this->input->post('pendidikan_wali'),
-        'pekerjaan_wali' => $this->input->post('pekerjaan_wali'),
-        'penghasilan_wali' => $this->input->post('penghasilan_wali'),
+        'sekolah_asal'      => $this->input->post('sekolah_asal'),
+        'skhun'             => $this->input->post('skhun'),
 
-        'no_hp_ortu' => $this->input->post('no_hp_ortu'),
+
+        // =====================================================
+        // AYAH
+        // =====================================================
+
+        'nama_ayah'         => $this->input->post('nama_ayah'),
+        'nik_ayah'          => $this->input->post('nik_ayah'),
+        'tahun_lahir_ayah'  => $this->input->post('tahun_lahir_ayah'),
+        'pendidikan_ayah'   => $this->input->post('pendidikan_ayah'),
+        'pekerjaan_ayah'    => $this->input->post('pekerjaan_ayah'),
+        'penghasilan_ayah'  => $this->input->post('penghasilan_ayah'),
+
+
+        // =====================================================
+        // IBU
+        // =====================================================
+
+        'nama_ibu'          => $this->input->post('nama_ibu'),
+        'nik_ibu'           => $this->input->post('nik_ibu'),
+        'tahun_lahir_ibu'   => $this->input->post('tahun_lahir_ibu'),
+        'pendidikan_ibu'    => $this->input->post('pendidikan_ibu'),
+        'pekerjaan_ibu'     => $this->input->post('pekerjaan_ibu'),
+        'penghasilan_ibu'   => $this->input->post('penghasilan_ibu'),
+
+
+        // =====================================================
+        // WALI
+        // =====================================================
+
+        'nama_wali'         => $this->input->post('nama_wali'),
+        'nik_wali'          => $this->input->post('nik_wali'),
+        'tahun_lahir_wali'  => $this->input->post('tahun_lahir_wali'),
+        'pendidikan_wali'   => $this->input->post('pendidikan_wali'),
+        'pekerjaan_wali'    => $this->input->post('pekerjaan_wali'),
+        'penghasilan_wali'  => $this->input->post('penghasilan_wali'),
+
+
+        // =====================================================
+        // ORANG TUA
+        // =====================================================
+
+        'no_hp_ortu'        => $this->input->post('no_hp_ortu')
     ];
-// =========================================================
-// SIMPAN PERUBAHAN BIODATA
-// =========================================================
 
-$update = $this->db
-    ->where('id', $siswa->id)
-    ->update('siswa', $data);
 
-if (!$update) {
+    // =========================================================
+    // LABEL FIELD UNTUK LOG
+    // =========================================================
 
-    log_message(
-        'error',
-        'UPDATE BIODATA GAGAL SISWA ID: ' .
-        $siswa->id .
-        ' | ' .
-        $this->db->last_query()
+    $field_labels = [
+
+        'tempat_lahir'      => 'Tempat Lahir',
+        'tgl_lahir'         => 'Tanggal Lahir',
+        'nomor_kk'          => 'Nomor KK',
+        'nik'               => 'NIK',
+        'anak_keberapa'     => 'Anak Keberapa',
+        'agama'             => 'Agama',
+
+        'alamat'            => 'Alamat',
+        'rt'                => 'RT',
+        'rw'                => 'RW',
+        'dusun'             => 'Dusun',
+        'kecamatan'         => 'Kecamatan',
+        'kode_pos'          => 'Kode Pos',
+
+        'telp'              => 'Telepon',
+        'hp'                => 'No. HP',
+        'email'             => 'Email',
+
+        'desil'             => 'Desil',
+        'penerima_kps'      => 'Penerima KPS',
+        'no_kps'            => 'No. KPS',
+
+        'tinggi_badan'      => 'Tinggi Badan',
+        'berat_badan'       => 'Berat Badan',
+        'hobi'              => 'Hobi',
+        'cita_cita'         => 'Cita-cita',
+
+        'sekolah_asal'      => 'Sekolah Asal',
+        'skhun'             => 'SKHUN',
+
+
+        // AYAH
+
+        'nama_ayah'         => 'Nama Ayah',
+        'nik_ayah'          => 'NIK Ayah',
+        'tahun_lahir_ayah'  => 'Tahun Lahir Ayah',
+        'pendidikan_ayah'   => 'Pendidikan Ayah',
+        'pekerjaan_ayah'    => 'Pekerjaan Ayah',
+        'penghasilan_ayah'  => 'Penghasilan Ayah',
+
+
+        // IBU
+
+        'nama_ibu'          => 'Nama Ibu',
+        'nik_ibu'           => 'NIK Ibu',
+        'tahun_lahir_ibu'   => 'Tahun Lahir Ibu',
+        'pendidikan_ibu'    => 'Pendidikan Ibu',
+        'pekerjaan_ibu'     => 'Pekerjaan Ibu',
+        'penghasilan_ibu'   => 'Penghasilan Ibu',
+
+
+        // WALI
+
+        'nama_wali'         => 'Nama Wali',
+        'nik_wali'          => 'NIK Wali',
+        'tahun_lahir_wali'  => 'Tahun Lahir Wali',
+        'pendidikan_wali'   => 'Pendidikan Wali',
+        'pekerjaan_wali'    => 'Pekerjaan Wali',
+        'penghasilan_wali'  => 'Penghasilan Wali',
+
+
+        // ORANG TUA
+
+        'no_hp_ortu'        => 'No. HP Orang Tua'
+    ];
+
+
+    // =========================================================
+    // SIMPAN BIODATA
+    // =========================================================
+
+    $update = $this->db
+        ->where('id', $siswa->id)
+        ->update('siswa', $data);
+
+
+    // =========================================================
+    // JIKA GAGAL
+    // =========================================================
+
+    if (!$update) {
+
+        log_message(
+            'error',
+            'UPDATE BIODATA GAGAL SISWA ID: ' .
+            $siswa->id .
+            ' | ' .
+            $this->db->last_query()
+        );
+
+        return $this->output
+            ->set_status_header(500)
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'status'  => false,
+                'message' => 'Gagal menyimpan biodata.'
+            ]));
+    }
+
+
+    // =========================================================
+    // CATAT PERUBAHAN
+    // =========================================================
+
+    foreach ($field_labels as $field_name => $field_label) {
+
+        // Nilai lama
+        $old_value = isset($siswa->$field_name)
+            ? trim((string) $siswa->$field_name)
+            : '';
+
+
+        // Nilai baru
+        $new_value = isset($data[$field_name])
+            ? trim((string) $data[$field_name])
+            : '';
+
+
+        // Tidak berubah → tidak perlu dicatat
+        if ($old_value === $new_value) {
+            continue;
+        }
+
+
+        // Simpan / timpa log
+        $this->Siswa_biodata_log_model->save_change(
+            $siswa->id,
+            $field_name,
+            $field_label,
+            $old_value,
+            $new_value,
+            $siswa->id
+        );
+    }
+
+
+    // =========================================================
+    // MASUKKAN KE QUEUE SINKRONISASI
+    // =========================================================
+
+    $this->sync_queue->tandai_biodata_pending(
+        $siswa->id
     );
 
-    return $this->output
-        ->set_status_header(500)
-        ->set_content_type('application/json')
-        ->set_output(json_encode([
-            'status'  => false,
-            'message' => 'Gagal menyimpan biodata.'
-        ]));
-}
 
+    // =========================================================
+    // SELESAI
+    // =========================================================
 
-// =========================================================
-// MASUKKAN KE QUEUE BIODATA
-// =========================================================
+    $this->session->set_flashdata(
+        'success',
+        'Biodata berhasil diperbarui dan menunggu sinkronisasi.'
+    );
 
-$this->sync_queue->tandai_biodata_pending(
-    $siswa->id
-);
-
-
-// =========================================================
-// SELESAI
-// =========================================================
-
-$this->session->set_flashdata(
-    'success',
-    'Biodata berhasil diperbarui dan menunggu sinkronisasi.'
-);
-
-redirect('SiswaDashboard/biodata');
+    redirect('SiswaDashboard/biodata');
 }
 
 private function syncGoogleSheet($lama, $baru)
