@@ -123,7 +123,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                             <i class="fas fa-sync-alt"></i>
 
-                            Sinkronkan Sekarang
+                            Kirim-sinkron Data
 
                         </a>
 
