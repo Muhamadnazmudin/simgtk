@@ -20,7 +20,10 @@ class Auth extends CI_Controller {
 
         if ($user && password_verify($password, $user->password)) {
 
-            // ================= SESSION DASAR =================
+    // ================= LOGIN TERAKHIR =================
+    $this->User_model->update_last_login($user->id);
+
+    // ================= SESSION DASAR =================
             $this->session->set_userdata([
                 'logged_in' => TRUE,
                 'user_id'   => $user->id,

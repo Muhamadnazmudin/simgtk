@@ -146,12 +146,12 @@ $isViewOnly = in_array($role, ['operator', 'bpbk']);
         <i class="fas fa-edit"></i>
     </a>
 
-    <a href="<?= site_url('siswa/delete/'.$s->id) ?>"
+    <!-- <a href="<?= site_url('siswa/delete/'.$s->id) ?>"
        onclick="return confirm('Hapus data ini?')"
        class="btn btn-danger btn-sm"
        title="Hapus">
         <i class="fas fa-trash"></i>
-    </a>
+    </a> -->
 
 <?php endif; ?>
 
@@ -170,12 +170,12 @@ $isViewOnly = in_array($role, ['operator', 'bpbk']);
 
 
 <!-- 🔹 Tombol Cetak Surat Pernyataan -->
-<!-- <a href="<?= site_url('siswa/surat_pernyataan/'.$s->id) ?>"
+<a href="<?= site_url('siswa/surat_pernyataan/'.$s->id) ?>"
    class="btn btn-info btn-sm"
    target="_blank"
    title="Cetak Surat Pernyataan">
-   <i class="fas fa-print"></i>
-</a> -->
+   <i class="fas fa-envelope"></i>
+</a>
 
 </td>
 

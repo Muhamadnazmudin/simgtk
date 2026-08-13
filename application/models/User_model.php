@@ -58,4 +58,13 @@ class User_model extends CI_Model {
   public function get_roles() {
     return $this->db->get('roles')->result();
   }
+
+  public function update_last_login($user_id)
+{
+    return $this->db
+        ->where('id', $user_id)
+        ->update('users', [
+            'last_login' => date('Y-m-d H:i:s')
+        ]);
+}
 }
