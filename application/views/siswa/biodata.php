@@ -119,7 +119,7 @@
             </td>
         </tr>
 
-        <tr>
+        <!-- <tr>
             <td class="bio-label">Penerima KPS</td>
             <td class="bio-value">
                 <?= $siswa->penerima_kps ?>
@@ -131,7 +131,7 @@
             <td class="bio-value">
                 <?= $siswa->no_kps ?>
             </td>
-        </tr>
+        </tr> -->
 
     </table>
 </div>
