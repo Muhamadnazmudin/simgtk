@@ -78,13 +78,29 @@ class Berkas_siswa_model extends CI_Model
      * =========================================================
      */
     public function get_siswa_by_id($id)
-    {
-        return $this->db
-            ->where('id', (int) $id)
-            ->where('status', 'aktif')
-            ->get('siswa')
-            ->row();
-    }
+{
+    return $this->db
+        ->select('
+            s.*,
+            k.nama AS nama_kelas
+        ')
+        ->from('siswa s')
+        ->join(
+            'kelas k',
+            'k.id = s.id_kelas',
+            'left'
+        )
+        ->where(
+            's.id',
+            (int) $id
+        )
+        ->where(
+            's.status',
+            'aktif'
+        )
+        ->get()
+        ->row();
+}
 
 
     /**
