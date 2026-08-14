@@ -43,58 +43,155 @@ class Guru extends CI_Controller {
         return $data;
     }
 
-    // ================== INDEX ==================
-    // ================== INDEX ==================
-public function index($offset = 0)
+    public function index($offset = 0)
 {
-    // ==========================================
+    // =========================================================
+    // PENCARIAN
+    // =========================================================
+
+    $search = trim(
+        $this->input->get('search', TRUE)
+    );
+
+
+    // =========================================================
     // PAGINATION
-    // ==========================================
+    // =========================================================
 
     $config['base_url'] = site_url('guru/index');
-    $config['total_rows'] = $this->Guru_model->count_all();
+
     $config['per_page'] = 10;
+
     $config['uri_segment'] = 3;
 
-    $config['full_tag_open'] = '<ul class="pagination justify-content-center">';
-    $config['full_tag_close'] = '</ul>';
+    /*
+     * Jika ada pencarian,
+     * hitung jumlah data berdasarkan keyword.
+     */
 
-    $config['num_tag_open'] = '<li class="page-item">';
-    $config['num_tag_close'] = '</li>';
+    $config['total_rows'] =
+        $this->Guru_model->count_all($search);
 
-    $config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
-    $config['cur_tag_close'] = '</span></li>';
+
+    /*
+     * Pertahankan keyword ketika pindah halaman.
+     */
+
+    if ($search !== '') {
+
+        $config['suffix'] =
+            '?search=' .
+            rawurlencode($search);
+
+        $config['first_url'] =
+            $config['base_url'] .
+            '?search=' .
+            rawurlencode($search);
+    }
+
+
+    // =========================================================
+    // STYLE PAGINATION
+    // =========================================================
+
+    $config['full_tag_open'] =
+        '<ul class="pagination justify-content-center">';
+
+    $config['full_tag_close'] =
+        '</ul>';
+
+    $config['first_tag_open'] =
+        '<li class="page-item">';
+
+    $config['first_tag_close'] =
+        '</li>';
+
+    $config['last_tag_open'] =
+        '<li class="page-item">';
+
+    $config['last_tag_close'] =
+        '</li>';
+
+    $config['next_tag_open'] =
+        '<li class="page-item">';
+
+    $config['next_tag_close'] =
+        '</li>';
+
+    $config['prev_tag_open'] =
+        '<li class="page-item">';
+
+    $config['prev_tag_close'] =
+        '</li>';
+
+    $config['num_tag_open'] =
+        '<li class="page-item">';
+
+    $config['num_tag_close'] =
+        '</li>';
+
+    $config['cur_tag_open'] =
+        '<li class="page-item active"><span class="page-link">';
+
+    $config['cur_tag_close'] =
+        '</span></li>';
 
     $config['attributes'] = [
         'class' => 'page-link'
     ];
 
     $config['next_link'] = '&raquo;';
+
     $config['prev_link'] = '&laquo;';
 
-    $this->pagination->initialize($config);
+    $config['first_link'] = 'First';
+
+    $config['last_link'] = 'Last';
 
 
-    // ==========================================
-    // DATA GURU
-    // ==========================================
-
-    $data['title']  = 'Data Guru';
-    $data['active'] = 'guru';
-
-    $data['guru'] = $this->Guru_model->get_all(
-        $config['per_page'],
-        $offset
+    $this->pagination->initialize(
+        $config
     );
 
-    $data['pagination'] = $this->pagination->create_links();
-    $data['start']      = $offset;
+
+    // =========================================================
+    // DATA GURU
+    // =========================================================
+
+    $data['title'] = 'Data Guru';
+
+    $data['active'] = 'guru';
+
+    $data['guru'] =
+        $this->Guru_model->get_all(
+            $config['per_page'],
+            $offset,
+            $search
+        );
 
 
-    // ==========================================
+    // =========================================================
+    // PAGINATION
+    // =========================================================
+
+    $data['pagination'] =
+        $this->pagination->create_links();
+
+    $data['start'] =
+        $offset;
+
+
+    // =========================================================
+    // KEYWORD PENCARIAN
+    // =========================================================
+
+    $data['search'] =
+        $search;
+
+
+    // =========================================================
     // STATISTIK GURU
-    // SATU QUERY SAJA
-    // ==========================================
+    // =========================================================
 
     $statistik = $this->db
         ->select("
@@ -125,36 +222,60 @@ public function index($offset = 0)
             ) AS guru_pppkpw,
 
             SUM(
-    CASE
-        WHEN UPPER(TRIM(status_kepegawaian)) = 'HONOR'
-        THEN 1
-        ELSE 0
-    END
-) AS guru_honorer
+                CASE
+                    WHEN UPPER(TRIM(status_kepegawaian))
+                    IN ('HONOR', 'HONORER')
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS guru_honorer
         ", false)
         ->get('guru')
         ->row();
 
 
-    // ==========================================
-    // KIRIM KE VIEW
-    // ==========================================
+    // =========================================================
+    // KIRIM STATISTIK KE VIEW
+    // =========================================================
 
-    $data['total_guru']  = (int) $statistik->total_guru;
-    $data['guru_pppk']   = (int) $statistik->guru_pppk;
-    $data['guru_pns']    = (int) $statistik->guru_pns;
-    $data['guru_pppkpw'] = (int) $statistik->guru_pppkpw;
-    $data['guru_honorer'] = (int) $statistik->guru_honorer;
+    $data['total_guru'] =
+        (int) $statistik->total_guru;
+
+    $data['guru_pppk'] =
+        (int) $statistik->guru_pppk;
+
+    $data['guru_pns'] =
+        (int) $statistik->guru_pns;
+
+    $data['guru_pppkpw'] =
+        (int) $statistik->guru_pppkpw;
+
+    $data['guru_honorer'] =
+        (int) $statistik->guru_honorer;
 
 
-    // ==========================================
+    // =========================================================
     // LOAD VIEW
-    // ==========================================
+    // =========================================================
 
-    $this->load->view('templates/header', $data);
-    $this->load->view('templates/sidebar', $data);
-    $this->load->view('guru/index', $data);
-    $this->load->view('templates/footer');
+    $this->load->view(
+        'templates/header',
+        $data
+    );
+
+    $this->load->view(
+        'templates/sidebar',
+        $data
+    );
+
+    $this->load->view(
+        'guru/index',
+        $data
+    );
+
+    $this->load->view(
+        'templates/footer'
+    );
 }
     // ================== ADD ==================
     public function add() {

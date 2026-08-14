@@ -1,179 +1,321 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/*
+|--------------------------------------------------------------------------
+| DEFAULT DATA
+|--------------------------------------------------------------------------
+*/
+
+$search = isset($search)
+    ? trim($search)
+    : '';
+
+$guru = isset($guru) && is_array($guru)
+    ? $guru
+    : [];
+
+$total_guru = isset($total_guru)
+    ? (int) $total_guru
+    : 0;
+
+$guru_pppk = isset($guru_pppk)
+    ? (int) $guru_pppk
+    : 0;
+
+$guru_pns = isset($guru_pns)
+    ? (int) $guru_pns
+    : 0;
+
+$guru_pppkpw = isset($guru_pppkpw)
+    ? (int) $guru_pppkpw
+    : 0;
+
+$guru_honorer = isset($guru_honorer)
+    ? (int) $guru_honorer
+    : 0;
+
+$start = isset($start)
+    ? (int) $start
+    : 0;
+
+
+/*
+|--------------------------------------------------------------------------
+| JUMLAH HASIL PENCARIAN
+|--------------------------------------------------------------------------
+*/
+
+$jumlah_hasil = count($guru);
+
+
+/*
+|--------------------------------------------------------------------------
+| FUNGSI STATUS
+|--------------------------------------------------------------------------
+*/
+
+$statusClass = function ($status) {
+
+    $status = strtoupper(
+        trim((string) $status)
+    );
+
+    switch ($status) {
+
+        case 'PNS':
+            return 'guru-status-pns';
+
+        case 'PPPK':
+            return 'guru-status-pppk';
+
+        case 'PPPKPW':
+            return 'guru-status-pppkpw';
+
+        case 'HONOR':
+        case 'HONORER':
+            return 'guru-status-honorer';
+
+        default:
+            return 'guru-status-other';
+    }
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| LABEL STATUS
+|--------------------------------------------------------------------------
+*/
+
+$statusLabel = function ($status) {
+
+    $status = strtoupper(
+        trim((string) $status)
+    );
+
+    if ($status === '') {
+        return 'Belum Diisi';
+    }
+
+    if ($status === 'HONOR') {
+        return 'HONORER';
+    }
+
+    return $status;
+};
+
+?>
+
 
 <style>
 
 /* =========================================================
-   GURU DASHBOARD
+   PAGE
 ========================================================= */
 
 .guru-page {
-    padding-bottom: 30px;
+    padding-bottom: 35px;
 }
 
+
 /* =========================================================
-   HEADER
+   HEADER HERO
 ========================================================= */
 
-.guru-header {
+.guru-hero {
     position: relative;
     overflow: hidden;
     border-radius: 22px;
-    padding: 32px 36px;
-    margin-bottom: 28px;
+    padding: 30px 34px;
+    margin-bottom: 25px;
     color: #fff;
-    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-    box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.12);
+    background: linear-gradient(
+        135deg,
+        #4e73df 0%,
+        #224abe 100%
+    );
+    box-shadow:
+        0 .5rem 1.5rem rgba(0,0,0,.12);
 }
 
-.guru-header:before {
+.guru-hero::before {
     content: "";
     position: absolute;
-    width: 260px;
-    height: 260px;
-    right: -80px;
-    top: -100px;
+    width: 280px;
+    height: 280px;
+    right: -100px;
+    top: -140px;
     border-radius: 50%;
     background: rgba(255,255,255,.08);
 }
 
-.guru-header:after {
+.guru-hero::after {
     content: "";
     position: absolute;
-    width: 150px;
-    height: 150px;
-    right: 110px;
-    bottom: -100px;
+    width: 170px;
+    height: 170px;
+    right: 130px;
+    bottom: -120px;
     border-radius: 50%;
     background: rgba(255,255,255,.06);
 }
 
-.guru-header-content {
+.guru-hero-content {
     position: relative;
     z-index: 2;
 }
 
-.guru-header h2 {
+.guru-hero-title {
+    margin: 0 0 6px;
+    font-size: 28px;
     font-weight: 700;
-    margin-bottom: 6px;
 }
 
-.guru-header p {
-    margin-bottom: 0;
+.guru-hero-subtitle {
+    margin: 0;
+    font-size: 13px;
     opacity: .9;
 }
 
-.guru-header-icon {
+.guru-hero-icon {
     position: relative;
     z-index: 2;
-    opacity: .25;
+    opacity: .18;
 }
+
 
 /* =========================================================
-   SUMMARY CARD
+   STATISTICS
 ========================================================= */
 
-.guru-summary {
+.guru-stat-card {
     border: 0;
-    border-radius: 18px;
+    border-radius: 17px;
     overflow: hidden;
-    transition: all .25s ease;
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
 }
 
-.guru-summary:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 .8rem 2rem rgba(0,0,0,.15) !important;
+.guru-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 .8rem 2rem rgba(0,0,0,.13) !important;
 }
 
-.guru-summary .card-body {
-    padding: 22px;
+.guru-stat-card .card-body {
+    padding: 20px;
 }
 
-.guru-summary-title {
-    font-size: 12px;
+.guru-stat-title {
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .5px;
-    color: #888;
+    color: #858796;
 }
 
-.guru-summary-number {
-    font-size: 32px;
+.guru-stat-number {
+    margin: 6px 0 3px;
+    font-size: 30px;
     line-height: 1.1;
     font-weight: 700;
-    margin: 7px 0;
+    color: #343a40;
 }
 
-.guru-summary-desc {
+.guru-stat-desc {
     font-size: 11px;
-    color: #999;
+    color: #9a9aa0;
 }
 
-.guru-summary-icon {
-    width: 62px;
-    height: 62px;
+.guru-stat-icon {
+    width: 58px;
+    height: 58px;
+    min-width: 58px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 24px;
-    flex-shrink: 0;
+    font-size: 22px;
 }
 
-.guru-primary {
+.guru-bg-primary {
     background: #4e73df;
 }
 
-.guru-success {
+.guru-bg-success {
     background: #1cc88a;
 }
 
-.guru-info {
+.guru-bg-info {
     background: #36b9cc;
 }
 
-.guru-warning {
+.guru-bg-warning {
     background: #f6c23e;
 }
 
-.guru-danger {
+.guru-bg-danger {
     background: #e74a3b;
 }
+
+
+/* =========================================================
+   ALERT
+========================================================= */
+
+.guru-alert {
+    border: 0;
+    border-radius: 12px;
+}
+
 
 /* =========================================================
    MAIN CARD
 ========================================================= */
 
-.guru-main-card {
+.guru-card {
     border: 0;
-    border-radius: 20px;
+    border-radius: 18px;
     overflow: hidden;
 }
 
-.guru-main-card .card-header {
+.guru-card-header {
+    padding: 20px 22px;
     background: #fff;
-    border-bottom: 1px solid #eee;
-    padding: 20px 24px;
+    border-bottom: 1px solid #eaecf4;
 }
 
-.guru-main-title {
-    font-size: 20px;
+.guru-card-title {
+    margin: 0;
+    font-size: 19px;
     font-weight: 700;
     color: #4e73df;
 }
 
-.guru-main-subtitle {
+.guru-card-subtitle {
+    margin-top: 3px;
     font-size: 12px;
-    color: #999;
+    color: #858796;
 }
 
+
 /* =========================================================
-   BUTTONS
+   ACTION BUTTON
 ========================================================= */
 
+.guru-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
 .guru-actions .btn {
-    margin-left: 4px;
     border-radius: 8px;
+    font-size: 12px;
     font-weight: 600;
 }
 
@@ -181,90 +323,277 @@
     margin-right: 3px;
 }
 
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.guru-search-area {
+    padding: 18px 22px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #eaecf4;
+}
+
+.guru-search-form {
+    width: 100%;
+}
+
+.guru-search-box {
+    position: relative;
+    max-width: 430px;
+}
+
+.guru-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    z-index: 2;
+    transform: translateY(-50%);
+    color: #858796;
+    pointer-events: none;
+}
+
+.guru-search-input {
+    height: 42px;
+    padding-left: 40px;
+    padding-right: 85px;
+    border-radius: 10px !important;
+    border: 1px solid #d1d3e2;
+    font-size: 13px;
+    background: #fff;
+}
+
+.guru-search-input:focus {
+    border-color: #4e73df;
+    box-shadow:
+        0 0 0 .15rem rgba(78,115,223,.15);
+}
+
+.guru-search-button {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    height: 32px;
+    border: 0;
+    border-radius: 7px;
+    padding: 0 12px;
+    color: #fff;
+    background: #4e73df;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.guru-search-button:hover {
+    background: #224abe;
+}
+
+.guru-search-clear {
+    position: absolute;
+    right: 74px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #858796;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.guru-search-clear:hover {
+    color: #e74a3b;
+    text-decoration: none;
+}
+
+.guru-search-info {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #858796;
+}
+
+.guru-search-keyword {
+    font-weight: 700;
+    color: #4e73df;
+}
+
+
 /* =========================================================
    TABLE
 ========================================================= */
 
+.guru-table-wrapper {
+    overflow-x: auto;
+}
+
 .guru-table {
-    margin-bottom: 0;
+    margin: 0;
+    min-width: 900px;
 }
 
 .guru-table thead th {
-    font-size: 12px;
+    padding: 13px 14px;
+    border-bottom-width: 1px;
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: .3px;
+    letter-spacing: .35px;
     white-space: nowrap;
     vertical-align: middle;
+    color: #5a5c69;
+    background: #f8f9fc;
 }
 
 .guru-table tbody td {
+    padding: 13px 14px;
     vertical-align: middle;
+    font-size: 13px;
 }
 
 .guru-table tbody tr {
-    transition: background .15s ease;
+    transition:
+        background .15s ease;
 }
 
 .guru-table tbody tr:hover {
-    background: rgba(78,115,223,.05);
+    background: rgba(78,115,223,.045);
 }
 
-.guru-name {
+.guru-number {
+    width: 55px;
+    text-align: center;
+    color: #858796;
     font-weight: 600;
 }
 
+.guru-nip {
+    white-space: nowrap;
+    font-family: monospace;
+    font-size: 12px;
+    color: #5a5c69;
+}
+
+.guru-name {
+    font-weight: 700;
+    color: #343a40;
+}
+
+.guru-email {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.guru-phone {
+    white-space: nowrap;
+}
+
+
 /* =========================================================
-   STATUS BADGE
+   STATUS
 ========================================================= */
 
 .guru-status {
-    display: inline-block;
-    min-width: 75px;
-    padding: 7px 10px;
-    border-radius: 8px;
-    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 78px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 10px;
     font-weight: 700;
     text-align: center;
 }
 
 .guru-status-pppk {
-    background: #1cc88a;
     color: #fff;
+    background: #1cc88a;
 }
 
 .guru-status-pns {
-    background: #36b9cc;
     color: #fff;
+    background: #36b9cc;
 }
 
 .guru-status-pppkpw {
-    background: #f6c23e;
     color: #fff;
+    background: #f6c23e;
 }
 
 .guru-status-honorer {
-    background: #e74a3b;
     color: #fff;
+    background: #e74a3b;
 }
 
 .guru-status-other {
-    background: #858796;
     color: #fff;
+    background: #858796;
 }
+
+
+/* =========================================================
+   ACTION TABLE
+========================================================= */
+
+.guru-row-actions {
+    white-space: nowrap;
+}
+
+.guru-row-actions .btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 
 /* =========================================================
    EMPTY
 ========================================================= */
 
 .guru-empty {
-    padding: 60px 20px !important;
+    padding: 70px 20px !important;
+    text-align: center;
 }
 
-.guru-empty i {
-    font-size: 45px;
-    margin-bottom: 15px;
-    opacity: .35;
+.guru-empty-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f3f9;
+    color: #858796;
+    font-size: 28px;
 }
+
+.guru-empty-title {
+    font-weight: 700;
+    color: #5a5c69;
+}
+
+.guru-empty-text {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #858796;
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.guru-pagination {
+    padding: 18px 22px;
+    border-top: 1px solid #eaecf4;
+}
+
+.guru-pagination .pagination {
+    margin: 0;
+}
+
 
 /* =========================================================
    MODAL
@@ -277,63 +606,314 @@
 }
 
 .guru-modal .modal-header {
+    padding: 18px 22px;
     border-bottom: 0;
     color: #fff;
-    background: linear-gradient(135deg, #4e73df, #224abe);
+    background: linear-gradient(
+        135deg,
+        #4e73df,
+        #224abe
+    );
 }
 
 .guru-modal .modal-title {
+    font-size: 17px;
     font-weight: 700;
 }
 
 .guru-modal .modal-body {
-    padding: 25px;
+    padding: 24px;
 }
 
-.guru-modal .form-control {
-    border-radius: 8px;
+.guru-modal .modal-footer {
+    padding: 15px 24px;
+    border-top: 1px solid #eaecf4;
+}
+
+.guru-modal .form-group {
+    margin-bottom: 17px;
 }
 
 .guru-modal label {
-    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.guru-modal .form-control {
+    min-height: 40px;
+    border-radius: 8px;
     font-size: 13px;
 }
+
+.guru-modal select.form-control {
+    height: 40px;
+}
+
+.guru-section-title {
+    margin-bottom: 15px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4e73df;
+}
+
+.guru-section-title i {
+    margin-right: 6px;
+}
+
+
+/* =========================================================
+   IMPORT MODAL
+========================================================= */
+
+.guru-import-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #1cc88a;
+    font-size: 28px;
+}
+
+.guru-import-description {
+    font-size: 12px;
+    color: #858796;
+}
+
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
-@media (max-width: 767px) {
+@media (max-width: 991.98px) {
 
-    .guru-header {
-        padding: 25px 20px;
+    .guru-hero {
+        padding: 25px;
     }
 
-    .guru-header-icon {
+    .guru-hero-icon {
         display: none;
     }
 
-    .guru-header h2 {
-        font-size: 25px;
-    }
-
-    .guru-summary-number {
-        font-size: 27px;
-    }
-
-    .guru-actions {
-        margin-top: 15px;
-        width: 100%;
-    }
-
-    .guru-actions .btn {
-        margin: 3px 0;
-    }
-
-    .guru-main-card .card-header {
+    .guru-card-header {
         padding: 18px;
     }
 
+    .guru-actions {
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .guru-actions .btn {
+        flex: 1;
+    }
+
+}
+
+
+@media (max-width: 767.98px) {
+
+    .guru-page {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .guru-hero {
+        border-radius: 17px;
+        padding: 23px 20px;
+    }
+
+    .guru-hero-title {
+        font-size: 23px;
+    }
+
+    .guru-stat-card .card-body {
+        padding: 17px;
+    }
+
+    .guru-stat-number {
+        font-size: 27px;
+    }
+
+    .guru-stat-icon {
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+        font-size: 19px;
+    }
+
+    .guru-search-area {
+        padding: 15px;
+    }
+
+    .guru-search-box {
+        max-width: none;
+    }
+
+    .guru-search-button {
+        padding: 0 10px;
+    }
+
+    .guru-pagination {
+        padding: 15px 10px;
+        overflow-x: auto;
+    }
+
+    .guru-pagination .pagination {
+        justify-content: flex-start !important;
+        min-width: max-content;
+    }
+
+    .guru-modal .modal-body {
+        padding: 18px;
+    }
+
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark-mode .guru-stat-card {
+    background: #29283d;
+    color: #fff;
+}
+
+body.dark-mode .guru-stat-title {
+    color: #a6a6b5;
+}
+
+body.dark-mode .guru-stat-number {
+    color: #fff;
+}
+
+body.dark-mode .guru-stat-desc {
+    color: #8f8fa1;
+}
+
+body.dark-mode .guru-card {
+    background: #29283d;
+}
+
+body.dark-mode .guru-card-header {
+    background: #29283d;
+    border-color: #414052;
+}
+
+body.dark-mode .guru-card-title {
+    color: #6f8df5;
+}
+
+body.dark-mode .guru-card-subtitle {
+    color: #9999aa;
+}
+
+body.dark-mode .guru-search-area {
+    background: #242336;
+    border-color: #414052;
+}
+
+body.dark-mode .guru-search-input {
+    background: #302f45;
+    border-color: #4a495d;
+    color: #fff;
+}
+
+body.dark-mode .guru-search-input::placeholder {
+    color: #858597;
+}
+
+body.dark-mode .guru-search-input:focus {
+    border-color: #6f8df5;
+    box-shadow:
+        0 0 0 .15rem rgba(111,141,245,.15);
+}
+
+body.dark-mode .guru-search-info {
+    color: #9999aa;
+}
+
+body.dark-mode .guru-search-keyword {
+    color: #7d99ff;
+}
+
+body.dark-mode .guru-table {
+    color: #eee;
+}
+
+body.dark-mode .guru-table thead th {
+    background: #302f45;
+    border-color: #464558;
+    color: #e8e8ef;
+}
+
+body.dark-mode .guru-table tbody td {
+    border-color: #414052;
+}
+
+body.dark-mode .guru-table tbody tr:hover {
+    background: rgba(111,141,245,.07);
+}
+
+body.dark-mode .guru-name {
+    color: #fff;
+}
+
+body.dark-mode .guru-nip {
+    color: #aaaabd;
+}
+
+body.dark-mode .guru-email {
+    color: #d2d2df;
+}
+
+body.dark-mode .guru-empty-icon {
+    background: #343348;
+    color: #88889b;
+}
+
+body.dark-mode .guru-empty-title {
+    color: #ddd;
+}
+
+body.dark-mode .guru-empty-text {
+    color: #9999aa;
+}
+
+body.dark-mode .guru-pagination {
+    border-color: #414052;
+}
+
+body.dark-mode .guru-modal .modal-content {
+    background: #29283d;
+    color: #fff;
+}
+
+body.dark-mode .guru-modal .modal-body {
+    background: #29283d;
+}
+
+body.dark-mode .guru-modal .modal-footer {
+    border-color: #414052;
+}
+
+body.dark-mode .guru-modal .form-control {
+    background: #343348;
+    border-color: #4a495d;
+    color: #fff;
+}
+
+body.dark-mode .guru-modal .form-control::placeholder {
+    color: #8f8fa1;
+}
+
+body.dark-mode .guru-section-title {
+    color: #7d99ff;
 }
 
 </style>
@@ -343,26 +923,26 @@
 
 
 <!-- =========================================================
-     HEADER
+     HERO
 ========================================================= -->
 
-<div class="guru-header">
+<div class="guru-hero">
 
     <div class="row align-items-center">
 
-        <div class="col-lg-9 guru-header-content">
+        <div class="col-lg-9 guru-hero-content">
 
-            <h2>
-                Data Guru 👋
-            </h2>
+            <h1 class="guru-hero-title">
+                Data Guru
+            </h1>
 
-            <p>
+            <p class="guru-hero-subtitle">
                 Kelola dan pantau data tenaga pendidik sekolah
             </p>
 
         </div>
 
-        <div class="col-lg-3 text-right guru-header-icon">
+        <div class="col-lg-3 text-right guru-hero-icon">
 
             <i class="fas fa-chalkboard-teacher fa-5x"></i>
 
@@ -380,35 +960,37 @@
 <div class="row">
 
 
-<!-- TOTAL GURU -->
+    <!-- TOTAL -->
 
-<div class="col-xl col-lg-4 col-md-6 mb-4">
+    <div class="col-xl col-lg-4 col-md-6 mb-4">
 
-    <div class="card guru-summary shadow h-100">
+        <div class="card guru-stat-card shadow-sm h-100">
 
-        <div class="card-body">
+            <div class="card-body">
 
-            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center">
 
-                <div>
+                    <div>
 
-                    <div class="guru-summary-title">
-                        Total Guru
+                        <div class="guru-stat-title">
+                            Total Guru
+                        </div>
+
+                        <div class="guru-stat-number">
+                            <?= number_format($total_guru); ?>
+                        </div>
+
+                        <div class="guru-stat-desc">
+                            Seluruh tenaga pendidik
+                        </div>
+
                     </div>
 
-                    <div class="guru-summary-number">
-                        <?= number_format(isset($total_guru) ? $total_guru : 0) ?>
+                    <div class="guru-stat-icon guru-bg-primary">
+
+                        <i class="fas fa-users"></i>
+
                     </div>
-
-                    <div class="guru-summary-desc">
-                        Seluruh tenaga pendidik
-                    </div>
-
-                </div>
-
-                <div class="guru-summary-icon guru-primary">
-
-                    <i class="fas fa-users"></i>
 
                 </div>
 
@@ -418,38 +1000,38 @@
 
     </div>
 
-</div>
 
+    <!-- PPPK -->
 
-<!-- PPPK -->
+    <div class="col-xl col-lg-4 col-md-6 mb-4">
 
-<div class="col-xl col-lg-4 col-md-6 mb-4">
+        <div class="card guru-stat-card shadow-sm h-100">
 
-    <div class="card guru-summary shadow h-100">
+            <div class="card-body">
 
-        <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
 
-            <div class="d-flex justify-content-between align-items-center">
+                    <div>
 
-                <div>
+                        <div class="guru-stat-title">
+                            Guru PPPK
+                        </div>
 
-                    <div class="guru-summary-title">
-                        Guru PPPK
+                        <div class="guru-stat-number text-success">
+                            <?= number_format($guru_pppk); ?>
+                        </div>
+
+                        <div class="guru-stat-desc">
+                            Pegawai Pemerintah
+                        </div>
+
                     </div>
 
-                    <div class="guru-summary-number text-success">
-                        <?= number_format(isset($guru_pppk) ? $guru_pppk : 0) ?>
+                    <div class="guru-stat-icon guru-bg-success">
+
+                        <i class="fas fa-user-tie"></i>
+
                     </div>
-
-                    <div class="guru-summary-desc">
-                        Pegawai Pemerintah
-                    </div>
-
-                </div>
-
-                <div class="guru-summary-icon guru-success">
-
-                    <i class="fas fa-user-tie"></i>
 
                 </div>
 
@@ -459,38 +1041,38 @@
 
     </div>
 
-</div>
 
+    <!-- PNS -->
 
-<!-- PNS -->
+    <div class="col-xl col-lg-4 col-md-6 mb-4">
 
-<div class="col-xl col-lg-4 col-md-6 mb-4">
+        <div class="card guru-stat-card shadow-sm h-100">
 
-    <div class="card guru-summary shadow h-100">
+            <div class="card-body">
 
-        <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
 
-            <div class="d-flex justify-content-between align-items-center">
+                    <div>
 
-                <div>
+                        <div class="guru-stat-title">
+                            Guru PNS
+                        </div>
 
-                    <div class="guru-summary-title">
-                        Guru PNS
+                        <div class="guru-stat-number text-info">
+                            <?= number_format($guru_pns); ?>
+                        </div>
+
+                        <div class="guru-stat-desc">
+                            Pegawai Negeri Sipil
+                        </div>
+
                     </div>
 
-                    <div class="guru-summary-number text-info">
-                        <?= number_format(isset($guru_pns) ? $guru_pns : 0) ?>
+                    <div class="guru-stat-icon guru-bg-info">
+
+                        <i class="fas fa-user-shield"></i>
+
                     </div>
-
-                    <div class="guru-summary-desc">
-                        Pegawai Negeri Sipil
-                    </div>
-
-                </div>
-
-                <div class="guru-summary-icon guru-info">
-
-                    <i class="fas fa-user-shield"></i>
 
                 </div>
 
@@ -500,38 +1082,38 @@
 
     </div>
 
-</div>
 
+    <!-- PPPK PARUH WAKTU -->
 
-<!-- PPPKPW -->
+    <div class="col-xl col-lg-4 col-md-6 mb-4">
 
-<div class="col-xl col-lg-4 col-md-6 mb-4">
+        <div class="card guru-stat-card shadow-sm h-100">
 
-    <div class="card guru-summary shadow h-100">
+            <div class="card-body">
 
-        <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
 
-            <div class="d-flex justify-content-between align-items-center">
+                    <div>
 
-                <div>
+                        <div class="guru-stat-title">
+                            Guru PPPKPW
+                        </div>
 
-                    <div class="guru-summary-title">
-                        Guru PPPKPW
+                        <div class="guru-stat-number text-warning">
+                            <?= number_format($guru_pppkpw); ?>
+                        </div>
+
+                        <div class="guru-stat-desc">
+                            PPPK Paruh Waktu
+                        </div>
+
                     </div>
 
-                    <div class="guru-summary-number text-warning">
-                        <?= number_format(isset($guru_pppkpw) ? $guru_pppkpw : 0) ?>
+                    <div class="guru-stat-icon guru-bg-warning">
+
+                        <i class="fas fa-user-clock"></i>
+
                     </div>
-
-                    <div class="guru-summary-desc">
-                        PPPK Paruh Waktu
-                    </div>
-
-                </div>
-
-                <div class="guru-summary-icon guru-warning">
-
-                    <i class="fas fa-user-clock"></i>
 
                 </div>
 
@@ -541,38 +1123,38 @@
 
     </div>
 
-</div>
 
+    <!-- HONORER -->
 
-<!-- HONORER -->
+    <div class="col-xl col-lg-4 col-md-6 mb-4">
 
-<div class="col-xl col-lg-4 col-md-6 mb-4">
+        <div class="card guru-stat-card shadow-sm h-100">
 
-    <div class="card guru-summary shadow h-100">
+            <div class="card-body">
 
-        <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
 
-            <div class="d-flex justify-content-between align-items-center">
+                    <div>
 
-                <div>
+                        <div class="guru-stat-title">
+                            Honorer
+                        </div>
 
-                    <div class="guru-summary-title">
-                        Honorer
+                        <div class="guru-stat-number text-danger">
+                            <?= number_format($guru_honorer); ?>
+                        </div>
+
+                        <div class="guru-stat-desc">
+                            Guru Honorer
+                        </div>
+
                     </div>
 
-                    <div class="guru-summary-number text-danger">
-                        <?= number_format(isset($guru_honorer) ? $guru_honorer : 0) ?>
+                    <div class="guru-stat-icon guru-bg-danger">
+
+                        <i class="fas fa-user"></i>
+
                     </div>
-
-                    <div class="guru-summary-desc">
-                        Guru Honorer
-                    </div>
-
-                </div>
-
-                <div class="guru-summary-icon guru-danger">
-
-                    <i class="fas fa-user"></i>
 
                 </div>
 
@@ -581,8 +1163,6 @@
         </div>
 
     </div>
-
-</div>
 
 
 </div>
@@ -594,42 +1174,42 @@
 
 <?php if ($this->session->flashdata('success')): ?>
 
-<div class="alert alert-success alert-dismissible fade show">
+    <div class="alert alert-success guru-alert alert-dismissible fade show">
 
-    <i class="fas fa-check-circle mr-2"></i>
+        <i class="fas fa-check-circle mr-2"></i>
 
-    <?= $this->session->flashdata('success'); ?>
+        <?= $this->session->flashdata('success'); ?>
 
-    <button type="button"
-            class="close"
-            data-dismiss="alert">
+        <button type="button"
+                class="close"
+                data-dismiss="alert">
 
-        <span>&times;</span>
+            <span>&times;</span>
 
-    </button>
+        </button>
 
-</div>
+    </div>
 
 <?php endif; ?>
 
 
 <?php if ($this->session->flashdata('error')): ?>
 
-<div class="alert alert-danger alert-dismissible fade show">
+    <div class="alert alert-danger guru-alert alert-dismissible fade show">
 
-    <i class="fas fa-exclamation-circle mr-2"></i>
+        <i class="fas fa-exclamation-circle mr-2"></i>
 
-    <?= $this->session->flashdata('error'); ?>
+        <?= $this->session->flashdata('error'); ?>
 
-    <button type="button"
-            class="close"
-            data-dismiss="alert">
+        <button type="button"
+                class="close"
+                data-dismiss="alert">
 
-        <span>&times;</span>
+            <span>&times;</span>
 
-    </button>
+        </button>
 
-</div>
+    </div>
 
 <?php endif; ?>
 
@@ -638,18 +1218,21 @@
      DATA GURU
 ========================================================= -->
 
-<div class="card guru-main-card shadow mb-4">
+<div class="card guru-card shadow-sm mb-4">
 
 
-    <!-- HEADER CARD -->
+    <!-- =====================================================
+         CARD HEADER
+    ====================================================== -->
 
-    <div class="card-header">
+    <div class="guru-card-header">
 
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <div class="d-flex align-items-center justify-content-between flex-wrap">
+
 
             <div>
 
-                <div class="guru-main-title">
+                <div class="guru-card-title">
 
                     <i class="fas fa-chalkboard-teacher mr-2"></i>
 
@@ -657,7 +1240,7 @@
 
                 </div>
 
-                <div class="guru-main-subtitle">
+                <div class="guru-card-subtitle">
 
                     Data tenaga pendidik sekolah
 
@@ -667,7 +1250,7 @@
 
 
             <!-- =================================================
-                 ACTION BUTTON
+                 ACTION
             ================================================= -->
 
             <div class="guru-actions">
@@ -675,9 +1258,12 @@
 
                 <!-- TEMPLATE -->
 
-                <a href="<?= base_url('assets/templates/templateimporguru.xlsx') ?>"
+                <a href="<?= base_url(
+                    'assets/templates/templateimporguru.xlsx'
+                ); ?>"
                    class="btn btn-outline-success btn-sm"
-                   download>
+                   download
+                   title="Download template Excel">
 
                     <i class="fas fa-download"></i>
 
@@ -688,8 +1274,11 @@
 
                 <!-- EXPORT -->
 
-                <a href="<?= site_url('guru/export_excel') ?>"
-                   class="btn btn-success btn-sm">
+                <a href="<?= site_url(
+                    'guru/export_excel'
+                ); ?>"
+                   class="btn btn-success btn-sm"
+                   title="Export data guru">
 
                     <i class="fas fa-file-excel"></i>
 
@@ -731,95 +1320,243 @@
     </div>
 
 
-    <!-- =================================================
+    <!-- =====================================================
+         SEARCH
+    ====================================================== -->
+
+    <div class="guru-search-area">
+
+        <form method="get"
+              action="<?= site_url('guru'); ?>"
+              class="guru-search-form">
+
+
+            <div class="guru-search-box">
+
+                <i class="fas fa-search guru-search-icon"></i>
+
+
+                <input type="text"
+                       name="search"
+                       class="form-control guru-search-input"
+                       value="<?= html_escape($search); ?>"
+                       placeholder="Cari nama atau NIP guru..."
+                       autocomplete="off">
+
+
+                <?php if ($search !== ''): ?>
+
+                    <a href="<?= site_url('guru'); ?>"
+                       class="guru-search-clear"
+                       title="Hapus pencarian">
+
+                        <i class="fas fa-times"></i>
+
+                    </a>
+
+                <?php endif; ?>
+
+
+                <button type="submit"
+                        class="guru-search-button">
+
+                    <i class="fas fa-search mr-1"></i>
+
+                    Cari
+
+                </button>
+
+            </div>
+
+
+            <?php if ($search !== ''): ?>
+
+                <div class="guru-search-info">
+
+                    Menampilkan
+                    <strong>
+                        <?= number_format($jumlah_hasil); ?>
+                    </strong>
+                    guru pada halaman ini untuk pencarian:
+
+                    <span class="guru-search-keyword">
+
+                        "<?= html_escape($search); ?>"
+
+                    </span>
+
+                    <?php if (!empty($pagination)): ?>
+
+                        <span>
+                            — gunakan pagination untuk melihat hasil lainnya.
+                        </span>
+
+                    <?php endif; ?>
+
+                </div>
+
+            <?php else: ?>
+
+                <div class="guru-search-info">
+
+                    <i class="fas fa-info-circle mr-1"></i>
+
+                    Cari berdasarkan nama atau NIP.
+
+                </div>
+
+            <?php endif; ?>
+
+
+        </form>
+
+    </div>
+
+
+    <!-- =====================================================
          TABLE
-    ================================================= -->
+    ====================================================== -->
 
-    <div class="card-body">
+    <div class="guru-table-wrapper">
 
-        <div class="table-responsive">
+        <table class="table table-bordered table-hover guru-table">
 
-            <table class="table table-bordered table-hover guru-table">
 
-                <thead class="thead-light">
+            <thead>
+
+                <tr>
+
+                    <th class="guru-number">
+                        No
+                    </th>
+
+                    <th>
+                        NIP
+                    </th>
+
+                    <th>
+                        Nama
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Email
+                    </th>
+
+                    <th>
+                        Telepon
+                    </th>
+
+                    <th width="100"
+                        class="text-center">
+
+                        Aksi
+
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+            <?php if (!empty($guru)): ?>
+
+
+                <?php
+
+                $no = $start + 1;
+
+                foreach ($guru as $g):
+
+
+                    $status =
+                        isset($g->status_kepegawaian)
+                        ? $g->status_kepegawaian
+                        : '';
+
+
+                    $status_class =
+                        $statusClass($status);
+
+
+                    $status_label =
+                        $statusLabel($status);
+
+
+                    $nama =
+                        isset($g->nama)
+                        ? $g->nama
+                        : '';
+
+
+                    $nip =
+                        isset($g->nip)
+                        ? $g->nip
+                        : '';
+
+
+                    $email =
+                        isset($g->email)
+                        ? $g->email
+                        : '';
+
+
+                    $telp =
+                        isset($g->telp)
+                        ? $g->telp
+                        : '';
+
+                ?>
+
 
                     <tr>
 
-                        <th width="50">
-                            No
-                        </th>
 
-                        <th>
-                            NIP
-                        </th>
+                        <!-- NO -->
 
-                        <th>
-                            Nama
-                        </th>
+                        <td class="guru-number">
 
-                        <th>
-                            Status
-                        </th>
+                            <?= $no++; ?>
 
-                        <th>
-                            Email
-                        </th>
-
-                        <th>
-                            Telepon
-                        </th>
-
-                        <th width="120"
-                            class="text-center">
-
-                            Aksi
-
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-
-                <?php if (!empty($guru)): ?>
-
-                    <?php
-
-                    $no = isset($start) ? $start + 1 : 1;
-
-                    foreach ($guru as $g):
-
-                        $status = strtoupper(
-                            trim(
-                                isset($g->status_kepegawaian)
-                                ? $g->status_kepegawaian
-                                : ''
-                            )
-                        );
-
-                    ?>
-
-                    <tr>
-
-
-                        <td>
-                            <?= $no++ ?>
                         </td>
 
 
+                        <!-- NIP -->
+
                         <td>
-                            <?= htmlspecialchars($g->nip ?? '') ?>
+
+                            <?php if ($nip !== ''): ?>
+
+                                <span class="guru-nip">
+
+                                    <?= html_escape($nip); ?>
+
+                                </span>
+
+                            <?php else: ?>
+
+                                <span class="text-muted">
+                                    -
+                                </span>
+
+                            <?php endif; ?>
+
                         </td>
 
+
+                        <!-- NAMA -->
 
                         <td>
 
                             <span class="guru-name">
 
-                                <?= htmlspecialchars($g->nama ?? '') ?>
+                                <?= html_escape($nama); ?>
 
                             </span>
 
@@ -830,34 +1567,34 @@
 
                         <td>
 
-                            <?php if ($status == 'PPPK'): ?>
+                            <span class="guru-status <?= $status_class; ?>">
 
-                                <span class="guru-status guru-status-pppk">
-                                    PPPK
-                                </span>
+                                <?= html_escape(
+                                    $status_label
+                                ); ?>
 
-                            <?php elseif ($status == 'PNS'): ?>
+                            </span>
 
-                                <span class="guru-status guru-status-pns">
-                                    PNS
-                                </span>
+                        </td>
 
-                            <?php elseif ($status == 'PPPKPW'): ?>
 
-                                <span class="guru-status guru-status-pppkpw">
-                                    PPPKPW
-                                </span>
+                        <!-- EMAIL -->
 
-                            <?php elseif ($status == 'HONORER'): ?>
+                        <td>
 
-                                <span class="guru-status guru-status-honorer">
-                                    HONORER
-                                </span>
+                            <?php if ($email !== ''): ?>
+
+                                <div class="guru-email"
+                                     title="<?= html_escape($email); ?>">
+
+                                    <?= html_escape($email); ?>
+
+                                </div>
 
                             <?php else: ?>
 
-                                <span class="guru-status guru-status-other">
-                                    <?= $status ?: 'Belum Diisi' ?>
+                                <span class="text-muted">
+                                    -
                                 </span>
 
                             <?php endif; ?>
@@ -865,34 +1602,51 @@
                         </td>
 
 
-                        <td>
-                            <?= htmlspecialchars($g->email ?? '') ?>
-                        </td>
+                        <!-- TELEPON -->
 
+                        <td class="guru-phone">
 
-                        <td>
-                            <?= htmlspecialchars($g->telp ?? '') ?>
+                            <?php if ($telp !== ''): ?>
+
+                                <?= html_escape($telp); ?>
+
+                            <?php else: ?>
+
+                                <span class="text-muted">
+                                    -
+                                </span>
+
+                            <?php endif; ?>
+
                         </td>
 
 
                         <!-- AKSI -->
 
-                        <td class="text-center">
+                        <td class="guru-row-actions text-center">
 
 
-                            <a href="<?= site_url('guru/edit/'.$g->id) ?>"
+                            <a href="<?= site_url(
+                                'guru/edit/' .
+                                (int) $g->id
+                            ); ?>"
                                class="btn btn-warning btn-sm"
-                               title="Edit">
+                               title="Edit guru">
 
                                 <i class="fas fa-edit"></i>
 
                             </a>
 
 
-                            <a href="<?= site_url('guru/delete/'.$g->id) ?>"
+                            <a href="<?= site_url(
+                                'guru/delete/' .
+                                (int) $g->id
+                            ); ?>"
                                class="btn btn-danger btn-sm"
-                               title="Hapus"
-                               onclick="return confirm('Hapus data guru ini?')">
+                               title="Hapus guru"
+                               onclick="return confirm(
+                                   'Yakin ingin menghapus data guru ini?'
+                               );">
 
                                 <i class="fas fa-trash"></i>
 
@@ -904,61 +1658,123 @@
 
                     </tr>
 
-                    <?php endforeach; ?>
+
+                <?php endforeach; ?>
 
 
-                <?php else: ?>
+            <?php else: ?>
 
 
-                    <tr>
+                <tr>
 
-                        <td colspan="7"
-                            class="text-center guru-empty">
+                    <td colspan="7"
+                        class="guru-empty">
 
-                            <i class="fas fa-user-slash d-block"></i>
 
-                            <strong>
-                                Data guru belum tersedia
-                            </strong>
+                        <?php if ($search !== ''): ?>
 
-                            <div class="small text-muted mt-1">
-                                Silakan tambahkan atau import data guru.
+
+                            <div class="guru-empty-icon">
+
+                                <i class="fas fa-search"></i>
+
                             </div>
 
-                        </td>
 
-                    </tr>
+                            <div class="guru-empty-title">
 
+                                Guru tidak ditemukan
 
-                <?php endif; ?>
-
-
-                </tbody>
-
-            </table>
-
-        </div>
+                            </div>
 
 
-        <!-- PAGINATION -->
+                            <div class="guru-empty-text">
 
-        <?php if (!empty($pagination)): ?>
+                                Tidak ada guru yang sesuai dengan pencarian
 
-        <div class="mt-3">
+                                <strong>
+                                    "<?= html_escape($search); ?>"
+                                </strong>.
 
-            <?= $pagination ?>
+                            </div>
 
-        </div>
 
-        <?php endif; ?>
+                            <div class="mt-3">
 
+                                <a href="<?= site_url('guru'); ?>"
+                                   class="btn btn-secondary btn-sm">
+
+                                    <i class="fas fa-times mr-1"></i>
+
+                                    Hapus Pencarian
+
+                                </a>
+
+                            </div>
+
+
+                        <?php else: ?>
+
+
+                            <div class="guru-empty-icon">
+
+                                <i class="fas fa-user-slash"></i>
+
+                            </div>
+
+
+                            <div class="guru-empty-title">
+
+                                Data guru belum tersedia
+
+                            </div>
+
+
+                            <div class="guru-empty-text">
+
+                                Silakan tambahkan atau import data guru.
+
+                            </div>
+
+
+                        <?php endif; ?>
+
+
+                    </td>
+
+                </tr>
+
+
+            <?php endif; ?>
+
+
+            </tbody>
+
+        </table>
 
     </div>
 
+
+    <!-- =====================================================
+         PAGINATION
+    ====================================================== -->
+
+    <?php if (!empty($pagination)): ?>
+
+        <div class="guru-pagination">
+
+            <?= $pagination; ?>
+
+        </div>
+
+    <?php endif; ?>
+
+
 </div>
 
 
 </div>
+
 
 
 <!-- =========================================================
@@ -972,14 +1788,16 @@
      aria-labelledby="addModalLabel"
      aria-hidden="true">
 
+
     <div class="modal-dialog modal-lg modal-dialog-centered"
          role="document">
+
 
         <div class="modal-content">
 
 
             <form method="post"
-                  action="<?= site_url('guru/add') ?>">
+                  action="<?= site_url('guru/add'); ?>">
 
 
                 <!-- HEADER -->
@@ -1017,15 +1835,17 @@
                            value="<?= $this->security->get_csrf_hash(); ?>">
 
 
-                    <!-- IDENTITAS -->
+                    <!-- =================================================
+                         IDENTITAS
+                    ================================================== -->
 
-                    <h6 class="text-primary font-weight-bold mb-3">
+                    <div class="guru-section-title">
 
-                        <i class="fas fa-id-card mr-2"></i>
+                        <i class="fas fa-id-card"></i>
 
                         Identitas Guru
 
-                    </h6>
+                    </div>
 
 
                     <div class="row">
@@ -1046,6 +1866,7 @@
                                        class="form-control"
                                        placeholder="Masukkan NIP">
 
+
                             </div>
 
                         </div>
@@ -1058,14 +1879,19 @@
                             <div class="form-group">
 
                                 <label>
+
                                     Nama
-                                    <span class="text-danger">*</span>
+
+                                    <span class="text-danger">
+                                        *
+                                    </span>
+
                                 </label>
 
                                 <input type="text"
                                        name="nama"
                                        class="form-control"
-                                       placeholder="Nama lengkap"
+                                       placeholder="Nama lengkap guru"
                                        required>
 
                             </div>
@@ -1137,19 +1963,23 @@
                     <hr>
 
 
-                    <!-- KEPEGAWAIAN -->
+                    <!-- =================================================
+                         KEPEGAWAIAN
+                    ================================================== -->
 
-                    <h6 class="text-primary font-weight-bold mb-3">
+                    <div class="guru-section-title">
 
-                        <i class="fas fa-user-tie mr-2"></i>
+                        <i class="fas fa-user-tie"></i>
 
                         Kepegawaian
 
-                    </h6>
+                    </div>
 
 
                     <div class="row">
 
+
+                        <!-- STATUS -->
 
                         <div class="col-md-6">
 
@@ -1195,15 +2025,17 @@
                     <hr>
 
 
-                    <!-- KONTAK -->
+                    <!-- =================================================
+                         KONTAK
+                    ================================================== -->
 
-                    <h6 class="text-primary font-weight-bold mb-3">
+                    <div class="guru-section-title">
 
-                        <i class="fas fa-address-book mr-2"></i>
+                        <i class="fas fa-address-book"></i>
 
                         Kontak
 
-                    </h6>
+                    </div>
 
 
                     <div class="row">
@@ -1259,6 +2091,7 @@
 
                 <div class="modal-footer">
 
+
                     <button type="button"
                             class="btn btn-secondary"
                             onclick="closeGuruModal('addModal')">
@@ -1279,6 +2112,7 @@
 
                     </button>
 
+
                 </div>
 
 
@@ -1291,8 +2125,9 @@
 </div>
 
 
+
 <!-- =========================================================
-     MODAL IMPORT GURU
+     MODAL IMPORT
 ========================================================= -->
 
 <div class="modal fade guru-modal"
@@ -1302,14 +2137,18 @@
      aria-labelledby="importModalLabel"
      aria-hidden="true">
 
+
     <div class="modal-dialog modal-dialog-centered"
          role="document">
+
 
         <div class="modal-content">
 
 
             <form method="post"
-                  action="<?= site_url('guru/import_excel') ?>"
+                  action="<?= site_url(
+                      'guru/import_excel'
+                  ); ?>"
                   enctype="multipart/form-data">
 
 
@@ -1350,33 +2189,44 @@
 
                     <div class="text-center mb-4">
 
-                        <div class="guru-summary-icon guru-success mx-auto mb-3">
+
+                        <div class="guru-import-icon">
 
                             <i class="fas fa-file-excel"></i>
 
                         </div>
 
-                        <h5 class="font-weight-bold">
+
+                        <h5 class="font-weight-bold mb-2">
+
                             Import Data Guru
+
                         </h5>
 
-                        <p class="text-muted small mb-0">
+
+                        <p class="guru-import-description mb-0">
 
                             Upload file Excel untuk menambahkan
-                            atau memperbarui data guru.
+                            data guru ke dalam sistem.
 
                         </p>
+
 
                     </div>
 
 
+                    <!-- FILE -->
+
                     <div class="form-group">
+
 
                         <label>
 
                             File Excel
 
-                            <span class="text-danger">*</span>
+                            <span class="text-danger">
+                                *
+                            </span>
 
                         </label>
 
@@ -1391,27 +2241,45 @@
                         <small class="form-text text-muted">
 
                             Format yang diperbolehkan:
-                            <strong>.xls</strong> atau
-                            <strong>.xlsx</strong>
+
+                            <strong>
+                                .xls
+                            </strong>
+                            atau
+                            <strong>
+                                .xlsx
+                            </strong>
 
                         </small>
 
+
                     </div>
 
+
+                    <!-- INFO -->
 
                     <div class="alert alert-info small">
 
+
                         <i class="fas fa-info-circle mr-1"></i>
 
-                        Pastikan baris pertama file Excel
-                        berisi nama kolom sesuai template.
+
+                        Pastikan baris pertama Excel
+                        berisi nama kolom yang sesuai
+                        dengan template.
+
 
                     </div>
 
 
+                    <!-- TEMPLATE -->
+
                     <div class="text-center">
 
-                        <a href="<?= base_url('assets/templates/templateimporguru.xlsx') ?>"
+
+                        <a href="<?= base_url(
+                            'assets/templates/templateimporguru.xlsx'
+                        ); ?>"
                            class="btn btn-outline-success btn-sm"
                            download>
 
@@ -1420,6 +2288,7 @@
                             Download Template
 
                         </a>
+
 
                     </div>
 
@@ -1430,6 +2299,7 @@
                 <!-- FOOTER -->
 
                 <div class="modal-footer">
+
 
                     <button type="button"
                             class="btn btn-secondary"
@@ -1451,6 +2321,7 @@
 
                     </button>
 
+
                 </div>
 
 
@@ -1463,87 +2334,127 @@
 </div>
 
 
+
 <!-- =========================================================
-     MODAL JAVASCRIPT
+     MODAL SCRIPT
 ========================================================= -->
 
 <script>
 
-function openGuruModal(id) {
+/*
+|--------------------------------------------------------------------------
+| OPEN MODAL
+|--------------------------------------------------------------------------
+*/
 
-    var modal = document.getElementById(id);
+function openGuruModal(id)
+{
+    var modal =
+        document.getElementById(id);
 
     if (!modal) {
-        console.log('Modal tidak ditemukan: ' + id);
         return;
     }
+
 
     /*
      * Bootstrap 4
      */
-    if (typeof jQuery !== 'undefined' &&
-        typeof jQuery.fn.modal === 'function') {
+
+    if (
+        typeof jQuery !== 'undefined' &&
+        typeof jQuery.fn.modal === 'function'
+    ) {
 
         jQuery('#' + id).modal('show');
 
         return;
     }
 
+
     /*
      * Bootstrap 5
      */
-    if (typeof bootstrap !== 'undefined' &&
-        bootstrap.Modal) {
 
-        var instance = bootstrap.Modal.getOrCreateInstance(modal);
+    if (
+        typeof bootstrap !== 'undefined' &&
+        bootstrap.Modal
+    ) {
+
+        var instance =
+            bootstrap.Modal.getOrCreateInstance(
+                modal
+            );
 
         instance.show();
 
         return;
     }
 
+
     /*
-     * Fallback jika library modal tidak tersedia
+     * Fallback
      */
 
     modal.style.display = 'block';
+
     modal.classList.add('show');
 
-    modal.setAttribute('aria-hidden', 'false');
+    modal.setAttribute(
+        'aria-hidden',
+        'false'
+    );
 
-    document.body.classList.add('modal-open');
-
+    document.body.classList.add(
+        'modal-open'
+    );
 }
 
 
-function closeGuruModal(id) {
+/*
+|--------------------------------------------------------------------------
+| CLOSE MODAL
+|--------------------------------------------------------------------------
+*/
 
-    var modal = document.getElementById(id);
+function closeGuruModal(id)
+{
+    var modal =
+        document.getElementById(id);
 
     if (!modal) {
         return;
     }
 
+
     /*
      * Bootstrap 4
      */
 
-    if (typeof jQuery !== 'undefined' &&
-        typeof jQuery.fn.modal === 'function') {
+    if (
+        typeof jQuery !== 'undefined' &&
+        typeof jQuery.fn.modal === 'function'
+    ) {
 
         jQuery('#' + id).modal('hide');
 
         return;
     }
 
+
     /*
      * Bootstrap 5
      */
 
-    if (typeof bootstrap !== 'undefined' &&
-        bootstrap.Modal) {
+    if (
+        typeof bootstrap !== 'undefined' &&
+        bootstrap.Modal
+    ) {
 
-        var instance = bootstrap.Modal.getInstance(modal);
+        var instance =
+            bootstrap.Modal.getInstance(
+                modal
+            );
 
         if (instance) {
             instance.hide();
@@ -1552,18 +2463,71 @@ function closeGuruModal(id) {
         return;
     }
 
+
     /*
      * Fallback
      */
 
     modal.style.display = 'none';
+
     modal.classList.remove('show');
 
-    modal.setAttribute('aria-hidden', 'true');
+    modal.setAttribute(
+        'aria-hidden',
+        'true'
+    );
 
-    document.body.classList.remove('modal-open');
-
+    document.body.classList.remove(
+        'modal-open'
+    );
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| ENTER SEARCH
+|--------------------------------------------------------------------------
+|
+| Tidak menggunakan AJAX / filter JavaScript.
+| Form dikirim ke server sehingga pencarian
+| dilakukan terhadap seluruh database.
+|--------------------------------------------------------------------------
+*/
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function ()
+    {
+
+        var searchInput =
+            document.querySelector(
+                '.guru-search-input'
+            );
+
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                'keydown',
+                function (event)
+                {
+
+                    if (
+                        event.key === 'Enter'
+                    ) {
+
+                        event.preventDefault();
+
+                        this.form.submit();
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+);
 
 </script>
