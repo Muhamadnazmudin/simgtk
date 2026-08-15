@@ -268,7 +268,7 @@ input[readonly] {
                     </tr>
 
                     <tr>
-                        <td class="bio-label">Alamat</td>
+                        <td class="bio-label">Desa/Kelurahan</td>
                         <td><textarea name="alamat" rows="2"><?= $siswa->alamat ?></textarea></td>
                     </tr>
 
