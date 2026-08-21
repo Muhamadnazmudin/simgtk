@@ -392,7 +392,7 @@ if ($this->input->post('punya_wali') == '0') {
   }
 
  // ========================================================
-// EXPORT EXCEL ANTI SCIENTIFIC NOTATION
+// EXPORT EXCEL - HANYA SISWA AKTIF
 // ========================================================
 public function export_excel()
 {
@@ -404,72 +404,138 @@ public function export_excel()
 
     error_reporting(0);
 
-    // ======================== QUERY DATA ========================
-    // ======================== QUERY DATA ========================
-$data = $this->db
-    ->select('
+    // ========================================================
+    // AMBIL FILTER DARI URL
+    // ========================================================
+    $kelas_id = $this->input->get('kelas', TRUE);
+    $search   = $this->input->get('search', TRUE);
+
+    // ========================================================
+    // QUERY DATA SISWA
+    // HANYA STATUS AKTIF
+    // ========================================================
+    $this->db->select('
         siswa.*,
         kelas.nama AS nama_kelas,
         kelas.jurusan AS nama_jurusan
-    ')
-    ->from('siswa')
-    ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
-    ->get()
-    ->result();
+    ');
 
-// ======================== FIELD EXPORT ========================
+    $this->db->from('siswa');
 
-// ambil semua field siswa
-$fields = $this->db->list_fields('siswa');
+    $this->db->join(
+        'kelas',
+        'kelas.id = siswa.id_kelas',
+        'left'
+    );
 
-// hapus id_kelas
-$fields = array_filter($fields, function ($f) {
-    return $f != 'id_kelas';
-});
+    // 🔥 PENTING:
+    // HANYA SISWA AKTIF
+    $this->db->where('siswa.status', 'aktif');
 
-// reset index
-$fields = array_values($fields);
+    // ========================================================
+    // FILTER KELAS
+    // ========================================================
+    if (!empty($kelas_id)) {
+        $this->db->where('siswa.id_kelas', $kelas_id);
+    }
 
-// tambah field relasi
-$fields[] = 'nama_kelas';
-$fields[] = 'nama_jurusan';
+    // ========================================================
+    // FILTER PENCARIAN
+    // ========================================================
+    if (!empty($search)) {
 
-    // ======================== SPREADSHEET ========================
+        $this->db->group_start();
+
+        $this->db->like('siswa.nama', $search);
+        $this->db->or_like('siswa.nis', $search);
+        $this->db->or_like('siswa.nisn', $search);
+
+        $this->db->group_end();
+    }
+
+    // ========================================================
+    // URUTKAN
+    // ========================================================
+    $this->db->order_by('siswa.id', 'ASC');
+
+    $data = $this->db->get()->result();
+
+    // ========================================================
+    // FIELD EXPORT
+    // ========================================================
+
+    // Ambil semua field tabel siswa
+    $fields = $this->db->list_fields('siswa');
+
+    // Jangan export id_kelas karena sudah ada nama kelas
+    $fields = array_filter($fields, function ($f) {
+        return $f != 'id_kelas';
+    });
+
+    // Reset index array
+    $fields = array_values($fields);
+
+    // Tambahkan field relasi
+    $fields[] = 'nama_kelas';
+    $fields[] = 'nama_jurusan';
+
+    // ========================================================
+    // SPREADSHEET
+    // ========================================================
+
     $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    $sheet = $spreadsheet->setActiveSheetIndex(0);
-    $sheet->setTitle('Data Siswa');
 
-    // ======================== HEADER ========================
+    $sheet = $spreadsheet->setActiveSheetIndex(0);
+
+    $sheet->setTitle('Data Siswa Aktif');
+
+    // ========================================================
+    // HEADER
+    // ========================================================
+
     $colIndex = 1;
 
     foreach ($fields as $f) {
+
         $sheet->setCellValueByColumnAndRow(
             $colIndex,
             1,
             strtoupper($f)
         );
+
         $colIndex++;
     }
 
-    // Style header
-    $lastCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($fields));
+    // ========================================================
+    // STYLE HEADER
+    // ========================================================
+
+    $lastCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(
+        count($fields)
+    );
 
     $sheet->getStyle("A1:{$lastCol}1")->applyFromArray([
         'font' => [
             'bold' => true
         ],
+
         'alignment' => [
-            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
+            'horizontal' =>
+                \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
         ],
+
         'borders' => [
             'allBorders' => [
-                'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+                'style' =>
+                    \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
             ]
         ]
     ]);
 
-    // ======================== FIELD TEXT ========================
-    // nomor identitas dipaksa TEXT
+    // ========================================================
+    // FIELD YANG HARUS TEXT
+    // ========================================================
+
     $textFields = [
         'nis',
         'nisn',
@@ -483,7 +549,10 @@ $fields[] = 'nama_jurusan';
         'telp'
     ];
 
-    // ======================== DATA ========================
+    // ========================================================
+    // DATA
+    // ========================================================
+
     $row = 2;
 
     foreach ($data as $d) {
@@ -494,21 +563,28 @@ $fields[] = 'nama_jurusan';
 
             $value = isset($d->$f) ? $d->$f : '';
 
-            $cell = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex) . $row;
+            $cell =
+                \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(
+                    $colIndex
+                ) . $row;
 
-            // detect angka panjang
-            $isLongNumber = is_numeric($value) && strlen((string)$value) >= 12;
+            // Deteksi angka panjang
+            $isLongNumber =
+                is_numeric($value) &&
+                strlen((string)$value) >= 12;
+
+            // ====================================================
+            // PAKSA TEXT UNTUK NIS / NIK / HP DLL
+            // ====================================================
 
             if (in_array($f, $textFields) || $isLongNumber) {
 
-                // paksa jadi string
                 $sheet->setCellValueExplicit(
                     $cell,
                     (string)$value,
                     \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
                 );
 
-                // format text
                 $sheet->getStyle($cell)
                     ->getNumberFormat()
                     ->setFormatCode(
@@ -517,7 +593,6 @@ $fields[] = 'nama_jurusan';
 
             } else {
 
-                // normal
                 $sheet->setCellValueByColumnAndRow(
                     $colIndex,
                     $row,
@@ -531,34 +606,53 @@ $fields[] = 'nama_jurusan';
         $row++;
     }
 
-    // ======================== AUTOSIZE ========================
+    // ========================================================
+    // AUTOSIZE
+    // ========================================================
+
     for ($i = 1; $i <= count($fields); $i++) {
 
-        $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+        $colLetter =
+            \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
 
         $sheet->getColumnDimension($colLetter)
             ->setAutoSize(true);
     }
 
-    // ======================== BORDER DATA ========================
+    // ========================================================
+    // BORDER DATA
+    // ========================================================
+
     $lastRow = $row - 1;
 
-    $sheet->getStyle("A1:{$lastCol}{$lastRow}")
-        ->getBorders()
-        ->getAllBorders()
-        ->setBorderStyle(
-            \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
-        );
+    if ($lastRow >= 1) {
 
-    // ======================== OUTPUT ========================
+        $sheet->getStyle("A1:{$lastCol}{$lastRow}")
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(
+                \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+            );
+    }
+
+    // ========================================================
+    // OUTPUT
+    // ========================================================
+
     header('Content-Type: application/vnd.ms-excel');
-    header('Content-Disposition: attachment; filename="data_siswa_full.xls"');
+
+    header(
+        'Content-Disposition: attachment; filename="data_siswa_aktif.xls"'
+    );
+
     header('Cache-Control: max-age=0');
 
     $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+
     $writer->save('php://output');
 
     ob_end_flush();
+
     exit;
 }
 
