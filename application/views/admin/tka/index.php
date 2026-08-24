@@ -286,6 +286,77 @@ body.dark-mode .tka-status-belum {
 
 }
 
+
+/* =========================================================
+   SEARCH NAMA
+========================================================= */
+
+.tka-search-wrapper {
+    position: relative;
+}
+
+.tka-search-input {
+    padding-left: 39px !important;
+    padding-right: 38px !important;
+}
+
+.tka-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+
+    color: #94a3b8;
+    font-size: .82rem;
+    pointer-events: none;
+}
+
+.tka-search-clear {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    color: #94a3b8;
+    background: transparent;
+
+    text-decoration: none !important;
+
+    transition: all .2s ease;
+}
+
+.tka-search-clear:hover {
+    background: #eef2f7;
+    color: #ef4444;
+}
+
+
+/* =========================================================
+   DARK MODE SEARCH
+========================================================= */
+
+body.dark-mode .tka-search-icon {
+    color: #7f899d;
+}
+
+body.dark-mode .tka-search-clear {
+    color: #9ca7ba;
+}
+
+body.dark-mode .tka-search-clear:hover {
+    background: #3a3f52;
+    color: #ff8a8a;
+}
 </style>
 
 
@@ -433,163 +504,207 @@ body.dark-mode .tka-status-belum {
 
 </div>
 
-    <!-- FILTER -->
+    <!-- =========================================================
+     FILTER
+========================================================= -->
 
-    <div class="card tka-filter-card mb-4">
+<div class="card tka-filter-card mb-4">
 
-        <div class="card-body">
+    <div class="card-body">
 
-            <form
-                method="get"
-                action="<?= site_url('Tka_admin'); ?>"
-            >
+        <form
+            method="get"
+            action="<?= site_url('Tka_admin'); ?>"
+        >
 
-                <div class="row align-items-end">
+            <div class="row align-items-end">
 
-                    <!-- TAHUN -->
+                <!-- TAHUN -->
+                <div class="col-lg-3 col-md-6 mb-3">
 
-                    <div class="col-md-4 mb-3 mb-md-0">
+                    <label class="tka-filter-label">
+                        Tahun Ajaran
+                    </label>
 
-                        <label class="tka-filter-label">
-                            Tahun Ajaran
-                        </label>
+                    <select
+                        name="tahun_id"
+                        class="form-control tka-filter"
+                    >
 
-                        <select
-                            name="tahun_id"
-                            class="form-control tka-filter"
-                        >
-
-                            <?php foreach ($tahun_list as $t): ?>
-
-                                <option
-                                    value="<?= (int) $t->id; ?>"
-                                    <?= (
-                                        $tahun_id == $t->id
-                                    )
-                                        ? 'selected'
-                                        : ''; ?>
-                                >
-
-                                    <?= html_escape($t->tahun); ?>
-
-                                </option>
-
-                            <?php endforeach; ?>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- KELAS -->
-
-                    <div class="col-md-3 mb-3 mb-md-0">
-
-                        <label class="tka-filter-label">
-                            Kelas
-                        </label>
-
-                        <select
-                            name="kelas_id"
-                            class="form-control tka-filter"
-                        >
-
-                            <option value="">
-                                Semua Kelas XII
-                            </option>
-
-                            <?php foreach ($kelas_list as $k): ?>
-
-                                <option
-                                    value="<?= (int) $k->id; ?>"
-                                    <?= (
-                                        $kelas_id == $k->id
-                                    )
-                                        ? 'selected'
-                                        : ''; ?>
-                                >
-
-                                    <?= html_escape($k->nama); ?>
-
-                                </option>
-
-                            <?php endforeach; ?>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- STATUS -->
-
-                    <div class="col-md-3 mb-3 mb-md-0">
-
-                        <label class="tka-filter-label">
-                            Status Pengisian
-                        </label>
-
-                        <select
-                            name="status"
-                            class="form-control tka-filter"
-                        >
+                        <?php foreach ($tahun_list as $t): ?>
 
                             <option
-                                value=""
-                                <?= $status === ''
+                                value="<?= (int) $t->id; ?>"
+                                <?= ($tahun_id == $t->id)
                                     ? 'selected'
                                     : ''; ?>
                             >
-                                Semua
+
+                                <?= html_escape($t->tahun); ?>
+
                             </option>
 
+                        <?php endforeach; ?>
+
+                    </select>
+
+                </div>
+
+
+                <!-- KELAS -->
+                <div class="col-lg-3 col-md-6 mb-3">
+
+                    <label class="tka-filter-label">
+                        Kelas
+                    </label>
+
+                    <select
+                        name="kelas_id"
+                        class="form-control tka-filter"
+                    >
+
+                        <option value="">
+                            Semua Kelas XII
+                        </option>
+
+                        <?php foreach ($kelas_list as $k): ?>
+
                             <option
-                                value="sudah"
-                                <?= $status === 'sudah'
+                                value="<?= (int) $k->id; ?>"
+                                <?= ($kelas_id == $k->id)
                                     ? 'selected'
                                     : ''; ?>
                             >
-                                Sudah Mengisi
+
+                                <?= html_escape($k->nama); ?>
+
                             </option>
 
-                            <option
-                                value="belum"
-                                <?= $status === 'belum'
-                                    ? 'selected'
-                                    : ''; ?>
-                            >
-                                Belum Mengisi
-                            </option>
+                        <?php endforeach; ?>
 
-                        </select>
+                    </select>
 
-                    </div>
+                </div>
 
 
-                    <!-- BUTTON -->
+                <!-- STATUS -->
+                <div class="col-lg-2 col-md-6 mb-3">
 
-                    <div class="col-md-2">
+                    <label class="tka-filter-label">
+                        Status Pengisian
+                    </label>
 
-                        <button
-                            type="submit"
-                            class="btn btn-primary tka-filter-btn w-100"
+                    <select
+                        name="status"
+                        class="form-control tka-filter"
+                    >
+
+                        <option
+                            value=""
+                            <?= ($status === '')
+                                ? 'selected'
+                                : ''; ?>
+                        >
+                            Semua
+                        </option>
+
+                        <option
+                            value="sudah"
+                            <?= ($status === 'sudah')
+                                ? 'selected'
+                                : ''; ?>
+                        >
+                            Sudah Mengisi
+                        </option>
+
+                        <option
+                            value="belum"
+                            <?= ($status === 'belum')
+                                ? 'selected'
+                                : ''; ?>
+                        >
+                            Belum Mengisi
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- CARI NAMA -->
+                <div class="col-lg-3 col-md-6 mb-3">
+
+                    <label class="tka-filter-label">
+                        Cari Nama Siswa
+                    </label>
+
+                    <div class="tka-search-wrapper">
+
+                        <i class="fas fa-search tka-search-icon"></i>
+
+                        <input
+                            type="text"
+                            name="nama"
+                            value="<?= html_escape(
+                                isset($nama)
+                                    ? $nama
+                                    : ''
+                            ); ?>"
+                            class="form-control tka-filter tka-search-input"
+                            placeholder="Ketik nama siswa..."
+                            autocomplete="off"
                         >
 
-                            <i class="fas fa-filter mr-1"></i>
+                        <?php if (!empty($nama)): ?>
 
-                            Filter
+                            <a
+                                href="<?= site_url(
+                                    'Tka_admin?' .
+                                    http_build_query([
+                                        'tahun_id' => $tahun_id,
+                                        'kelas_id' => $kelas_id,
+                                        'status'   => $status
+                                    ])
+                                ); ?>"
+                                class="tka-search-clear"
+                                title="Hapus pencarian"
+                            >
+                                <i class="fas fa-times"></i>
+                            </a>
 
-                        </button>
+                        <?php endif; ?>
 
                     </div>
 
                 </div>
 
-            </form>
 
-        </div>
+                <!-- BUTTON -->
+                <div class="col-lg-1 col-md-6 mb-3">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary tka-filter-btn w-100"
+                        title="Filter"
+                    >
+
+                        <i class="fas fa-filter"></i>
+
+                        <span class="d-lg-none ml-1">
+                            Filter
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
 
     </div>
 
+</div>
 
     <!-- TABLE -->
 
