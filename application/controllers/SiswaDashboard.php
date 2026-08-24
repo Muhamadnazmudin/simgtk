@@ -46,38 +46,176 @@ private $sheet_url = 'https://script.google.com/macros/s/AKfycbySQTOl8EZLnAxYaO5
 {
     $this->cek_login();
 
-    // ambil data siswa
+    // =========================================================
+    // AMBIL DATA SISWA
+    // =========================================================
+
     $data['siswa'] = $this->getSiswa();
-    // ===============================
-// CEK APAKAH SISWA ADALAH KETUA KELAS
-// ===============================
-$data['ketua_kelas'] = $this->db
-    ->select('kelas.id, kelas.nama')
-    ->from('kelas')
-    ->where('kelas.ketua_kelas_id', $data['siswa']->id)
-    ->get()
-    ->row();
 
     if (!$data['siswa']) {
         redirect('SiswaAuth/logout');
+        return;
     }
 
-    // ===== INISIALISASI VARIABEL DULU (INI KUNCI) =====
+
+    // =========================================================
+    // CEK SISWA KELAS XII
+    // =========================================================
+
+    $nama_kelas = strtoupper(
+        trim(
+            (string) $data['siswa']->nama_kelas
+        )
+    );
+
+    $is_xii = (
+        $nama_kelas === 'XII' ||
+        strpos($nama_kelas, 'XII ') === 0
+    );
+
+
+    // =========================================================
+    // DEFAULT NOTIFIKASI TKA
+    // =========================================================
+
+    $data['is_xii']    = $is_xii;
+    $data['tka_notif'] = false;
+    $data['tka_data']  = null;
+
+
+    // =========================================================
+    // CEK TKA
+    // =========================================================
+
+    if ($is_xii) {
+
+        /*
+         * Ambil data TKA berdasarkan SISWA.
+         *
+         * Tidak kita kunci dengan tahun_id siswa,
+         * supaya notif tidak gagal hanya karena tahun_id
+         * pada tabel siswa berbeda.
+         */
+
+        $tka = $this->db
+            ->select('
+                id,
+                siswa_id,
+                tahun_id,
+                mapel_1_id,
+                mapel_2_id
+            ')
+            ->from('tka_siswa')
+            ->where(
+                'siswa_id',
+                (int) $data['siswa']->id
+            )
+            ->order_by(
+                'id',
+                'DESC'
+            )
+            ->limit(1)
+            ->get()
+            ->row();
+
+
+        /*
+         * Belum mengisi / belum lengkap
+         */
+
+        if (
+            !$tka ||
+            empty($tka->mapel_1_id) ||
+            empty($tka->mapel_2_id)
+        ) {
+
+            $data['tka_notif'] = true;
+
+        } else {
+
+            /*
+             * Sudah mengisi lengkap
+             */
+
+            $data['tka_data'] = $tka;
+        }
+    }
+
+
+    // =========================================================
+    // CEK KETUA KELAS
+    // =========================================================
+
+    $data['ketua_kelas'] = $this->db
+        ->select('kelas.id, kelas.nama')
+        ->from('kelas')
+        ->where(
+            'kelas.ketua_kelas_id',
+            $data['siswa']->id
+        )
+        ->get()
+        ->row();
+
+
+    // =========================================================
+    // JADWAL HARI INI
+    // =========================================================
+
     $kelas_id = $this->session->userdata('kelas_id');
+
+    /*
+     * Kalau session kelas_id kosong,
+     * gunakan kelas dari data siswa.
+     */
+
+    if (!$kelas_id) {
+        $kelas_id = $data['siswa']->id_kelas;
+    }
+
+
     $hari_ini = $this->hari_ini();
 
-    // ===== AMBIL JADWAL HARI INI =====
-    $data['hari_ini'] = $hari_ini;
-    $data['jadwal_hari_ini'] = $this->Siswa_jadwal_model
-        ->get_jadwal_hari_ini($kelas_id, $hari_ini);
 
-    // ===== DATA VIEW =====
+    $data['hari_ini'] = $hari_ini;
+
+
+    $data['jadwal_hari_ini'] =
+        $this->Siswa_jadwal_model
+            ->get_jadwal_hari_ini(
+                $kelas_id,
+                $hari_ini
+            );
+
+
+    // =========================================================
+    // ACTIVE MENU
+    // =========================================================
+
     $data['active'] = 'dashboard';
 
-    $this->load->view('siswa/layout/header', $data);
-    $this->load->view('siswa/layout/sidebar', $data);
-    $this->load->view('siswa/dashboard', $data);
-    $this->load->view('siswa/layout/footer');
+
+    // =========================================================
+    // LOAD VIEW
+    // =========================================================
+
+    $this->load->view(
+        'siswa/layout/header',
+        $data
+    );
+
+    $this->load->view(
+        'siswa/layout/sidebar',
+        $data
+    );
+
+    $this->load->view(
+        'siswa/dashboard',
+        $data
+    );
+
+    $this->load->view(
+        'siswa/layout/footer'
+    );
 }
 
     public function biodata()

@@ -314,6 +314,88 @@ $ketua_kelas = $this->db
 
 <?php endif; ?>
 
+<?php
+/*
+|--------------------------------------------------------------------------
+| CEK KELAS XII UNTUK MENU TKA
+|--------------------------------------------------------------------------
+*/
+
+$kelas_tka = '';
+
+if (isset($siswa) && isset($siswa->nama_kelas)) {
+
+    $kelas_tka = strtoupper(
+        trim($siswa->nama_kelas)
+    );
+
+} else {
+
+    /*
+     * Fallback jika sidebar dipanggil dari controller
+     * yang tidak mengirim object siswa.
+     */
+
+    $sid_tka = $this->session->userdata('siswa_id');
+
+    if ($sid_tka) {
+
+        $row_tka = $this->db
+            ->select('kelas.nama AS nama_kelas')
+            ->from('siswa')
+            ->join(
+                'kelas',
+                'kelas.id = siswa.id_kelas',
+                'left'
+            )
+            ->where(
+                'siswa.id',
+                $sid_tka
+            )
+            ->get()
+            ->row();
+
+        if ($row_tka) {
+            $kelas_tka = strtoupper(
+                trim($row_tka->nama_kelas)
+            );
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| HANYA KELAS XII
+|--------------------------------------------------------------------------
+*/
+
+$is_xii = (
+    $kelas_tka === 'XII' ||
+    strpos($kelas_tka, 'XII ') === 0
+);
+?>
+
+<?php if ($is_xii && !$is_lulus): ?>
+
+    <hr class="sidebar-divider">
+
+    <li class="nav-item <?= ($active == 'tka') ? 'active' : ''; ?>">
+
+        <a
+            class="nav-link"
+            href="<?= site_url('Tka'); ?>"
+        >
+
+            <i class="fas fa-graduation-cap"></i>
+
+            <span>TKA</span>
+
+        </a>
+
+    </li>
+
+<?php endif; ?>
+
     <!-- <li class="nav-item <?= ($active=='cetak'?'active':''); ?>">
         <a class="nav-link" href="<?= site_url('SiswaDashboard/cetak'); ?>">
             <i class="fas fa-file-pdf"></i>

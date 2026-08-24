@@ -86,7 +86,10 @@ $group_tutorial = in_array($active, [
     'tutorial_add',
     'tutorial_edit'
 ]);
-
+$group_tka = in_array($active, [
+    'tka',
+    'tka_edit'
+]);
 
 ?>
 
@@ -300,6 +303,51 @@ $group_tutorial = in_array($active, [
     </div>
 </li>
 <?php endif; ?>
+
+
+<!-- ==============================
+     TKA
+================================= -->
+<?php if ($isAdmin): ?>
+
+<li class="nav-item <?= $group_tka ? 'active' : '' ?>">
+
+    <a
+        class="nav-link collapsed"
+        href="#"
+        data-toggle="collapse"
+        data-target="#mTKAAdmin"
+    >
+
+        <i class="fas fa-graduation-cap"></i>
+
+        <span>TKA</span>
+
+    </a>
+
+    <div
+        id="mTKAAdmin"
+        class="collapse <?= $group_tka ? 'show' : '' ?>"
+    >
+
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <a
+                class="collapse-item <?= $active=='tka'?'active':'' ?>"
+                href="<?= site_url('Tka_admin') ?>"
+            >
+                Peserta TKA
+            </a>
+
+        </div>
+
+    </div>
+
+</li>
+
+<?php endif; ?>
+
+
 <!-- ==============================
      AKUN BELAJAR / BELAJARID
 ================================= -->
@@ -527,6 +575,22 @@ $group_tutorial = in_array($active, [
         <i class="fas fa-user-graduate"></i>
         <span>Data Siswa</span>
     </a>
+</li>
+<hr class="sidebar-divider">
+
+<li class="nav-item <?= $active=='tka'?'active':'' ?>">
+
+    <a
+        class="nav-link"
+        href="<?= site_url('Tka_admin') ?>"
+    >
+
+        <i class="fas fa-graduation-cap"></i>
+
+        <span>Peserta TKA</span>
+
+    </a>
+
 </li>
 
 <div class="sidebar-heading">Mutasi</div>

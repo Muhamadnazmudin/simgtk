@@ -1,3 +1,203 @@
+<?php if (!empty($tka_notif)): ?>
+
+<style>
+
+.tka-notification {
+    position: relative;
+    overflow: hidden;
+    border: 0;
+    border-radius: 22px;
+    padding: 24px 28px;
+    margin-bottom: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e3f2fd 0%,
+            #bbdefb 100%
+        );
+
+    box-shadow:
+        0 8px 25px rgba(30, 136, 229, .15);
+}
+
+.tka-notification::before {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    right: -50px;
+    top: -70px;
+
+    background: rgba(255,255,255,.35);
+    border-radius: 50%;
+}
+
+.tka-notification-content {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.tka-notification-icon {
+    width: 58px;
+    height: 58px;
+
+    min-width: 58px;
+
+    border-radius: 17px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #1e88e5;
+    color: #fff;
+
+    font-size: 25px;
+
+    box-shadow:
+        0 6px 15px rgba(30,136,229,.25);
+}
+
+.tka-notification-text {
+    flex: 1;
+}
+
+.tka-notification-title {
+    margin: 0 0 5px;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #0d47a1;
+}
+
+.tka-notification-desc {
+    margin: 0;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    color: #245078;
+}
+
+.tka-notification-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 11px 18px;
+
+    border-radius: 12px;
+
+    background: #1e88e5;
+    color: #fff !important;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none !important;
+
+    white-space: nowrap;
+
+    transition: .2s ease;
+}
+
+.tka-notification-button:hover {
+    background: #1565c0;
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 15px rgba(30,136,229,.25);
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+    .tka-notification {
+        padding: 20px;
+    }
+
+    .tka-notification-content {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .tka-notification-text {
+        min-width: calc(100% - 80px);
+    }
+
+    .tka-notification-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+}
+
+</style>
+
+
+<div class="tka-notification">
+
+    <div class="tka-notification-content">
+
+        <!-- ICON -->
+        <div class="tka-notification-icon">
+
+            <i class="fas fa-graduation-cap"></i>
+
+        </div>
+
+
+        <!-- TEXT -->
+        <div class="tka-notification-text">
+
+            <h5 class="tka-notification-title">
+
+                Pengisian TKA Dibuka
+
+            </h5>
+
+            <p class="tka-notification-desc">
+
+                Anda adalah siswa kelas XII.
+                Silakan menentukan
+                <strong>2 mata pelajaran pilihan</strong>
+                yang akan digunakan untuk TKA.
+
+            </p>
+
+        </div>
+
+
+        <!-- BUTTON -->
+        <div>
+
+            <a
+                href="<?= site_url('Tka'); ?>"
+                class="tka-notification-button"
+            >
+
+                <i class="fas fa-edit"></i>
+
+                Isi Form TKA
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+<?php endif; ?>
 <style>
 /* =========================================================
    SISWA DASHBOARD
