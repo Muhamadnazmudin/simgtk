@@ -157,7 +157,7 @@
 
 
         <!-- TEXT -->
-        <div class="tka-notification-text">
+        <!-- <div class="tka-notification-text">
 
             <h5 class="tka-notification-title">
 
@@ -174,11 +174,11 @@
 
             </p>
 
-        </div>
+        </div> -->
 
 
         <!-- BUTTON -->
-        <div>
+        <!-- <div>
 
             <a
                 href="<?= site_url('Tka'); ?>"
@@ -191,13 +191,14 @@
 
             </a>
 
-        </div>
+        </div> -->
 
     </div>
 
 </div>
 
 <?php endif; ?>
+
 <style>
 /* =========================================================
    SISWA DASHBOARD

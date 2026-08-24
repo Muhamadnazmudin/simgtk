@@ -381,7 +381,7 @@ $is_xii = (
 
     <li class="nav-item <?= ($active == 'tka') ? 'active' : ''; ?>">
 
-        <a
+        <!-- <a
             class="nav-link"
             href="<?= site_url('Tka'); ?>"
         >
@@ -390,7 +390,7 @@ $is_xii = (
 
             <span>TKA</span>
 
-        </a>
+        </a> -->
 
     </li>
 
