@@ -3,13 +3,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------
-| STATUS
+| DATA
 |--------------------------------------------------------------------------
 */
 
 $tka_terkunci = !empty($tka_terkunci);
 $pilihan      = isset($pilihan) ? $pilihan : null;
 $mapel        = isset($mapel) ? $mapel : [];
+
+
+/*
+|--------------------------------------------------------------------------
+| WHATSAPP PAK RIKI
+|--------------------------------------------------------------------------
+*/
+
+$wa_riki = '6289630267870';
+
+$wa_message = urlencode(
+    'Halo Pak Riki, saya mengalami kendala pada pengisian TKA.'
+);
+
+$wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 ?>
 
 <style>
@@ -19,9 +34,10 @@ $mapel        = isset($mapel) ? $mapel : [];
 ========================================================= */
 
 .tka-page {
-    padding: 20px 0 40px;
+    padding: 18px 0 40px;
     color: #1f2937;
 }
+
 
 /* =========================================================
    MAIN CARD
@@ -29,11 +45,14 @@ $mapel        = isset($mapel) ? $mapel : [];
 
 .tka-card {
     border: 0;
-    border-radius: 24px;
+    border-radius: 22px;
     overflow: hidden;
     background: #ffffff;
-    box-shadow: 0 12px 35px rgba(15, 23, 42, .08);
+
+    box-shadow:
+        0 12px 35px rgba(15, 23, 42, .08);
 }
+
 
 /* =========================================================
    HEADER
@@ -42,34 +61,48 @@ $mapel        = isset($mapel) ? $mapel : [];
 .tka-header {
     position: relative;
     overflow: hidden;
-    padding: 30px 32px;
-    background: linear-gradient(
-        135deg,
-        #4f9cf9 0%,
-        #3b82f6 100%
-    );
+
+    padding: 28px 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4f9cf9 0%,
+            #3b82f6 100%
+        );
+
     color: #ffffff;
 }
 
 .tka-header::before {
     content: "";
+
     position: absolute;
-    width: 180px;
-    height: 180px;
-    right: -60px;
-    top: -80px;
+
+    width: 190px;
+    height: 190px;
+
+    right: -65px;
+    top: -90px;
+
     border-radius: 50%;
+
     background: rgba(255,255,255,.10);
 }
 
 .tka-header::after {
     content: "";
+
     position: absolute;
+
     width: 120px;
     height: 120px;
+
     right: 90px;
-    bottom: -70px;
+    bottom: -75px;
+
     border-radius: 50%;
+
     background: rgba(255,255,255,.07);
 }
 
@@ -81,37 +114,49 @@ $mapel        = isset($mapel) ? $mapel : [];
 .tka-icon {
     width: 52px;
     height: 52px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    margin-bottom: 14px;
+
     border-radius: 15px;
+
     background: rgba(255,255,255,.16);
+
     font-size: 21px;
-    margin-bottom: 15px;
 }
 
 .tka-title {
     margin: 0;
+
+    color: #ffffff;
+
     font-size: 1.45rem;
     font-weight: 700;
-    color: #ffffff;
 }
 
 .tka-description {
+    max-width: 720px;
+
     margin: 8px 0 0;
-    max-width: 700px;
-    color: rgba(255,255,255,.88);
-    font-size: .92rem;
+
+    color: rgba(255,255,255,.90);
+
+    font-size: .90rem;
     line-height: 1.6;
 }
+
 
 /* =========================================================
    BODY
 ========================================================= */
 
 .tka-body {
-    padding: 30px 32px 34px;
+    padding: 28px 30px 32px;
 }
+
 
 /* =========================================================
    STUDENT INFO
@@ -119,46 +164,64 @@ $mapel        = isset($mapel) ? $mapel : [];
 
 .tka-student-info {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr;
+
+    grid-template-columns:
+        1.5fr
+        1fr
+        1fr;
+
     gap: 12px;
-    margin-bottom: 28px;
+
+    margin-bottom: 27px;
 }
 
 .tka-info-item {
-    padding: 16px 18px;
+    padding: 15px 17px;
+
     border: 1px solid #e5eaf2;
-    border-radius: 15px;
+    border-radius: 14px;
+
     background: #f8fafc;
 }
 
 .tka-info-label {
     display: block;
+
     margin-bottom: 5px;
+
     color: #6b7280;
-    font-size: .76rem;
-    font-weight: 600;
+
+    font-size: .74rem;
+    font-weight: 700;
+
     text-transform: uppercase;
     letter-spacing: .3px;
 }
 
 .tka-info-value {
     display: block;
+
     color: #1f2937;
-    font-size: .94rem;
+
+    font-size: .93rem;
     font-weight: 700;
 }
 
+
 /* =========================================================
-   SECTION TITLE
+   SECTION
 ========================================================= */
 
 .tka-section-title {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    gap: 9px;
+
+    margin-bottom: 7px;
+
     color: #1f2937;
-    font-size: 1.05rem;
+
+    font-size: 1.04rem;
     font-weight: 700;
 }
 
@@ -167,69 +230,91 @@ $mapel        = isset($mapel) ? $mapel : [];
 }
 
 .tka-section-description {
-    margin-bottom: 22px;
+    margin-bottom: 20px;
+
     color: #6b7280;
-    font-size: .87rem;
+
+    font-size: .86rem;
     line-height: 1.6;
 }
 
+
 /* =========================================================
-   ALERT
+   NOTICE
 ========================================================= */
 
 .tka-notice {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    margin-bottom: 24px;
+
+    margin-bottom: 23px;
     padding: 15px 17px;
-    border-radius: 14px;
-    background: #eef6ff;
+
     border: 1px solid #d7eaff;
+    border-radius: 14px;
+
+    background: #eef6ff;
+
     color: #315b86;
-    font-size: .87rem;
+
+    font-size: .86rem;
     line-height: 1.55;
 }
 
 .tka-notice-icon {
-    flex: 0 0 auto;
     width: 32px;
     height: 32px;
+
+    flex: 0 0 auto;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     border-radius: 10px;
+
     background: #dcecff;
+
     color: #3b82f6;
 }
+
 
 /* =========================================================
    FORM
 ========================================================= */
 
 .tka-form-group {
-    margin-bottom: 21px;
+    margin-bottom: 20px;
 }
 
 .tka-label {
     display: flex;
     align-items: center;
     gap: 7px;
+
     margin-bottom: 8px;
+
     color: #374151 !important;
-    font-size: .88rem;
+
+    font-size: .87rem;
     font-weight: 700;
 }
 
 .tka-label-number {
     width: 24px;
     height: 24px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     border-radius: 7px;
+
     background: #eaf3ff;
+
     color: #3b82f6;
+
     font-size: .75rem;
     font-weight: 700;
 }
@@ -237,14 +322,20 @@ $mapel        = isset($mapel) ? $mapel : [];
 .tka-select {
     width: 100%;
     min-height: 50px;
+
     padding: 10px 14px;
-    border-radius: 13px !important;
+
     border: 1px solid #dce3ed !important;
+    border-radius: 13px !important;
+
     background: #ffffff !important;
     color: #1f2937 !important;
-    font-size: .9rem;
+
+    font-size: .90rem;
+
     box-shadow: none !important;
-    transition: all .2s ease;
+
+    transition: .2s ease;
 }
 
 .tka-select:hover {
@@ -253,15 +344,21 @@ $mapel        = isset($mapel) ? $mapel : [];
 
 .tka-select:focus {
     border-color: #4f9cf9 !important;
-    box-shadow: 0 0 0 3px rgba(79,156,249,.12) !important;
+
+    box-shadow:
+        0 0 0 3px rgba(79,156,249,.12) !important;
 }
 
+
 /* =========================================================
-   SAVE BUTTON
+   ACTION
 ========================================================= */
 
 .tka-actions {
-    margin-top: 26px;
+    display: flex;
+    justify-content: flex-start;
+
+    margin-top: 25px;
 }
 
 .tka-submit {
@@ -269,90 +366,111 @@ $mapel        = isset($mapel) ? $mapel : [];
     align-items: center;
     justify-content: center;
     gap: 9px;
+
     min-height: 48px;
+
     padding: 11px 22px;
+
     border: 0;
     border-radius: 13px;
+
     background: #4f9cf9;
+
     color: #ffffff !important;
+
     font-size: .88rem;
     font-weight: 700;
-    box-shadow: 0 6px 15px rgba(79,156,249,.20);
-    transition: all .2s ease;
+
+    box-shadow:
+        0 6px 15px rgba(79,156,249,.20);
+
+    transition: .2s ease;
 }
 
 .tka-submit:hover {
     background: #3b82f6;
-    color: #ffffff !important;
+
     transform: translateY(-1px);
-    box-shadow: 0 8px 18px rgba(79,156,249,.25);
+
+    box-shadow:
+        0 8px 18px rgba(79,156,249,.25);
 }
 
-.tka-submit:active {
-    transform: translateY(0);
-}
 
 /* =========================================================
-   LOCKED STATE
+   LOCKED
 ========================================================= */
-
-.tka-locked {
-    margin-top: 4px;
-}
 
 .tka-locked-banner {
     display: flex;
     align-items: flex-start;
     gap: 13px;
+
     margin-bottom: 22px;
     padding: 17px 18px;
-    border-radius: 15px;
-    background: #ecfdf5;
+
     border: 1px solid #ccefe0;
+    border-radius: 15px;
+
+    background: #ecfdf5;
 }
 
 .tka-locked-icon {
-    flex: 0 0 auto;
     width: 38px;
     height: 38px;
+
+    flex: 0 0 auto;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     border-radius: 11px;
+
     background: #d1fae5;
+
     color: #059669;
 }
 
 .tka-locked-title {
     margin: 0 0 3px;
+
     color: #047857;
+
     font-size: .92rem;
     font-weight: 700;
 }
 
 .tka-locked-text {
     margin: 0;
+
     color: #3f7665;
+
     font-size: .82rem;
     line-height: 1.5;
 }
 
+
 /* =========================================================
-   CHOICE CARD
+   CHOICE BOX
 ========================================================= */
 
 .tka-choice-box {
     padding: 21px;
-    border-radius: 18px;
-    background: #f8fafc;
+
     border: 1px solid #e6ebf2;
+    border-radius: 18px;
+
+    background: #f8fafc;
 }
 
 .tka-choice-heading {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 15px;
+
     margin-bottom: 14px;
 }
 
@@ -360,7 +478,9 @@ $mapel        = isset($mapel) ? $mapel : [];
     display: flex;
     align-items: center;
     gap: 9px;
+
     color: #1f2937;
+
     font-size: .94rem;
     font-weight: 700;
 }
@@ -373,63 +493,130 @@ $mapel        = isset($mapel) ? $mapel : [];
     display: inline-flex;
     align-items: center;
     gap: 5px;
+
     padding: 5px 9px;
+
     border-radius: 8px;
+
     background: #dcfce7;
     color: #15803d;
+
     font-size: .68rem;
     font-weight: 700;
-    letter-spacing: .3px;
 }
 
 .tka-choice-item {
     display: flex;
     align-items: center;
     gap: 14px;
+
     min-height: 65px;
+
     margin-top: 10px;
     padding: 11px 14px;
-    border-radius: 13px;
-    background: #ffffff;
+
     border: 1px solid #e5eaf1;
+    border-radius: 13px;
+
+    background: #ffffff;
 }
 
 .tka-choice-number {
-    flex: 0 0 auto;
     width: 36px;
     height: 36px;
+
+    flex: 0 0 auto;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     border-radius: 11px;
+
     background: #eaf3ff;
     color: #3b82f6;
+
     font-size: .85rem;
     font-weight: 700;
 }
 
 .tka-choice-mapel {
     color: #1f2937 !important;
-    font-size: .9rem;
+
+    font-size: .90rem;
     font-weight: 600;
 }
 
+
 /* =========================================================
-   ADMIN NOTE
+   CONTACT PERSON
 ========================================================= */
 
-.tka-admin-note {
+.tka-contact {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 16px;
-    color: #6b7280;
-    font-size: .78rem;
+    gap: 13px;
+
+    margin-top: 22px;
+    padding: 15px 17px;
+
+    border: 1px solid #e5eaf2;
+    border-radius: 15px;
+
+    background: #ffffff;
 }
 
-.tka-admin-note i {
-    color: #9ca3af;
+.tka-contact-icon {
+    width: 40px;
+    height: 40px;
+
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #e8f5e9;
+
+    color: #25d366;
+
+    font-size: 18px;
 }
+
+.tka-contact-text {
+    flex: 1;
+
+    color: #6b7280;
+
+    font-size: .78rem;
+    line-height: 1.5;
+}
+
+.tka-contact-title {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: #374151;
+
+    font-size: .80rem;
+    font-weight: 700;
+}
+
+.tka-contact-link {
+    color: #16803c !important;
+
+    font-weight: 700;
+
+    text-decoration: none !important;
+}
+
+.tka-contact-link:hover {
+    text-decoration: underline !important;
+}
+
 
 /* =========================================================
    FLASH MESSAGE
@@ -437,14 +624,194 @@ $mapel        = isset($mapel) ? $mapel : [];
 
 .tka-alert {
     margin-bottom: 20px;
+
     border: 0;
     border-radius: 13px;
+
     font-size: .87rem;
 }
 
-.tka-alert .close {
-    outline: none;
+
+/* =========================================================
+   CONFIRM MODAL
+========================================================= */
+
+.tka-confirm-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 99999;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(15,23,42,.60);
+
+    backdrop-filter: blur(4px);
 }
+
+.tka-confirm-overlay.show {
+    display: flex;
+}
+
+.tka-confirm-box {
+    width: 100%;
+    max-width: 470px;
+
+    padding: 27px;
+
+    border-radius: 22px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.20);
+
+    animation: tkaConfirmIn .18s ease-out;
+}
+
+@keyframes tkaConfirmIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+.tka-confirm-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 17px;
+
+    background: #eaf3ff;
+
+    color: #3b82f6;
+
+    font-size: 24px;
+}
+
+.tka-confirm-title {
+    margin: 0;
+
+    text-align: center;
+
+    color: #1f2937;
+
+    font-size: 1.12rem;
+    font-weight: 700;
+}
+
+.tka-confirm-text {
+    margin: 9px 0 17px;
+
+    text-align: center;
+
+    color: #6b7280;
+
+    font-size: .85rem;
+    line-height: 1.6;
+}
+
+.tka-confirm-choice {
+    padding: 13px 15px;
+
+    margin-bottom: 8px;
+
+    border-radius: 12px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5eaf2;
+
+    font-size: .85rem;
+}
+
+.tka-confirm-choice strong {
+    color: #3b82f6;
+}
+
+.tka-confirm-warning {
+    margin-top: 14px;
+
+    padding: 12px 14px;
+
+    border-radius: 11px;
+
+    background: #fff7ed;
+
+    border: 1px solid #fed7aa;
+
+    color: #9a3412;
+
+    font-size: .78rem;
+
+    line-height: 1.5;
+}
+
+.tka-confirm-actions {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.tka-confirm-cancel,
+.tka-confirm-save {
+    flex: 1;
+
+    min-height: 45px;
+
+    border-radius: 11px;
+
+    font-size: .84rem;
+    font-weight: 700;
+
+    transition: .2s ease;
+}
+
+.tka-confirm-cancel {
+    border: 1px solid #dbe2ea;
+
+    background: #ffffff;
+
+    color: #4b5563;
+}
+
+.tka-confirm-save {
+    border: 0;
+
+    background: #3b82f6;
+
+    color: #ffffff;
+}
+
+.tka-confirm-save:hover {
+    background: #2563eb;
+}
+
+.tka-confirm-cancel:hover {
+    background: #f3f4f6;
+}
+
 
 /* =========================================================
    DARK MODE
@@ -454,17 +821,15 @@ body.dark-mode .tka-page {
     color: #e5e7eb;
 }
 
-body.dark-mode .tka-card {
-    background: #202333 !important;
-    box-shadow: 0 12px 35px rgba(0,0,0,.22);
-}
-
+body.dark-mode .tka-card,
 body.dark-mode .tka-body {
     background: #202333 !important;
-    color: #e5e7eb;
 }
 
-/* student info */
+body.dark-mode .tka-card {
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.22);
+}
 
 body.dark-mode .tka-info-item {
     background: #292d40 !important;
@@ -479,8 +844,6 @@ body.dark-mode .tka-info-value {
     color: #f3f4f6 !important;
 }
 
-/* title */
-
 body.dark-mode .tka-section-title {
     color: #f3f4f6 !important;
 }
@@ -493,8 +856,6 @@ body.dark-mode .tka-section-description {
     color: #aeb6c7 !important;
 }
 
-/* notice */
-
 body.dark-mode .tka-notice {
     background: #263650 !important;
     border-color: #354b6b !important;
@@ -505,8 +866,6 @@ body.dark-mode .tka-notice-icon {
     background: #304a70 !important;
     color: #7db4ff !important;
 }
-
-/* form */
 
 body.dark-mode .tka-label {
     color: #f1f5f9 !important;
@@ -523,22 +882,10 @@ body.dark-mode .tka-select {
     color: #f8fafc !important;
 }
 
-body.dark-mode .tka-select:hover {
-    border-color: #63718c !important;
-}
-
-body.dark-mode .tka-select:focus {
-    background: #292d40 !important;
-    border-color: #6ea8fe !important;
-    color: #ffffff !important;
-}
-
 body.dark-mode .tka-select option {
     background: #292d40 !important;
     color: #ffffff !important;
 }
-
-/* locked */
 
 body.dark-mode .tka-locked-banner {
     background: #19392f !important;
@@ -558,8 +905,6 @@ body.dark-mode .tka-locked-text {
     color: #a7dccc !important;
 }
 
-/* choice */
-
 body.dark-mode .tka-choice-box {
     background: #292d40 !important;
     border-color: #3c4255 !important;
@@ -569,55 +914,58 @@ body.dark-mode .tka-choice-title {
     color: #f3f4f6 !important;
 }
 
-body.dark-mode .tka-choice-title i {
-    color: #6ee7b7 !important;
-}
-
-body.dark-mode .tka-locked-badge {
-    background: #214936 !important;
-    color: #72e4ae !important;
-}
-
 body.dark-mode .tka-choice-item {
     background: #202333 !important;
     border-color: #3c4255 !important;
-}
-
-body.dark-mode .tka-choice-number {
-    background: #293f63 !important;
-    color: #7eb4ff !important;
 }
 
 body.dark-mode .tka-choice-mapel {
     color: #f1f5f9 !important;
 }
 
-body.dark-mode .tka-admin-note {
-    color: #9ca7ba !important;
+body.dark-mode .tka-contact {
+    background: #292d40 !important;
+    border-color: #3c4255 !important;
 }
 
-body.dark-mode .tka-admin-note i {
-    color: #788398 !important;
+body.dark-mode .tka-contact-title {
+    color: #f3f4f6 !important;
 }
 
-/* alerts */
-
-body.dark-mode .tka-alert.alert-success {
-    background: #19392f !important;
-    color: #b8f5d6 !important;
-    border-color: #285b4b !important;
+body.dark-mode .tka-contact-text {
+    color: #aeb6c7 !important;
 }
 
-body.dark-mode .tka-alert.alert-danger {
-    background: #47252c !important;
-    color: #ffd0d5 !important;
-    border-color: #70363f !important;
+body.dark-mode .tka-confirm-box {
+    background: #202333 !important;
 }
 
-body.dark-mode .tka-alert.alert-info {
-    background: #263650 !important;
-    color: #c9dcf7 !important;
+body.dark-mode .tka-confirm-title {
+    color: #f3f4f6;
 }
+
+body.dark-mode .tka-confirm-text {
+    color: #aeb6c7;
+}
+
+body.dark-mode .tka-confirm-choice {
+    background: #292d40;
+    border-color: #3c4255;
+    color: #e5e7eb;
+}
+
+body.dark-mode .tka-confirm-warning {
+    background: #402c1f;
+    border-color: #68442d;
+    color: #fed7aa;
+}
+
+body.dark-mode .tka-confirm-cancel {
+    background: #292d40;
+    border-color: #4a5064;
+    color: #d1d5db;
+}
+
 
 /* =========================================================
    RESPONSIVE
@@ -634,7 +982,7 @@ body.dark-mode .tka-alert.alert-info {
     }
 
     .tka-header {
-        padding: 24px 21px;
+        padding: 23px 20px;
     }
 
     .tka-title {
@@ -646,17 +994,13 @@ body.dark-mode .tka-alert.alert-info {
     }
 
     .tka-body {
-        padding: 22px 18px 26px;
+        padding: 21px 17px 25px;
     }
 
     .tka-student-info {
         grid-template-columns: 1fr;
         gap: 9px;
-        margin-bottom: 23px;
-    }
-
-    .tka-info-item {
-        padding: 13px 15px;
+        margin-bottom: 22px;
     }
 
     .tka-choice-box {
@@ -673,16 +1017,25 @@ body.dark-mode .tka-alert.alert-info {
         padding: 10px 12px;
     }
 
-    .tka-choice-number {
-        width: 33px;
-        height: 33px;
-    }
-
-    .tka-choice-mapel {
-        font-size: .84rem;
-    }
-
     .tka-submit {
+        width: 100%;
+    }
+
+    .tka-contact {
+        align-items: flex-start;
+    }
+
+    .tka-confirm-box {
+        padding: 23px 18px;
+        border-radius: 19px;
+    }
+
+    .tka-confirm-actions {
+        flex-direction: column-reverse;
+    }
+
+    .tka-confirm-cancel,
+    .tka-confirm-save {
         width: 100%;
     }
 }
@@ -692,6 +1045,7 @@ body.dark-mode .tka-alert.alert-info {
 
 <div class="container-fluid tka-page">
 
+
     <!-- =====================================================
          FLASH MESSAGE
     ====================================================== -->
@@ -699,8 +1053,13 @@ body.dark-mode .tka-alert.alert-info {
     <?php if ($this->session->flashdata('success')): ?>
 
         <div class="alert alert-success tka-alert">
+
             <i class="fas fa-check-circle mr-2"></i>
-            <?= html_escape($this->session->flashdata('success')); ?>
+
+            <?= html_escape(
+                $this->session->flashdata('success')
+            ); ?>
+
         </div>
 
     <?php endif; ?>
@@ -709,8 +1068,13 @@ body.dark-mode .tka-alert.alert-info {
     <?php if ($this->session->flashdata('error')): ?>
 
         <div class="alert alert-danger tka-alert">
+
             <i class="fas fa-exclamation-circle mr-2"></i>
-            <?= html_escape($this->session->flashdata('error')); ?>
+
+            <?= html_escape(
+                $this->session->flashdata('error')
+            ); ?>
+
         </div>
 
     <?php endif; ?>
@@ -722,14 +1086,19 @@ body.dark-mode .tka-alert.alert-info {
 
     <div class="card tka-card">
 
-        <!-- HEADER -->
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
 
         <div class="tka-header">
 
             <div class="tka-header-content">
 
                 <div class="tka-icon">
+
                     <i class="fas fa-graduation-cap"></i>
+
                 </div>
 
                 <h1 class="tka-title">
@@ -746,7 +1115,9 @@ body.dark-mode .tka-alert.alert-info {
         </div>
 
 
-        <!-- BODY -->
+        <!-- =================================================
+             BODY
+        ================================================== -->
 
         <div class="tka-body">
 
@@ -802,7 +1173,7 @@ body.dark-mode .tka-alert.alert-info {
 
 
                 <!-- =============================================
-                     FORM BELUM DIISI
+                     FORM
                 ============================================== -->
 
                 <div class="tka-section-title">
@@ -813,9 +1184,11 @@ body.dark-mode .tka-alert.alert-info {
 
                 </div>
 
+
                 <div class="tka-section-description">
 
-                    Silakan pilih <strong>2 mata pelajaran</strong>.
+                    Silakan pilih
+                    <strong>2 mata pelajaran</strong>.
                     Pastikan pilihan sudah benar sebelum menyimpan.
                     Setelah disimpan, pilihan akan dikunci dan hanya
                     dapat diubah oleh admin.
@@ -828,15 +1201,20 @@ body.dark-mode .tka-alert.alert-info {
                 <div class="tka-notice">
 
                     <div class="tka-notice-icon">
+
                         <i class="fas fa-info"></i>
+
                     </div>
 
                     <div>
+
                         <strong>Perhatian</strong><br>
 
                         Pilihan TKA hanya dapat disimpan satu kali.
-                        Setelah klik <strong>Simpan & Kunci Pilihan</strong>,
-                        siswa tidak dapat mengubah pilihan tersebut.
+                        Setelah klik
+                        <strong>Simpan & Kunci Pilihan</strong>,
+                        pilihan tidak dapat diubah oleh siswa.
+
                     </div>
 
                 </div>
@@ -845,11 +1223,10 @@ body.dark-mode .tka-alert.alert-info {
                 <!-- FORM -->
 
                 <form
+                    id="tkaForm"
                     action="<?= site_url('Tka/simpan'); ?>"
                     method="post"
                 >
-
-                    <!-- CSRF -->
 
                     <input
                         type="hidden"
@@ -872,7 +1249,9 @@ body.dark-mode .tka-alert.alert-info {
 
                         </label>
 
+
                         <select
+                            id="mapel_1_id"
                             name="mapel_1_id"
                             class="form-control tka-select"
                             required
@@ -884,10 +1263,10 @@ body.dark-mode .tka-alert.alert-info {
 
                             <?php foreach ($mapel as $m): ?>
 
-                                <option value="<?= (int) $m->id; ?>">
-
+                                <option
+                                    value="<?= (int) $m->id; ?>"
+                                >
                                     <?= html_escape($m->nama_mapel); ?>
-
                                 </option>
 
                             <?php endforeach; ?>
@@ -911,7 +1290,9 @@ body.dark-mode .tka-alert.alert-info {
 
                         </label>
 
+
                         <select
+                            id="mapel_2_id"
                             name="mapel_2_id"
                             class="form-control tka-select"
                             required
@@ -923,10 +1304,10 @@ body.dark-mode .tka-alert.alert-info {
 
                             <?php foreach ($mapel as $m): ?>
 
-                                <option value="<?= (int) $m->id; ?>">
-
+                                <option
+                                    value="<?= (int) $m->id; ?>"
+                                >
                                     <?= html_escape($m->nama_mapel); ?>
-
                                 </option>
 
                             <?php endforeach; ?>
@@ -960,13 +1341,13 @@ body.dark-mode .tka-alert.alert-info {
 
 
                 <!-- =============================================
-                     SUDAH TERKUNCI
+                     LOCKED
                 ============================================== -->
 
                 <div class="tka-locked">
 
 
-                    <!-- LOCKED MESSAGE -->
+                    <!-- LOCKED BANNER -->
 
                     <div class="tka-locked-banner">
 
@@ -1009,6 +1390,7 @@ body.dark-mode .tka-alert.alert-info {
 
                             </div>
 
+
                             <span class="tka-locked-badge">
 
                                 <i class="fas fa-lock"></i>
@@ -1019,8 +1401,6 @@ body.dark-mode .tka-alert.alert-info {
 
                         </div>
 
-
-                        <!-- CHOICE 1 -->
 
                         <div class="tka-choice-item">
 
@@ -1039,8 +1419,6 @@ body.dark-mode .tka-alert.alert-info {
                         </div>
 
 
-                        <!-- CHOICE 2 -->
-
                         <div class="tka-choice-item">
 
                             <div class="tka-choice-number">
@@ -1058,12 +1436,37 @@ body.dark-mode .tka-alert.alert-info {
                         </div>
 
 
-                        <div class="tka-admin-note">
+                        <!-- CONTACT PERSON -->
 
-                            <i class="fas fa-user-shield"></i>
+                        <div class="tka-contact">
 
-                            Jika terdapat kesalahan pilihan,
-                            silakan hubungi admin sekolah.
+                            <div class="tka-contact-icon">
+
+                                <i class="fab fa-whatsapp"></i>
+
+                            </div>
+
+
+                            <div class="tka-contact-text">
+
+                                <span class="tka-contact-title">
+                                    Mengalami kendala?
+                                </span>
+
+                                Silakan hubungi
+
+                                <a
+                                    href="<?= $wa_url; ?>"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="tka-contact-link"
+                                >
+                                    Pak Riki
+                                </a>
+
+                                melalui WhatsApp.
+
+                            </div>
 
                         </div>
 
@@ -1074,8 +1477,348 @@ body.dark-mode .tka-alert.alert-info {
 
             <?php endif; ?>
 
+
         </div>
 
     </div>
 
 </div>
+
+
+<!-- =========================================================
+     KONFIRMASI SIMPAN
+========================================================= -->
+
+<?php if (!$tka_terkunci): ?>
+
+<div
+    id="tkaConfirmOverlay"
+    class="tka-confirm-overlay"
+>
+
+    <div
+        class="tka-confirm-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tkaConfirmTitle"
+    >
+
+        <div class="tka-confirm-icon">
+
+            <i class="fas fa-circle-question"></i>
+
+        </div>
+
+
+        <h5
+            id="tkaConfirmTitle"
+            class="tka-confirm-title"
+        >
+            Sudah yakin dengan pilihan Anda?
+        </h5>
+
+
+        <p class="tka-confirm-text">
+
+            Periksa kembali pilihan mata pelajaran Anda.
+            Setelah disimpan, pilihan akan
+            <strong>terkunci</strong> dan tidak dapat
+            diubah oleh siswa.
+
+        </p>
+
+
+        <div class="tka-confirm-choice">
+
+            <strong>Pilihan 1</strong>
+
+            <div id="confirmMapel1">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="tka-confirm-choice">
+
+            <strong>Pilihan 2</strong>
+
+            <div id="confirmMapel2">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="tka-confirm-warning">
+
+            <i class="fas fa-triangle-exclamation mr-1"></i>
+
+            Pastikan kedua mata pelajaran sudah benar.
+            Jika Anda membatalkan, Anda akan kembali
+            ke form dan masih dapat mengganti pilihan.
+
+        </div>
+
+
+        <div class="tka-confirm-actions">
+
+            <button
+                type="button"
+                id="tkaCancelConfirm"
+                class="tka-confirm-cancel"
+            >
+
+                <i class="fas fa-arrow-left mr-1"></i>
+
+                Batal
+
+            </button>
+
+
+            <button
+                type="button"
+                id="tkaSaveConfirm"
+                class="tka-confirm-save"
+            >
+
+                <i class="fas fa-lock mr-1"></i>
+
+                Ya, Simpan & Kunci
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<?php endif; ?>
+
+
+<script>
+
+(function () {
+
+    'use strict';
+
+
+    var form = document.getElementById('tkaForm');
+
+    var overlay = document.getElementById(
+        'tkaConfirmOverlay'
+    );
+
+    var cancelButton = document.getElementById(
+        'tkaCancelConfirm'
+    );
+
+    var saveButton = document.getElementById(
+        'tkaSaveConfirm'
+    );
+
+    var mapel1 = document.getElementById(
+        'mapel_1_id'
+    );
+
+    var mapel2 = document.getElementById(
+        'mapel_2_id'
+    );
+
+    var confirmMapel1 = document.getElementById(
+        'confirmMapel1'
+    );
+
+    var confirmMapel2 = document.getElementById(
+        'confirmMapel2'
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PASTIKAN ELEMEN ADA
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !form ||
+        !overlay ||
+        !cancelButton ||
+        !saveButton ||
+        !mapel1 ||
+        !mapel2
+    ) {
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BUKA MODAL
+    |--------------------------------------------------------------------------
+    */
+
+    form.addEventListener(
+        'submit',
+        function (event) {
+
+            /*
+             * Biarkan HTML5 validation berjalan.
+             */
+
+            if (!form.checkValidity()) {
+
+                return;
+            }
+
+
+            event.preventDefault();
+
+
+            /*
+             * Pastikan dua pilihan tidak sama.
+             */
+
+            if (
+                mapel1.value &&
+                mapel2.value &&
+                mapel1.value === mapel2.value
+            ) {
+
+                alert(
+                    'Mata pelajaran pilihan 1 dan pilihan 2 tidak boleh sama.'
+                );
+
+                mapel2.focus();
+
+                return;
+            }
+
+
+            /*
+             * Tampilkan nama mapel
+             */
+
+            confirmMapel1.textContent =
+                mapel1.options[
+                    mapel1.selectedIndex
+                ].text;
+
+
+            confirmMapel2.textContent =
+                mapel2.options[
+                    mapel2.selectedIndex
+                ].text;
+
+
+            /*
+             * Tampilkan modal
+             */
+
+            overlay.classList.add('show');
+
+            document.body.style.overflow = 'hidden';
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BATAL
+    |--------------------------------------------------------------------------
+    */
+
+    cancelButton.addEventListener(
+        'click',
+        function () {
+
+            overlay.classList.remove('show');
+
+            document.body.style.overflow = '';
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN
+    |--------------------------------------------------------------------------
+    */
+
+    saveButton.addEventListener(
+        'click',
+        function () {
+
+            /*
+             * Disable tombol agar tidak double submit.
+             */
+
+            saveButton.disabled = true;
+
+            saveButton.innerHTML =
+                '<i class="fas fa-spinner fa-spin mr-1"></i>' +
+                ' Menyimpan...';
+
+
+            /*
+             * Submit asli
+             */
+
+            form.submit();
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KLIK AREA LUAR MODAL
+    |--------------------------------------------------------------------------
+    */
+
+    overlay.addEventListener(
+        'click',
+        function (event) {
+
+            if (event.target === overlay) {
+
+                overlay.classList.remove('show');
+
+                document.body.style.overflow = '';
+
+            }
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ESC
+    |--------------------------------------------------------------------------
+    */
+
+    document.addEventListener(
+        'keydown',
+        function (event) {
+
+            if (
+                event.key === 'Escape' &&
+                overlay.classList.contains('show')
+            ) {
+
+                overlay.classList.remove('show');
+
+                document.body.style.overflow = '';
+
+            }
+
+        }
+    );
+
+})();
+
+</script>
