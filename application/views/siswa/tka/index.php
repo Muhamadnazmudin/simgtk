@@ -1237,84 +1237,80 @@ body.dark-mode .tka-confirm-cancel {
 
                     <!-- PILIHAN 1 -->
 
-                    <div class="tka-form-group">
+<div class="tka-form-group">
 
-                        <label class="tka-label">
+    <label class="tka-label">
+        <span class="tka-label-number">
+            1
+        </span>
 
-                            <span class="tka-label-number">
-                                1
-                            </span>
+        Mata Pelajaran Pilihan 1
+    </label>
 
-                            Mata Pelajaran Pilihan 1
+    <select
+        name="mapel_1_id"
+        id="mapel_1_id"
+        class="form-control tka-select"
+        required
+    >
 
-                        </label>
+        <option value="">
+            -- Pilih Mata Pelajaran --
+        </option>
 
+        <?php foreach ($mapel as $m): ?>
 
-                        <select
-                            id="mapel_1_id"
-                            name="mapel_1_id"
-                            class="form-control tka-select"
-                            required
-                        >
+            <option
+                value="<?= (int) $m->id; ?>"
+            >
+                <?= html_escape($m->nama_mapel); ?>
+            </option>
 
-                            <option value="">
-                                -- Pilih Mata Pelajaran --
-                            </option>
+        <?php endforeach; ?>
 
-                            <?php foreach ($mapel as $m): ?>
+    </select>
 
-                                <option
-                                    value="<?= (int) $m->id; ?>"
-                                >
-                                    <?= html_escape($m->nama_mapel); ?>
-                                </option>
-
-                            <?php endforeach; ?>
-
-                        </select>
-
-                    </div>
+</div>
 
 
-                    <!-- PILIHAN 2 -->
+<!-- PILIHAN 2 -->
 
-                    <div class="tka-form-group">
+<div class="tka-form-group">
 
-                        <label class="tka-label">
+    <label class="tka-label">
 
-                            <span class="tka-label-number">
-                                2
-                            </span>
+        <span class="tka-label-number">
+            2
+        </span>
 
-                            Mata Pelajaran Pilihan 2
+        Mata Pelajaran Pilihan 2
 
-                        </label>
+    </label>
 
+    <select
+        name="mapel_2_id"
+        id="mapel_2_id"
+        class="form-control tka-select"
+        required
+    >
 
-                        <select
-                            id="mapel_2_id"
-                            name="mapel_2_id"
-                            class="form-control tka-select"
-                            required
-                        >
+        <option value="">
+            -- Pilih Mata Pelajaran --
+        </option>
 
-                            <option value="">
-                                -- Pilih Mata Pelajaran --
-                            </option>
+        <?php foreach ($mapel as $m): ?>
 
-                            <?php foreach ($mapel as $m): ?>
+            <option
+                value="<?= (int) $m->id; ?>"
+            >
+                <?= html_escape($m->nama_mapel); ?>
+            </option>
 
-                                <option
-                                    value="<?= (int) $m->id; ?>"
-                                >
-                                    <?= html_escape($m->nama_mapel); ?>
-                                </option>
+        <?php endforeach; ?>
 
-                            <?php endforeach; ?>
+    </select>
 
-                        </select>
-
-                    </div>
+</div>
 
 
                     <!-- BUTTON -->
@@ -1821,4 +1817,95 @@ body.dark-mode .tka-confirm-cancel {
 
 })();
 
+
+
+
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const pilihan1 = document.getElementById('mapel_1_id');
+    const pilihan2 = document.getElementById('mapel_2_id');
+
+    if (!pilihan1 || !pilihan2) {
+        return;
+    }
+
+
+    function updatePilihan2() {
+
+        const selectedValue = pilihan1.value;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tampilkan kembali semua pilihan
+        |--------------------------------------------------------------------------
+        */
+
+        Array.from(pilihan2.options).forEach(function (option) {
+
+            option.hidden = false;
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Jika pilihan 1 sudah dipilih,
+        | sembunyikan pilihan yang sama di pilihan 2
+        |--------------------------------------------------------------------------
+        */
+
+        if (selectedValue !== '') {
+
+            const optionToHide =
+                pilihan2.querySelector(
+                    'option[value="' + selectedValue + '"]'
+                );
+
+            if (optionToHide) {
+
+                optionToHide.hidden = true;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Kalau pilihan 2 kebetulan sama,
+            | kosongkan kembali
+            |--------------------------------------------------------------------------
+            */
+
+            if (pilihan2.value === selectedValue) {
+
+                pilihan2.value = '';
+
+            }
+        }
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Saat pilihan 1 berubah
+    |--------------------------------------------------------------------------
+    */
+
+    pilihan1.addEventListener(
+        'change',
+        updatePilihan2
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Jalankan pertama kali
+    |--------------------------------------------------------------------------
+    */
+
+    updatePilihan2();
+
+});
 </script>
