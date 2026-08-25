@@ -2904,7 +2904,7 @@ pada sistem.
 
 © <?= date('Y') ?>
 
-<a href="https://www.profilsaya.my.id">
+<a href="https://porto.nazmu.web.id">
 
 SimSGTK
 
