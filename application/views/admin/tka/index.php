@@ -1002,7 +1002,78 @@ body.dark-mode .tka-empty-text {
         padding: 16px;
     }
 }
+/* =========================================================
+   ACTION BUTTON
+========================================================= */
 
+.tka-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    min-width: 68px;
+    min-height: 34px;
+
+    padding: 6px 10px;
+
+    border: 0;
+    border-radius: 9px;
+
+    font-size: .70rem;
+    font-weight: 700;
+
+    line-height: 1;
+
+    transition:
+        background .18s ease,
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.tka-action-btn:hover {
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   EDIT
+========================================================= */
+
+.tka-edit-btn {
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+.tka-edit-btn:hover {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+
+    box-shadow:
+        0 4px 10px rgba(59,130,246,.20);
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.tka-input-btn {
+    background: #16a34a !important;
+    border-color: #16a34a !important;
+    color: #ffffff !important;
+}
+
+.tka-input-btn:hover {
+    background: #15803d !important;
+    border-color: #15803d !important;
+    color: #ffffff !important;
+
+    box-shadow:
+        0 4px 10px rgba(22,163,74,.20);
+}
 </style>
 
 
@@ -1865,49 +1936,43 @@ body.dark-mode .tka-empty-text {
                                 </td>
 
 
-                                <!-- AKSI -->
+                                <!-- =====================================================
+     AKSI
+===================================================== -->
 
-                                <td>
+<td class="text-nowrap">
 
+    <?php if (!empty($row->tka_id)): ?>
 
-                                    <?php if (
-                                        !empty(
-                                            $row->tka_id
-                                        )
-                                    ): ?>
+        <!-- SUDAH MENGISI -->
+        <a
+            href="<?= site_url(
+                'Tka_admin/edit/' . (int) $row->tka_id
+            ); ?>"
+            class="btn btn-sm tka-action-btn tka-edit-btn"
+            title="Edit pilihan TKA"
+        >
+            <i class="fas fa-pen"></i>
+            <span>Edit</span>
+        </a>
 
+    <?php else: ?>
 
-                                        <a
-                                            href="<?= site_url(
-                                                'Tka_admin/edit/' .
-                                                (int) $row->tka_id
-                                            ); ?>"
-                                            class="btn btn-sm btn-primary tka-edit-btn"
-                                        >
+        <!-- BELUM MENGISI -->
+        <a
+            href="<?= site_url(
+                'Tka_admin/input/' . (int) $row->id
+            ); ?>"
+            class="btn btn-sm tka-action-btn tka-input-btn"
+            title="Input pilihan TKA"
+        >
+            <i class="fas fa-plus"></i>
+            <span>Input</span>
+        </a>
 
-                                            <i
-                                                class="fas fa-pen"
-                                            ></i>
+    <?php endif; ?>
 
-                                            Edit
-
-                                        </a>
-
-
-                                    <?php else: ?>
-
-
-                                        <span
-                                            class="tka-no-action"
-                                        >
-                                            —
-                                        </span>
-
-
-                                    <?php endif; ?>
-
-
-                                </td>
+</td>
 
 
                             </tr>

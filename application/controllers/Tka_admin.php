@@ -1,11 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/*
-|--------------------------------------------------------------------------
-| PhpSpreadsheet
-|--------------------------------------------------------------------------
-*/
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -20,6 +15,7 @@ class Tka_admin extends CI_Controller
     | CONSTRUCTOR
     |--------------------------------------------------------------------------
     */
+
     public function __construct()
     {
         parent::__construct();
@@ -27,15 +23,29 @@ class Tka_admin extends CI_Controller
         $this->load->database();
         $this->load->model('Tka_model');
 
+        $this->cek_login();
         $this->cek_akses();
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | CEK AKSES
+    | AUTH
     |--------------------------------------------------------------------------
     */
+
+    private function cek_login()
+    {
+        if (
+            !$this->session->userdata('logged_in') &&
+            !$this->session->userdata('login')
+        ) {
+            redirect('auth');
+            exit;
+        }
+    }
+
+
     private function cek_akses()
     {
         $role = strtolower(
@@ -57,28 +67,80 @@ class Tka_admin extends CI_Controller
 
     /*
     |--------------------------------------------------------------------------
-    | CEK LOGIN
+    | VIEW LAYOUT
     |--------------------------------------------------------------------------
+    |
+    | Semua halaman admin TKA menggunakan layout yang sama.
+    | Ini mencegah sidebar hilang pada halaman input/edit.
+    |
     */
-    private function cek_login()
+
+    private function render($view, $data = [])
     {
-        if (
-            !$this->session->userdata('logged_in') &&
-            !$this->session->userdata('login')
-        ) {
-            redirect('auth');
-        }
+        $data['active'] = 'tka';
+
+        $this->load->view(
+            'templates/header',
+            $data
+        );
+
+        $this->load->view(
+            'templates/sidebar',
+            $data
+        );
+
+        $this->load->view(
+            $view,
+            $data
+        );
+
+        $this->load->view(
+            'templates/footer'
+        );
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | TAHUN AJARAN AKTIF
+    | REDIRECT ERROR
     |--------------------------------------------------------------------------
     */
+
+    private function error_redirect($message, $url = 'Tka_admin')
+    {
+        $this->session->set_flashdata(
+            'error',
+            $message
+        );
+
+        redirect($url);
+        exit;
+    }
+
+
+    private function success_redirect($message)
+    {
+        $this->session->set_flashdata(
+            'success',
+            $message
+        );
+
+        redirect('Tka_admin');
+        exit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TAHUN AJARAN
+    |--------------------------------------------------------------------------
+    */
+
     private function get_tahun_aktif()
     {
-        $tahun_id = (int) $this->session->userdata('tahun_id');
+        $tahun_id = (int) $this->session->userdata(
+            'tahun_id'
+        );
 
         if ($tahun_id > 0) {
             return $tahun_id;
@@ -98,11 +160,6 @@ class Tka_admin extends CI_Controller
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | DAFTAR TAHUN AJARAN
-    |--------------------------------------------------------------------------
-    */
     private function get_tahun_list()
     {
         return $this->db
@@ -114,38 +171,15 @@ class Tka_admin extends CI_Controller
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | DAFTAR KELAS XII
-    |--------------------------------------------------------------------------
-    */
-    private function get_kelas_xii()
-    {
-        return $this->db
-            ->select('id, nama')
-            ->from('kelas')
-            ->where(
-                "UPPER(nama) LIKE 'XII %'",
-                null,
-                false
-            )
-            ->order_by('nama', 'ASC')
-            ->get()
-            ->result();
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | NAMA TAHUN AJARAN
-    |--------------------------------------------------------------------------
-    */
     private function get_nama_tahun($tahun_id)
     {
         $row = $this->db
             ->select('tahun')
             ->from('tahun_ajaran')
-            ->where('id', (int) $tahun_id)
+            ->where(
+                'id',
+                (int) $tahun_id
+            )
             ->limit(1)
             ->get()
             ->row();
@@ -158,19 +192,44 @@ class Tka_admin extends CI_Controller
 
     /*
     |--------------------------------------------------------------------------
-    | NAMA KELAS
+    | KELAS
     |--------------------------------------------------------------------------
     */
+
+    private function get_kelas_xii()
+    {
+        return $this->db
+            ->select('id, nama')
+            ->from('kelas')
+            ->where(
+                "UPPER(nama) LIKE 'XII %'",
+                null,
+                false
+            )
+            ->order_by(
+                'nama',
+                'ASC'
+            )
+            ->get()
+            ->result();
+    }
+
+
     private function get_nama_kelas($kelas_id)
     {
-        if ((int) $kelas_id <= 0) {
+        $kelas_id = (int) $kelas_id;
+
+        if ($kelas_id <= 0) {
             return 'Semua Kelas XII';
         }
 
         $row = $this->db
             ->select('nama')
             ->from('kelas')
-            ->where('id', (int) $kelas_id)
+            ->where(
+                'id',
+                $kelas_id
+            )
             ->limit(1)
             ->get()
             ->row();
@@ -183,9 +242,60 @@ class Tka_admin extends CI_Controller
 
     /*
     |--------------------------------------------------------------------------
-    | LABEL STATUS
+    | FILTER
     |--------------------------------------------------------------------------
     */
+
+    private function normalize_status($status)
+    {
+        $status = strtolower(
+            trim(
+                (string) $status
+            )
+        );
+
+        if (
+            !in_array(
+                $status,
+                ['sudah', 'belum'],
+                true
+            )
+        ) {
+            return '';
+        }
+
+        return $status;
+    }
+
+
+    private function get_filter()
+    {
+        $tahun_id = (int) $this->input->get(
+            'tahun_id'
+        );
+
+        if ($tahun_id <= 0) {
+            $tahun_id = $this->get_tahun_aktif();
+        }
+
+        return [
+            'tahun_id' => $tahun_id,
+
+            'kelas_id' => (int) $this->input->get(
+                'kelas_id'
+            ),
+
+            'status' => $this->normalize_status(
+                $this->input->get('status')
+            ),
+
+            'nama' => trim(
+                (string) $this->input->get('nama')
+            )
+        ];
+    }
+
+
     private function get_status_label($status)
     {
         switch ($status) {
@@ -204,26 +314,279 @@ class Tka_admin extends CI_Controller
 
     /*
     |--------------------------------------------------------------------------
-    | NORMALISASI STATUS
+    | SISWA
     |--------------------------------------------------------------------------
     */
-    private function normalize_status($status)
+
+    private function get_siswa($siswa_id)
     {
+        $siswa_id = (int) $siswa_id;
+
+        if ($siswa_id <= 0) {
+            return null;
+        }
+
+        return $this->db
+            ->select('
+                s.*,
+
+                k.nama AS nama_kelas,
+
+                ta.tahun AS tahun_ajaran
+            ')
+            ->from('siswa s')
+
+            ->join(
+                'kelas k',
+                'k.id = s.id_kelas',
+                'left'
+            )
+
+            ->join(
+                'tahun_ajaran ta',
+                'ta.id = s.tahun_id',
+                'left'
+            )
+
+            ->where(
+                's.id',
+                $siswa_id
+            )
+
+            ->limit(1)
+
+            ->get()
+            ->row();
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDASI SISWA TKA
+    |--------------------------------------------------------------------------
+    */
+
+    private function validasi_siswa_tka($siswa)
+    {
+        if (!$siswa) {
+            return 'Data siswa tidak ditemukan.';
+        }
+
         $status = strtolower(
             trim(
-                (string) $status
+                (string) (
+                    isset($siswa->status)
+                        ? $siswa->status
+                        : ''
+                )
             )
         );
 
-        if (!in_array(
-            $status,
-            ['sudah', 'belum'],
-            true
-        )) {
-            return '';
+        if ($status !== 'aktif') {
+            return 'Siswa sudah tidak aktif.';
         }
 
-        return $status;
+        $kelas = strtoupper(
+            trim(
+                (string) (
+                    isset($siswa->nama_kelas)
+                        ? $siswa->nama_kelas
+                        : ''
+                )
+            )
+        );
+
+        if (
+            $kelas !== 'XII' &&
+            strpos(
+                $kelas,
+                'XII '
+            ) !== 0
+        ) {
+            return 'Input TKA hanya diperbolehkan untuk siswa kelas XII.';
+        }
+
+        if (
+            (int) $siswa->tahun_id <= 0
+        ) {
+            return 'Tahun ajaran siswa tidak valid.';
+        }
+
+        return true;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATA TKA
+    |--------------------------------------------------------------------------
+    */
+
+    private function get_tka($id)
+    {
+        $id = (int) $id;
+
+        if ($id <= 0) {
+            return null;
+        }
+
+        return $this->db
+            ->select('
+                ts.*,
+
+                s.nisn,
+                s.nis,
+                s.nama,
+                s.id_kelas,
+                s.tahun_id,
+                s.status,
+
+                k.nama AS nama_kelas,
+
+                ta.tahun AS tahun_ajaran,
+
+                m1.nama_mapel AS mapel_1,
+                m2.nama_mapel AS mapel_2,
+
+                m1.kode AS kode_mapel_1,
+                m2.kode AS kode_mapel_2
+            ')
+
+            ->from('tka_siswa ts')
+
+            ->join(
+                'siswa s',
+                's.id = ts.siswa_id',
+                'inner'
+            )
+
+            ->join(
+                'kelas k',
+                'k.id = s.id_kelas',
+                'left'
+            )
+
+            ->join(
+                'tahun_ajaran ta',
+                'ta.id = ts.tahun_id',
+                'left'
+            )
+
+            ->join(
+                'tka_mapel m1',
+                'm1.id = ts.mapel_1_id',
+                'left'
+            )
+
+            ->join(
+                'tka_mapel m2',
+                'm2.id = ts.mapel_2_id',
+                'left'
+            )
+
+            ->where(
+                'ts.id',
+                $id
+            )
+
+            ->limit(1)
+
+            ->get()
+            ->row();
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MAPEL
+    |--------------------------------------------------------------------------
+    */
+
+    private function get_mapel_program()
+    {
+        return $this->Tka_model
+            ->get_mapel_program_keahlian();
+    }
+
+
+    private function get_mapel_pilihan()
+    {
+        /*
+        | Tidak menggunakan get_mapel_pilihan_admin()
+        | karena method tersebut memang tidak ada
+        | di Tka_model saat ini.
+        */
+
+        return $this->Tka_model
+            ->get_mapel_pilihan();
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDASI MAPEL PILIHAN 2
+    |--------------------------------------------------------------------------
+    */
+
+    private function validate_mapel_2(
+        $mapel_1_id,
+        $mapel_2_id
+    ) {
+        $mapel_1_id = (int) $mapel_1_id;
+        $mapel_2_id = (int) $mapel_2_id;
+
+        if ($mapel_2_id <= 0) {
+
+            return [
+                'valid' => false,
+                'message' =>
+                    'Silakan pilih mata pelajaran pilihan kedua.'
+            ];
+        }
+
+        if (
+            $mapel_1_id === $mapel_2_id
+        ) {
+
+            return [
+                'valid' => false,
+                'message' =>
+                    'Pilihan kedua tidak boleh sama dengan Program Keahlian.'
+            ];
+        }
+
+        $mapel = $this->db
+            ->where(
+                'id',
+                $mapel_2_id
+            )
+            ->where(
+                'aktif',
+                1
+            )
+            ->where(
+                'kode !=',
+                'PK'
+            )
+            ->limit(1)
+            ->get(
+                'tka_mapel'
+            )
+            ->row();
+
+        if (!$mapel) {
+
+            return [
+                'valid' => false,
+                'message' =>
+                    'Mata pelajaran pilihan kedua tidak valid.'
+            ];
+        }
+
+        return [
+            'valid' => true,
+            'data' => $mapel
+        ];
     }
 
 
@@ -231,27 +594,14 @@ class Tka_admin extends CI_Controller
     |--------------------------------------------------------------------------
     | DATA PESERTA TKA
     |--------------------------------------------------------------------------
-    |
-    | Digunakan oleh:
-    | - index()
-    | - export_excel()
-    | - export_pdf()
-    |
-    | Filter:
-    | - tahun ajaran
-    | - kelas
-    | - status TKA
-    | - nama siswa
-    |
-    |--------------------------------------------------------------------------
     */
+
     private function get_peserta_tka(
         $tahun_id,
         $kelas_id = 0,
         $status = '',
         $nama = ''
     ) {
-
         $tahun_id = (int) $tahun_id;
         $kelas_id = (int) $kelas_id;
 
@@ -265,9 +615,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | QUERY
-        |--------------------------------------------------------------------------
+        | Query utama
         */
 
         $this->db
@@ -294,40 +642,23 @@ class Tka_admin extends CI_Controller
 
             ->from('siswa s')
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | KELAS
-            |--------------------------------------------------------------------------
-            */
             ->join(
                 'kelas k',
                 'k.id = s.id_kelas',
                 'left'
             )
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | TAHUN AJARAN
-            |--------------------------------------------------------------------------
-            */
             ->join(
                 'tahun_ajaran ta',
                 'ta.id = s.tahun_id',
                 'left'
             )
 
-
             /*
-            |--------------------------------------------------------------------------
-            | DATA TKA
-            |--------------------------------------------------------------------------
-            |
-            | Harus berdasarkan tahun yang sedang difilter.
-            |
-            |--------------------------------------------------------------------------
+            | Penting:
+            | TKA harus berdasarkan tahun filter.
             */
+
             ->join(
                 'tka_siswa ts',
                 'ts.siswa_id = s.id
@@ -336,24 +667,12 @@ class Tka_admin extends CI_Controller
                 false
             )
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | MAPEL TKA 1
-            |--------------------------------------------------------------------------
-            */
             ->join(
                 'tka_mapel m1',
                 'm1.id = ts.mapel_1_id',
                 'left'
             )
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | MAPEL TKA 2
-            |--------------------------------------------------------------------------
-            */
             ->join(
                 'tka_mapel m2',
                 'm2.id = ts.mapel_2_id',
@@ -362,9 +681,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | HANYA SISWA AKTIF
-        |--------------------------------------------------------------------------
+        | Hanya siswa aktif
         */
 
         $this->db->where(
@@ -374,9 +691,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | TAHUN AJARAN
-        |--------------------------------------------------------------------------
+        | Tahun ajaran
         */
 
         $this->db->where(
@@ -386,9 +701,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | HANYA KELAS XII
-        |--------------------------------------------------------------------------
+        | Kelas XII
         */
 
         $this->db->where(
@@ -399,9 +712,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | FILTER KELAS
-        |--------------------------------------------------------------------------
+        | Filter kelas
         */
 
         if ($kelas_id > 0) {
@@ -414,19 +725,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | FILTER NAMA
-        |--------------------------------------------------------------------------
-        |
-        | Contoh:
-        | ?nama=ahmad
-        |
-        | Akan mencari:
-        | Ahmad
-        | Ahmad Fauzan
-        | Muhammad Ahmad
-        |
-        |--------------------------------------------------------------------------
+        | Pencarian
         */
 
         if ($nama !== '') {
@@ -439,9 +738,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | FILTER STATUS TKA
-        |--------------------------------------------------------------------------
+        | Filter status TKA
         */
 
         if ($status === 'sudah') {
@@ -463,9 +760,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | URUTAN
-        |--------------------------------------------------------------------------
+        | Urutan
         */
 
         $this->db
@@ -479,12 +774,6 @@ class Tka_admin extends CI_Controller
             );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | RESULT
-        |--------------------------------------------------------------------------
-        */
-
         return $this->db
             ->get()
             ->result();
@@ -496,195 +785,353 @@ class Tka_admin extends CI_Controller
     | INDEX
     |--------------------------------------------------------------------------
     */
+
     public function index()
     {
-        $this->cek_login();
+        $filter = $this->get_filter();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | TAHUN
-        |--------------------------------------------------------------------------
-        */
-
-        $tahun_id = (int) $this->input->get(
-            'tahun_id'
-        );
-
-        if ($tahun_id <= 0) {
-
-            $tahun_id =
-                $this->get_tahun_aktif();
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | KELAS
-        |--------------------------------------------------------------------------
-        */
-
-        $kelas_id = (int) $this->input->get(
-            'kelas_id'
+        $siswa = $this->get_peserta_tka(
+            $filter['tahun_id'],
+            $filter['kelas_id'],
+            $filter['status'],
+            $filter['nama']
         );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | STATUS
-        |--------------------------------------------------------------------------
-        */
+        $total_sudah = 0;
+        $total_belum = 0;
 
-        $status = $this->normalize_status(
-            $this->input->get('status')
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | PENCARIAN NAMA
-        |--------------------------------------------------------------------------
-        */
-
-        $nama = trim(
-            (string) $this->input->get(
-                'nama'
-            )
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATA PESERTA
-        |--------------------------------------------------------------------------
-        */
-
-        $data['siswa'] =
-            $this->get_peserta_tka(
-                $tahun_id,
-                $kelas_id,
-                $status,
-                $nama
-            );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATA FILTER
-        |--------------------------------------------------------------------------
-        */
-
-        $data['tahun_list'] =
-            $this->get_tahun_list();
-
-        $data['kelas_list'] =
-            $this->get_kelas_xii();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | NILAI FILTER
-        |--------------------------------------------------------------------------
-        */
-
-        $data['tahun_id'] =
-            $tahun_id;
-
-        $data['kelas_id'] =
-            $kelas_id;
-
-        $data['status'] =
-            $status;
-
-        $data['nama'] =
-            $nama;
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | INFORMASI FILTER
-        |--------------------------------------------------------------------------
-        */
-
-        $data['nama_tahun'] =
-            $this->get_nama_tahun(
-                $tahun_id
-            );
-
-        $data['nama_kelas'] =
-            $this->get_nama_kelas(
-                $kelas_id
-            );
-
-        $data['status_label'] =
-            $this->get_status_label(
-                $status
-            );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | STATISTIK
-        |--------------------------------------------------------------------------
-        */
-
-        $data['total_siswa'] =
-            count(
-                $data['siswa']
-            );
-
-        $data['total_sudah'] = 0;
-        $data['total_belum'] = 0;
-
-
-        foreach (
-            $data['siswa']
-            as $row
-        ) {
+        foreach ($siswa as $row) {
 
             if (!empty($row->tka_id)) {
-
-                $data['total_sudah']++;
-
+                $total_sudah++;
             } else {
-
-                $data['total_belum']++;
+                $total_belum++;
             }
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | ACTIVE MENU
-        |--------------------------------------------------------------------------
-        */
+        $data = [
 
-        $data['active'] = 'tka';
+            'siswa' => $siswa,
+
+            'tahun_list' =>
+                $this->get_tahun_list(),
+
+            'kelas_list' =>
+                $this->get_kelas_xii(),
+
+            'tahun_id' =>
+                $filter['tahun_id'],
+
+            'kelas_id' =>
+                $filter['kelas_id'],
+
+            'status' =>
+                $filter['status'],
+
+            'nama' =>
+                $filter['nama'],
+
+            'nama_tahun' =>
+                $this->get_nama_tahun(
+                    $filter['tahun_id']
+                ),
+
+            'nama_kelas' =>
+                $this->get_nama_kelas(
+                    $filter['kelas_id']
+                ),
+
+            'status_label' =>
+                $this->get_status_label(
+                    $filter['status']
+                ),
+
+            'total_siswa' =>
+                count($siswa),
+
+            'total_sudah' =>
+                $total_sudah,
+
+            'total_belum' =>
+                $total_belum
+        ];
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | VIEW
-        |--------------------------------------------------------------------------
-        */
-
-        $this->load->view(
-            'templates/header',
-            $data
-        );
-
-        $this->load->view(
-            'templates/sidebar',
-            $data
-        );
-
-        $this->load->view(
+        $this->render(
             'admin/tka/index',
             $data
         );
+    }
 
-        $this->load->view(
-            'templates/footer'
+
+    /*
+    |--------------------------------------------------------------------------
+    | INPUT
+    |--------------------------------------------------------------------------
+    */
+
+    public function input($siswa_id = null)
+    {
+        $siswa_id = (int) $siswa_id;
+
+        if ($siswa_id <= 0) {
+
+            $this->error_redirect(
+                'ID siswa tidak valid.'
+            );
+        }
+
+
+        /*
+        | Ambil siswa dengan data kelas
+        */
+
+        $siswa = $this->get_siswa(
+            $siswa_id
+        );
+
+
+        $validasi = $this->validasi_siswa_tka(
+            $siswa
+        );
+
+        if ($validasi !== true) {
+
+            $this->error_redirect(
+                $validasi
+            );
+        }
+
+
+        /*
+        | Cek apakah sudah memiliki TKA
+        */
+
+        $existing = $this->Tka_model
+            ->get_pilihan(
+                $siswa->id,
+                $siswa->tahun_id
+            );
+
+
+        if ($existing) {
+
+            redirect(
+                'Tka_admin/edit/' .
+                (int) $existing->id
+            );
+
+            exit;
+        }
+
+
+        /*
+        | Pilihan 1 otomatis = PK
+        */
+
+        $mapel_program =
+            $this->get_mapel_program();
+
+
+        if (!$mapel_program) {
+
+            $this->error_redirect(
+                'Mata pelajaran Program Keahlian (PK) belum tersedia.'
+            );
+        }
+
+
+        /*
+        | Pilihan 2
+        */
+
+        $mapel_pilihan =
+            $this->get_mapel_pilihan();
+
+
+        $data = [
+
+            'siswa' =>
+                $siswa,
+
+            'mapel_program' =>
+                $mapel_program,
+
+            'mapel_pilihan' =>
+                $mapel_pilihan
+        ];
+
+
+        /*
+        | Layout lengkap:
+        | header + sidebar + content + footer
+        */
+
+        $this->render(
+            'admin/tka/input',
+            $data
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | STORE
+    |--------------------------------------------------------------------------
+    |
+    | Satu-satunya method untuk INSERT data TKA baru.
+    |
+    */
+
+    public function store()
+    {
+        $siswa_id = (int) $this->input->post(
+            'siswa_id'
+        );
+
+        if ($siswa_id <= 0) {
+
+            $this->error_redirect(
+                'Data siswa tidak valid.'
+            );
+        }
+
+
+        /*
+        | Ambil siswa dari database.
+        | Jangan percaya tahun_id dari browser.
+        */
+
+        $siswa = $this->get_siswa(
+            $siswa_id
+        );
+
+
+        $validasi = $this->validasi_siswa_tka(
+            $siswa
+        );
+
+        if ($validasi !== true) {
+
+            $this->error_redirect(
+                $validasi
+            );
+        }
+
+
+        $tahun_id = (int) $siswa->tahun_id;
+
+
+        /*
+        | Cek duplikat
+        */
+
+        $existing = $this->Tka_model
+            ->get_pilihan(
+                $siswa_id,
+                $tahun_id
+            );
+
+
+        if ($existing) {
+
+            $this->session->set_flashdata(
+                'error',
+                'Siswa tersebut sudah memiliki data TKA.'
+            );
+
+            redirect(
+                'Tka_admin/edit/' .
+                (int) $existing->id
+            );
+
+            exit;
+        }
+
+
+        /*
+        | Pilihan 1 SELALU PK.
+        | Tidak mengambil mapel_1_id dari POST.
+        */
+
+        $mapel_program =
+            $this->get_mapel_program();
+
+
+        if (!$mapel_program) {
+
+            $this->error_redirect(
+                'Mata pelajaran Program Keahlian (PK) belum tersedia.'
+            );
+        }
+
+
+        $mapel_1_id =
+            (int) $mapel_program->id;
+
+
+        /*
+        | Pilihan 2
+        */
+
+        $mapel_2_id = (int) $this->input->post(
+            'mapel_2_id'
+        );
+
+
+        $valid_mapel =
+            $this->validate_mapel_2(
+                $mapel_1_id,
+                $mapel_2_id
+            );
+
+
+        if (!$valid_mapel['valid']) {
+
+            $this->error_redirect(
+                $valid_mapel['message'],
+                'Tka_admin/input/' .
+                $siswa_id
+            );
+        }
+
+
+        /*
+        | INSERT
+        */
+
+        $saved =
+            $this->Tka_model->save_pilihan(
+                $siswa_id,
+                $tahun_id,
+                $mapel_1_id,
+                $mapel_2_id
+            );
+
+
+        if (!$saved) {
+
+            log_message(
+                'error',
+                'GAGAL INSERT TKA ADMIN | ' .
+                'SISWA ID: ' . $siswa_id .
+                ' | QUERY: ' .
+                $this->db->last_query()
+            );
+
+
+            $this->error_redirect(
+                'Gagal menyimpan pilihan TKA.',
+                'Tka_admin/input/' .
+                $siswa_id
+            );
+        }
+
+
+        $this->success_redirect(
+            'Pilihan TKA siswa berhasil disimpan.'
         );
     }
 
@@ -694,10 +1141,9 @@ class Tka_admin extends CI_Controller
     | EDIT
     |--------------------------------------------------------------------------
     */
+
     public function edit($id = null)
     {
-        $this->cek_login();
-
         $id = (int) $id;
 
         if ($id <= 0) {
@@ -706,94 +1152,45 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | DATA TKA
-        |--------------------------------------------------------------------------
+        | Ambil TKA lengkap dengan siswa.
         */
 
-        $tka = $this->db
-            ->select('
-                ts.*,
-
-                s.nisn,
-                s.nis,
-                s.nama,
-                s.id_kelas,
-                s.tahun_id,
-                s.status,
-
-                k.nama AS nama_kelas,
-
-                ta.tahun AS tahun_ajaran
-            ')
-
-            ->from('tka_siswa ts')
-
-            ->join(
-                'siswa s',
-                's.id = ts.siswa_id',
-                'inner'
-            )
-
-            ->join(
-                'kelas k',
-                'k.id = s.id_kelas',
-                'left'
-            )
-
-            ->join(
-                'tahun_ajaran ta',
-                'ta.id = ts.tahun_id',
-                'left'
-            )
-
-            ->where(
-                'ts.id',
-                $id
-            )
-
-            ->limit(1)
-
-            ->get()
-            ->row();
+        $tka = $this->get_tka(
+            $id
+        );
 
 
         if (!$tka) {
 
-            $this->session->set_flashdata(
-                'error',
+            $this->error_redirect(
                 'Data TKA tidak ditemukan.'
-            );
-
-            redirect(
-                'Tka_admin'
             );
         }
 
 
         /*
-        |--------------------------------------------------------------------------
-        | VALIDASI KELAS XII
-        |--------------------------------------------------------------------------
+        | Validasi siswa.
         */
 
-        $nama_kelas = strtoupper(
-            trim(
-                (string) $tka->nama_kelas
-            )
-        );
+        $validasi =
+            $this->validasi_siswa_tka(
+                (object) [
+                    'status' =>
+                        $tka->status,
+
+                    'nama_kelas' =>
+                        $tka->nama_kelas,
+
+                    'tahun_id' =>
+                        $tka->tahun_id
+                ]
+            );
 
 
-        if (
-            $nama_kelas !== 'XII' &&
-            strpos(
-                $nama_kelas,
-                'XII '
-            ) !== 0
-        ) {
+        if ($validasi !== true) {
 
             show_error(
-                'Data TKA hanya untuk siswa kelas XII.',
+                $validasi,
                 403,
                 'Data Tidak Valid'
             );
@@ -801,46 +1198,27 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | MAPEL
-        |--------------------------------------------------------------------------
+        | Semua mapel aktif untuk edit.
         */
 
-        $data['mapel'] =
+        $mapel =
             $this->Tka_model
                 ->get_mapel_aktif();
 
 
-        $data['tka'] =
-            $tka;
+        $data = [
 
-        $data['active'] =
-            'tka';
+            'tka' =>
+                $tka,
+
+            'mapel' =>
+                $mapel
+        ];
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | VIEW
-        |--------------------------------------------------------------------------
-        */
-
-        $this->load->view(
-            'templates/header',
-            $data
-        );
-
-        $this->load->view(
-            'templates/sidebar',
-            $data
-        );
-
-        $this->load->view(
+        $this->render(
             'admin/tka/edit',
             $data
-        );
-
-        $this->load->view(
-            'templates/footer'
         );
     }
 
@@ -849,12 +1227,13 @@ class Tka_admin extends CI_Controller
     |--------------------------------------------------------------------------
     | UPDATE
     |--------------------------------------------------------------------------
+    |
+    | Satu-satunya method untuk UPDATE data TKA.
+    |
     */
+
     public function update()
     {
-        $this->cek_login();
-
-
         $id = (int) $this->input->post(
             'id'
         );
@@ -862,150 +1241,81 @@ class Tka_admin extends CI_Controller
 
         if ($id <= 0) {
 
-            $this->session->set_flashdata(
-                'error',
+            $this->error_redirect(
                 'ID TKA tidak valid.'
-            );
-
-            redirect(
-                'Tka_admin'
             );
         }
 
 
         /*
-        |--------------------------------------------------------------------------
-        | DATA TKA
-        |--------------------------------------------------------------------------
+        | Ambil data TKA lama.
         */
 
-        $tka = $this->db
-            ->where(
-                'id',
-                $id
-            )
-            ->limit(1)
-            ->get(
-                'tka_siswa'
-            )
-            ->row();
+        $tka = $this->get_tka(
+            $id
+        );
 
 
         if (!$tka) {
 
-            $this->session->set_flashdata(
-                'error',
+            $this->error_redirect(
                 'Data TKA tidak ditemukan.'
-            );
-
-            redirect(
-                'Tka_admin'
             );
         }
 
 
         /*
-        |--------------------------------------------------------------------------
-        | INPUT
-        |--------------------------------------------------------------------------
+        | Pilihan 1 tetap harus PK.
+        | Jangan percaya hidden input browser.
         */
 
-        $mapel_1_id = (int) $this->input->post(
-            'mapel_1_id'
-        );
+        $mapel_program =
+            $this->get_mapel_program();
+
+
+        if (!$mapel_program) {
+
+            $this->error_redirect(
+                'Mata pelajaran Program Keahlian (PK) belum tersedia.',
+                'Tka_admin/edit/' . $id
+            );
+        }
+
+
+        $mapel_1_id =
+            (int) $mapel_program->id;
+
+
+        /*
+        | Pilihan 2
+        */
 
         $mapel_2_id = (int) $this->input->post(
             'mapel_2_id'
         );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | WAJIB DIISI
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $mapel_1_id <= 0 ||
-            $mapel_2_id <= 0
-        ) {
-
-            $this->session->set_flashdata(
-                'error',
-                'Kedua pilihan mata pelajaran wajib diisi.'
+        $valid_mapel =
+            $this->validate_mapel_2(
+                $mapel_1_id,
+                $mapel_2_id
             );
 
-            redirect(
+
+        if (!$valid_mapel['valid']) {
+
+            $this->error_redirect(
+                $valid_mapel['message'],
                 'Tka_admin/edit/' . $id
             );
         }
 
 
         /*
-        |--------------------------------------------------------------------------
-        | TIDAK BOLEH SAMA
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $mapel_1_id === $mapel_2_id
-        ) {
-
-            $this->session->set_flashdata(
-                'error',
-                'Pilihan TKA 1 dan 2 tidak boleh sama.'
-            );
-
-            redirect(
-                'Tka_admin/edit/' . $id
-            );
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI MAPEL AKTIF
-        |--------------------------------------------------------------------------
-        */
-
-        $jumlah_mapel =
-            $this->db
-                ->where_in(
-                    'id',
-                    [
-                        $mapel_1_id,
-                        $mapel_2_id
-                    ]
-                )
-                ->where(
-                    'aktif',
-                    1
-                )
-                ->count_all_results(
-                    'tka_mapel'
-                );
-
-
-        if ($jumlah_mapel !== 2) {
-
-            $this->session->set_flashdata(
-                'error',
-                'Mata pelajaran TKA tidak valid.'
-            );
-
-            redirect(
-                'Tka_admin/edit/' . $id
-            );
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
         | UPDATE
-        |--------------------------------------------------------------------------
         */
 
-        $update = $this->db
+        $updated = $this->db
             ->where(
                 'id',
                 $id
@@ -1013,48 +1323,80 @@ class Tka_admin extends CI_Controller
             ->update(
                 'tka_siswa',
                 [
-                    'mapel_1_id' => $mapel_1_id,
-                    'mapel_2_id' => $mapel_2_id
+                    'mapel_1_id' =>
+                        $mapel_1_id,
+
+                    'mapel_2_id' =>
+                        $mapel_2_id
                 ]
             );
 
 
-        if (!$update) {
+        if (!$updated) {
 
             log_message(
                 'error',
-                'UPDATE TKA GAGAL | ID: ' .
-                $id .
+                'GAGAL UPDATE TKA | ' .
+                'ID: ' . $id .
                 ' | QUERY: ' .
                 $this->db->last_query()
             );
 
-            $this->session->set_flashdata(
-                'error',
-                'Gagal menyimpan perubahan TKA.'
-            );
 
-            redirect(
+            $this->error_redirect(
+                'Gagal menyimpan perubahan TKA.',
                 'Tka_admin/edit/' . $id
             );
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | SUKSES
-        |--------------------------------------------------------------------------
-        */
-
-        $this->session->set_flashdata(
-            'success',
+        $this->success_redirect(
             'Pilihan TKA berhasil diperbarui.'
         );
+    }
 
 
-        redirect(
-            'Tka_admin'
+    /*
+    |--------------------------------------------------------------------------
+    | EXPORT FILTER
+    |--------------------------------------------------------------------------
+    */
+
+    private function get_export_filter()
+    {
+        $tahun_id = (int) $this->input->get(
+            'tahun_id'
         );
+
+        if ($tahun_id <= 0) {
+            $tahun_id =
+                $this->get_tahun_aktif();
+        }
+
+        return [
+
+            'tahun_id' =>
+                $tahun_id,
+
+            'kelas_id' =>
+                (int) $this->input->get(
+                    'kelas_id'
+                ),
+
+            'status' =>
+                $this->normalize_status(
+                    $this->input->get(
+                        'status'
+                    )
+                ),
+
+            'nama' =>
+                trim(
+                    (string) $this->input->get(
+                        'nama'
+                    )
+                )
+        ];
     }
 
 
@@ -1063,80 +1405,42 @@ class Tka_admin extends CI_Controller
     | EXPORT EXCEL
     |--------------------------------------------------------------------------
     */
+
     public function export_excel()
     {
-        $this->cek_login();
+        $filter =
+            $this->get_export_filter();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | FILTER
-        |--------------------------------------------------------------------------
-        */
-
-        $tahun_id = (int) $this->input->get(
-            'tahun_id'
-        );
-
-        if ($tahun_id <= 0) {
-
-            $tahun_id =
-                $this->get_tahun_aktif();
-        }
-
-
-        $kelas_id = (int) $this->input->get(
-            'kelas_id'
-        );
-
-
-        $status = $this->normalize_status(
-            $this->input->get('status')
-        );
-
-
-        $nama = trim(
-            (string) $this->input->get(
-                'nama'
-            )
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATA
-        |--------------------------------------------------------------------------
-        */
 
         $siswa =
             $this->get_peserta_tka(
-                $tahun_id,
-                $kelas_id,
-                $status,
-                $nama
+                $filter['tahun_id'],
+                $filter['kelas_id'],
+                $filter['status'],
+                $filter['nama']
             );
 
 
         $tahun_ajaran =
             $this->get_nama_tahun(
-                $tahun_id
+                $filter['tahun_id']
             );
+
 
         $kelas_nama =
             $this->get_nama_kelas(
-                $kelas_id
+                $filter['kelas_id']
             );
+
 
         $status_label =
             $this->get_status_label(
-                $status
+                $filter['status']
             );
 
 
         /*
-        |--------------------------------------------------------------------------
-        | AUTOLOAD
-        |--------------------------------------------------------------------------
+        | Composer
         */
 
         $autoload =
@@ -1156,13 +1460,12 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | SPREADSHEET
-        |--------------------------------------------------------------------------
+        | Spreadsheet
         */
 
         $spreadsheet =
             new Spreadsheet();
+
 
         $sheet =
             $spreadsheet->getActiveSheet();
@@ -1174,9 +1477,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | JUDUL
-        |--------------------------------------------------------------------------
+        | Header
         */
 
         $sheet->mergeCells(
@@ -1212,11 +1513,11 @@ class Tka_admin extends CI_Controller
             $status_label;
 
 
-        if ($nama !== '') {
+        if ($filter['nama'] !== '') {
 
             $filter_info .=
                 ' | Pencarian: "' .
-                $nama .
+                $filter['nama'] .
                 '"';
         }
 
@@ -1228,96 +1529,40 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | STYLE JUDUL
-        |--------------------------------------------------------------------------
+        | Column header
         */
-
-        $sheet
-            ->getStyle('A1:G1')
-            ->getFont()
-            ->setBold(true)
-            ->setSize(16);
-
-
-        $sheet
-            ->getStyle('A1:G3')
-            ->getAlignment()
-            ->setHorizontal(
-                Alignment::HORIZONTAL_CENTER
-            );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | HEADER
-        |--------------------------------------------------------------------------
-        */
-
-        $header_row = 5;
-
 
         $headers = [
-            'No',
-            'NISN',
-            'NIS',
-            'Nama Siswa',
-            'Kelas',
-            'Pilihan TKA 1',
-            'Pilihan TKA 2'
+
+            'A5' => 'No',
+
+            'B5' => 'NISN',
+
+            'C5' => 'NIS',
+
+            'D5' => 'Nama Siswa',
+
+            'E5' => 'Kelas',
+
+            'F5' => 'Pilihan TKA 1',
+
+            'G5' => 'Pilihan TKA 2'
         ];
 
 
         foreach (
-            $headers as $index => $header
+            $headers as $cell => $value
         ) {
 
-            $column =
-                chr(
-                    65 + $index
-                );
-
             $sheet->setCellValue(
-                $column . $header_row,
-                $header
+                $cell,
+                $value
             );
         }
 
 
         /*
-        |--------------------------------------------------------------------------
-        | STYLE HEADER
-        |--------------------------------------------------------------------------
-        */
-
-        $sheet
-            ->getStyle(
-                'A' .
-                $header_row .
-                ':G' .
-                $header_row
-            )
-            ->getFont()
-            ->setBold(true);
-
-
-        $sheet
-            ->getStyle(
-                'A' .
-                $header_row .
-                ':G' .
-                $header_row
-            )
-            ->getAlignment()
-            ->setHorizontal(
-                Alignment::HORIZONTAL_CENTER
-            );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATA
-        |--------------------------------------------------------------------------
+        | Data
         */
 
         $row_number = 6;
@@ -1336,27 +1581,39 @@ class Tka_admin extends CI_Controller
 
             $sheet->setCellValueExplicit(
                 'B' . $row_number,
-                (string) $row->nisn,
+                (string) (
+                    !empty($row->nisn)
+                        ? $row->nisn
+                        : '-'
+                ),
                 DataType::TYPE_STRING
             );
 
 
             $sheet->setCellValueExplicit(
                 'C' . $row_number,
-                (string) $row->nis,
+                (string) (
+                    !empty($row->nis)
+                        ? $row->nis
+                        : '-'
+                ),
                 DataType::TYPE_STRING
             );
 
 
             $sheet->setCellValue(
                 'D' . $row_number,
-                $row->nama
+                !empty($row->nama)
+                    ? $row->nama
+                    : '-'
             );
 
 
             $sheet->setCellValue(
                 'E' . $row_number,
-                $row->nama_kelas
+                !empty($row->nama_kelas)
+                    ? $row->nama_kelas
+                    : '-'
             );
 
 
@@ -1382,23 +1639,15 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | LAST ROW
-        |--------------------------------------------------------------------------
+        | Border
         */
 
         $last_row =
             max(
-                $header_row,
+                5,
                 $row_number - 1
             );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | BORDER
-        |--------------------------------------------------------------------------
-        */
 
         $sheet
             ->getStyle(
@@ -1412,9 +1661,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | ALIGNMENT
-        |--------------------------------------------------------------------------
+        | Alignment
         */
 
         if ($last_row >= 6) {
@@ -1441,13 +1688,11 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | WIDTH
-        |--------------------------------------------------------------------------
+        | Width
         */
 
         foreach (
-            ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+            ['A','B','C','D','E','F','G']
             as $column
         ) {
 
@@ -1457,21 +1702,13 @@ class Tka_admin extends CI_Controller
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | FREEZE
-        |--------------------------------------------------------------------------
-        */
-
         $sheet->freezePane(
             'A6'
         );
 
 
         /*
-        |--------------------------------------------------------------------------
-        | FILENAME
-        |--------------------------------------------------------------------------
+        | Filename
         */
 
         $filename =
@@ -1483,14 +1720,14 @@ class Tka_admin extends CI_Controller
             );
 
 
-        if ($nama !== '') {
+        if ($filter['nama'] !== '') {
 
             $filename .=
                 '_Cari_' .
                 preg_replace(
                     '/[^a-zA-Z0-9\-]/',
                     '_',
-                    $nama
+                    $filter['nama']
                 );
         }
 
@@ -1502,9 +1739,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | OUTPUT
-        |--------------------------------------------------------------------------
+        | Output
         */
 
         $writer =
@@ -1549,80 +1784,42 @@ class Tka_admin extends CI_Controller
     | EXPORT PDF
     |--------------------------------------------------------------------------
     */
+
     public function export_pdf()
     {
-        $this->cek_login();
+        $filter =
+            $this->get_export_filter();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | FILTER
-        |--------------------------------------------------------------------------
-        */
-
-        $tahun_id = (int) $this->input->get(
-            'tahun_id'
-        );
-
-        if ($tahun_id <= 0) {
-
-            $tahun_id =
-                $this->get_tahun_aktif();
-        }
-
-
-        $kelas_id = (int) $this->input->get(
-            'kelas_id'
-        );
-
-
-        $status = $this->normalize_status(
-            $this->input->get('status')
-        );
-
-
-        $nama = trim(
-            (string) $this->input->get(
-                'nama'
-            )
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATA
-        |--------------------------------------------------------------------------
-        */
 
         $siswa =
             $this->get_peserta_tka(
-                $tahun_id,
-                $kelas_id,
-                $status,
-                $nama
+                $filter['tahun_id'],
+                $filter['kelas_id'],
+                $filter['status'],
+                $filter['nama']
             );
 
 
         $tahun_ajaran =
             $this->get_nama_tahun(
-                $tahun_id
+                $filter['tahun_id']
             );
+
 
         $kelas_nama =
             $this->get_nama_kelas(
-                $kelas_id
+                $filter['kelas_id']
             );
+
 
         $status_label =
             $this->get_status_label(
-                $status
+                $filter['status']
             );
 
 
         /*
-        |--------------------------------------------------------------------------
         | PDF
-        |--------------------------------------------------------------------------
         */
 
         $this->load->library(
@@ -1639,12 +1836,6 @@ class Tka_admin extends CI_Controller
             false
         );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | SETTING
-        |--------------------------------------------------------------------------
-        */
 
         $pdf->SetCreator(
             'SimSGTK'
@@ -1698,9 +1889,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | JUDUL
-        |--------------------------------------------------------------------------
+        | Judul
         */
 
         $pdf->SetFont(
@@ -1740,9 +1929,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | INFORMASI FILTER
-        |--------------------------------------------------------------------------
+        | Filter
         */
 
         $pdf->SetFont(
@@ -1786,13 +1973,13 @@ class Tka_admin extends CI_Controller
         );
 
 
-        if ($nama !== '') {
+        if ($filter['nama'] !== '') {
 
             $pdf->Cell(
                 0,
                 6,
                 'Pencarian Nama: "' .
-                $nama .
+                $filter['nama'] .
                 '"',
                 0,
                 1,
@@ -1805,14 +1992,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | LEBAR KOLOM
-        |--------------------------------------------------------------------------
-        |
-        | Total area:
-        | 297 - 10 - 10 = 277 mm
-        |
-        |--------------------------------------------------------------------------
+        | Lebar tabel
         */
 
         $w_no    = 12;
@@ -1823,18 +2003,11 @@ class Tka_admin extends CI_Controller
         $w_tka1  = 43.5;
         $w_tka2  = 43.5;
 
-
         $header_height = 10;
 
 
         /*
-        |--------------------------------------------------------------------------
-        | FUNCTION HEADER TABEL
-        |--------------------------------------------------------------------------
-        |
-        | Supaya header tidak ditulis berulang-ulang.
-        |
-        |--------------------------------------------------------------------------
+        | Header tabel
         */
 
         $draw_header = function () use (
@@ -1855,10 +2028,11 @@ class Tka_admin extends CI_Controller
                 8
             );
 
+
             $pdf->SetFillColor(
-                235,
-                235,
-                235
+                240,
+                244,
+                248
             );
 
 
@@ -1945,6 +2119,7 @@ class Tka_admin extends CI_Controller
                 8
             );
 
+
             $pdf->SetFillColor(
                 255,
                 255,
@@ -1953,71 +2128,48 @@ class Tka_admin extends CI_Controller
         };
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | HEADER PERTAMA
-        |--------------------------------------------------------------------------
-        */
-
         $draw_header();
 
 
         /*
-        |--------------------------------------------------------------------------
-        | DATA
-        |--------------------------------------------------------------------------
+        | Data
         */
-
-        $pdf->SetFont(
-            'helvetica',
-            '',
-            8
-        );
-
 
         $no = 1;
 
 
-        foreach (
-            $siswa as $row
-        ) {
+        foreach ($siswa as $row) {
 
-            /*
-            |--------------------------------------------------------------------------
-            | DATA
-            |--------------------------------------------------------------------------
-            */
+            $nisn =
+                !empty($row->nisn)
+                    ? $row->nisn
+                    : '-';
 
-            $nisn = !empty($row->nisn)
-                ? $row->nisn
-                : '-';
+            $nis =
+                !empty($row->nis)
+                    ? $row->nis
+                    : '-';
 
-            $nis = !empty($row->nis)
-                ? $row->nis
-                : '-';
+            $nama_siswa =
+                !empty($row->nama)
+                    ? $row->nama
+                    : '-';
 
-            $nama_siswa = !empty($row->nama)
-                ? $row->nama
-                : '-';
+            $kelas =
+                !empty($row->nama_kelas)
+                    ? $row->nama_kelas
+                    : '-';
 
-            $kelas = !empty($row->nama_kelas)
-                ? $row->nama_kelas
-                : '-';
+            $mapel_1 =
+                !empty($row->mapel_1)
+                    ? $row->mapel_1
+                    : '-';
 
-            $mapel_1 = !empty($row->mapel_1)
-                ? $row->mapel_1
-                : '-';
+            $mapel_2 =
+                !empty($row->mapel_2)
+                    ? $row->mapel_2
+                    : '-';
 
-            $mapel_2 = !empty($row->mapel_2)
-                ? $row->mapel_2
-                : '-';
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | HITUNG BARIS
-            |--------------------------------------------------------------------------
-            */
 
             $nama_lines =
                 $pdf->getNumLines(
@@ -2051,16 +2203,13 @@ class Tka_admin extends CI_Controller
 
 
             /*
-            |--------------------------------------------------------------------------
-            | PAGE BREAK
-            |--------------------------------------------------------------------------
+            | Cek halaman
             */
 
             if (
                 $pdf->GetY() +
                 $row_height >
-                $pdf->getPageHeight() -
-                15
+                190
             ) {
 
                 $pdf->AddPage();
@@ -2068,12 +2217,6 @@ class Tka_admin extends CI_Controller
                 $draw_header();
             }
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | POSISI
-            |--------------------------------------------------------------------------
-            */
 
             $x =
                 $pdf->GetX();
@@ -2083,15 +2226,13 @@ class Tka_admin extends CI_Controller
 
 
             /*
-            |--------------------------------------------------------------------------
             | NO
-            |--------------------------------------------------------------------------
             */
 
             $pdf->MultiCell(
                 $w_no,
                 $row_height,
-                $no,
+                (string) $no,
                 1,
                 'C',
                 false,
@@ -2108,9 +2249,7 @@ class Tka_admin extends CI_Controller
 
 
             /*
-            |--------------------------------------------------------------------------
             | NISN
-            |--------------------------------------------------------------------------
             */
 
             $x += $w_no;
@@ -2120,7 +2259,7 @@ class Tka_admin extends CI_Controller
                 $row_height,
                 $nisn,
                 1,
-                'C',
+                'L',
                 false,
                 0,
                 $x,
@@ -2135,9 +2274,7 @@ class Tka_admin extends CI_Controller
 
 
             /*
-            |--------------------------------------------------------------------------
             | NIS
-            |--------------------------------------------------------------------------
             */
 
             $x += $w_nisn;
@@ -2147,7 +2284,7 @@ class Tka_admin extends CI_Controller
                 $row_height,
                 $nis,
                 1,
-                'C',
+                'L',
                 false,
                 0,
                 $x,
@@ -2162,9 +2299,7 @@ class Tka_admin extends CI_Controller
 
 
             /*
-            |--------------------------------------------------------------------------
             | NAMA
-            |--------------------------------------------------------------------------
             */
 
             $x += $w_nis;
@@ -2189,9 +2324,7 @@ class Tka_admin extends CI_Controller
 
 
             /*
-            |--------------------------------------------------------------------------
             | KELAS
-            |--------------------------------------------------------------------------
             */
 
             $x += $w_nama;
@@ -2216,9 +2349,7 @@ class Tka_admin extends CI_Controller
 
 
             /*
-            |--------------------------------------------------------------------------
             | TKA 1
-            |--------------------------------------------------------------------------
             */
 
             $x += $w_kelas;
@@ -2243,9 +2374,7 @@ class Tka_admin extends CI_Controller
 
 
             /*
-            |--------------------------------------------------------------------------
             | TKA 2
-            |--------------------------------------------------------------------------
             */
 
             $x += $w_tka1;
@@ -2274,9 +2403,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | DATA KOSONG
-        |--------------------------------------------------------------------------
+        | Data kosong
         */
 
         if (empty($siswa)) {
@@ -2287,12 +2414,13 @@ class Tka_admin extends CI_Controller
                 9
             );
 
+
             $pdf->Cell(
                 277,
                 10,
-                $nama !== ''
+                $filter['nama'] !== ''
                     ? 'Tidak ditemukan siswa dengan nama "' .
-                      $nama .
+                      $filter['nama'] .
                       '".'
                     : 'Tidak ada data peserta TKA.',
                 1,
@@ -2303,9 +2431,7 @@ class Tka_admin extends CI_Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | FILENAME
-        |--------------------------------------------------------------------------
+        | Filename
         */
 
         $filename =
@@ -2317,14 +2443,14 @@ class Tka_admin extends CI_Controller
             );
 
 
-        if ($nama !== '') {
+        if ($filter['nama'] !== '') {
 
             $filename .=
                 '_Cari_' .
                 preg_replace(
                     '/[^a-zA-Z0-9\-]/',
                     '_',
-                    $nama
+                    $filter['nama']
                 );
         }
 
@@ -2334,12 +2460,6 @@ class Tka_admin extends CI_Controller
             date('Ymd_His') .
             '.pdf';
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | OUTPUT
-        |--------------------------------------------------------------------------
-        */
 
         $pdf->Output(
             $filename,
