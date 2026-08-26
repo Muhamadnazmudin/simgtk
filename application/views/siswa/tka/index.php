@@ -1,15 +1,26 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+
 /*
 |--------------------------------------------------------------------------
-| DATA
+| DATA VIEW
 |--------------------------------------------------------------------------
 */
 
 $tka_terkunci = !empty($tka_terkunci);
-$pilihan      = isset($pilihan) ? $pilihan : null;
-$mapel        = isset($mapel) ? $mapel : [];
+
+$pilihan = isset($pilihan)
+    ? $pilihan
+    : null;
+
+$mapel = isset($mapel)
+    ? $mapel
+    : [];
+
+$mapel_program = isset($mapel_program)
+    ? $mapel_program
+    : null;
 
 
 /*
@@ -27,6 +38,7 @@ $wa_message = urlencode(
 $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 ?>
 
+
 <style>
 
 /* =========================================================
@@ -34,7 +46,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 ========================================================= */
 
 .tka-page {
-    padding: 18px 0 40px;
+    padding: 18px 0 45px;
     color: #1f2937;
 }
 
@@ -44,9 +56,11 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 ========================================================= */
 
 .tka-card {
-    border: 0;
-    border-radius: 22px;
     overflow: hidden;
+
+    border: 0;
+    border-radius: 24px;
+
     background: #ffffff;
 
     box-shadow:
@@ -62,7 +76,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     position: relative;
     overflow: hidden;
 
-    padding: 28px 30px;
+    padding: 30px 32px;
 
     background:
         linear-gradient(
@@ -79,11 +93,11 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     position: absolute;
 
-    width: 190px;
-    height: 190px;
+    width: 210px;
+    height: 210px;
 
-    right: -65px;
-    top: -90px;
+    top: -110px;
+    right: -60px;
 
     border-radius: 50%;
 
@@ -95,11 +109,11 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     position: absolute;
 
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
 
-    right: 90px;
-    bottom: -75px;
+    right: 100px;
+    bottom: -95px;
 
     border-radius: 50%;
 
@@ -111,17 +125,25 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     z-index: 2;
 }
 
-.tka-icon {
-    width: 52px;
-    height: 52px;
+.tka-header-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 
-    display: inline-flex;
+    margin-bottom: 14px;
+}
+
+.tka-icon {
+    width: 54px;
+    height: 54px;
+
+    flex: 0 0 auto;
+
+    display: flex;
     align-items: center;
     justify-content: center;
 
-    margin-bottom: 14px;
-
-    border-radius: 15px;
+    border-radius: 16px;
 
     background: rgba(255,255,255,.16);
 
@@ -135,16 +157,15 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     font-size: 1.45rem;
     font-weight: 700;
+    line-height: 1.25;
 }
 
-.tka-description {
-    max-width: 720px;
-
-    margin: 8px 0 0;
+.tka-subtitle {
+    margin: 0;
 
     color: rgba(255,255,255,.90);
 
-    font-size: .90rem;
+    font-size: .88rem;
     line-height: 1.6;
 }
 
@@ -154,12 +175,36 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 ========================================================= */
 
 .tka-body {
-    padding: 28px 30px 32px;
+    padding: 30px 32px 35px;
 }
 
 
 /* =========================================================
-   STUDENT INFO
+   FLASH MESSAGE
+========================================================= */
+
+.tka-alert {
+    margin-bottom: 20px;
+
+    border: 0;
+    border-radius: 13px;
+
+    font-size: .86rem;
+}
+
+.tka-alert.alert-success {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.tka-alert.alert-danger {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+
+/* =========================================================
+   STUDENT INFORMATION
 ========================================================= */
 
 .tka-student-info {
@@ -172,14 +217,16 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     gap: 12px;
 
-    margin-bottom: 27px;
+    margin-bottom: 30px;
 }
 
 .tka-info-item {
-    padding: 15px 17px;
+    min-width: 0;
+
+    padding: 16px 18px;
 
     border: 1px solid #e5eaf2;
-    border-radius: 14px;
+    border-radius: 15px;
 
     background: #f8fafc;
 }
@@ -191,37 +238,46 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     color: #6b7280;
 
-    font-size: .74rem;
+    font-size: .72rem;
     font-weight: 700;
 
     text-transform: uppercase;
-    letter-spacing: .3px;
+    letter-spacing: .35px;
 }
 
 .tka-info-value {
     display: block;
 
+    overflow: hidden;
+
     color: #1f2937;
 
-    font-size: .93rem;
+    font-size: .92rem;
     font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 
 /* =========================================================
-   SECTION
+   SECTION HEADER
 ========================================================= */
+
+.tka-section-header {
+    margin-bottom: 21px;
+}
 
 .tka-section-title {
     display: flex;
     align-items: center;
     gap: 9px;
 
-    margin-bottom: 7px;
+    margin: 0 0 6px;
 
     color: #1f2937;
 
-    font-size: 1.04rem;
+    font-size: 1.05rem;
     font-weight: 700;
 }
 
@@ -230,17 +286,17 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 }
 
 .tka-section-description {
-    margin-bottom: 20px;
+    margin: 0;
 
     color: #6b7280;
 
-    font-size: .86rem;
+    font-size: .85rem;
     line-height: 1.6;
 }
 
 
 /* =========================================================
-   NOTICE
+   INFORMATION NOTICE
 ========================================================= */
 
 .tka-notice {
@@ -248,7 +304,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     align-items: flex-start;
     gap: 12px;
 
-    margin-bottom: 23px;
+    margin-bottom: 24px;
     padding: 15px 17px;
 
     border: 1px solid #d7eaff;
@@ -258,13 +314,13 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     color: #315b86;
 
-    font-size: .86rem;
-    line-height: 1.55;
+    font-size: .83rem;
+    line-height: 1.6;
 }
 
 .tka-notice-icon {
-    width: 32px;
-    height: 32px;
+    width: 33px;
+    height: 33px;
 
     flex: 0 0 auto;
 
@@ -279,48 +335,156 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     color: #3b82f6;
 }
 
+.tka-notice strong {
+    color: #28598b;
+}
+
 
 /* =========================================================
    FORM
 ========================================================= */
 
 .tka-form-group {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
 }
 
 .tka-label {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
 
-    margin-bottom: 8px;
+    margin-bottom: 9px;
 
     color: #374151 !important;
 
-    font-size: .87rem;
+    font-size: .86rem;
     font-weight: 700;
 }
 
 .tka-label-number {
-    width: 24px;
-    height: 24px;
+    width: 25px;
+    height: 25px;
+
+    flex: 0 0 auto;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 7px;
+    border-radius: 8px;
 
     background: #eaf3ff;
-
     color: #3b82f6;
 
-    font-size: .75rem;
+    font-size: .74rem;
     font-weight: 700;
 }
 
+
+/* =========================================================
+   FIXED PROGRAM KEAHLIAN
+========================================================= */
+
+.tka-fixed-mapel {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    min-height: 66px;
+
+    padding: 12px 15px;
+
+    border: 1px solid #d7e6f8;
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f6faff,
+            #eef6ff
+        );
+}
+
+.tka-fixed-icon {
+    width: 40px;
+    height: 40px;
+
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #e1efff;
+
+    color: #3b82f6;
+
+    font-size: .92rem;
+}
+
+.tka-fixed-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.tka-fixed-label {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: #718096;
+
+    font-size: .66rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: .35px;
+}
+
+.tka-fixed-name {
+    display: block;
+
+    overflow: hidden;
+
+    color: #1f2937;
+
+    font-size: .91rem;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tka-fixed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    flex: 0 0 auto;
+
+    padding: 6px 9px;
+
+    border-radius: 8px;
+
+    background: #e6f0ff;
+    color: #3578d4;
+
+    font-size: .64rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   SELECT
+========================================================= */
+
 .tka-select {
     width: 100%;
+
     min-height: 50px;
 
     padding: 10px 14px;
@@ -331,11 +495,13 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     background: #ffffff !important;
     color: #1f2937 !important;
 
-    font-size: .90rem;
+    font-size: .88rem;
 
     box-shadow: none !important;
 
-    transition: .2s ease;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
 }
 
 .tka-select:hover {
@@ -351,6 +517,27 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
 
 /* =========================================================
+   SELECT HELP
+========================================================= */
+
+.tka-help {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-top: 7px;
+
+    color: #8a94a6;
+
+    font-size: .72rem;
+}
+
+.tka-help i {
+    color: #94a3b8;
+}
+
+
+/* =========================================================
    ACTION
 ========================================================= */
 
@@ -358,7 +545,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     display: flex;
     justify-content: flex-start;
 
-    margin-top: 25px;
+    margin-top: 27px;
 }
 
 .tka-submit {
@@ -369,36 +556,53 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     min-height: 48px;
 
-    padding: 11px 22px;
+    padding: 11px 23px;
 
     border: 0;
     border-radius: 13px;
 
-    background: #4f9cf9;
+    background:
+        linear-gradient(
+            135deg,
+            #4f9cf9,
+            #3b82f6
+        );
 
     color: #ffffff !important;
 
-    font-size: .88rem;
+    font-size: .86rem;
     font-weight: 700;
 
     box-shadow:
-        0 6px 15px rgba(79,156,249,.20);
+        0 7px 17px rgba(59,130,246,.20);
 
-    transition: .2s ease;
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
 }
 
 .tka-submit:hover {
-    background: #3b82f6;
+    color: #ffffff !important;
 
     transform: translateY(-1px);
 
     box-shadow:
-        0 8px 18px rgba(79,156,249,.25);
+        0 9px 20px rgba(59,130,246,.27);
+}
+
+.tka-submit:active {
+    transform: translateY(0);
+}
+
+.tka-submit:disabled {
+    opacity: .75;
+    cursor: not-allowed;
+    transform: none;
 }
 
 
 /* =========================================================
-   LOCKED
+   LOCKED STATE
 ========================================================= */
 
 .tka-locked-banner {
@@ -406,7 +610,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     align-items: flex-start;
     gap: 13px;
 
-    margin-bottom: 22px;
+    margin-bottom: 20px;
     padding: 17px 18px;
 
     border: 1px solid #ccefe0;
@@ -416,8 +620,8 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 }
 
 .tka-locked-icon {
-    width: 38px;
-    height: 38px;
+    width: 39px;
+    height: 39px;
 
     flex: 0 0 auto;
 
@@ -437,7 +641,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     color: #047857;
 
-    font-size: .92rem;
+    font-size: .91rem;
     font-weight: 700;
 }
 
@@ -446,7 +650,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     color: #3f7665;
 
-    font-size: .82rem;
+    font-size: .81rem;
     line-height: 1.5;
 }
 
@@ -471,17 +675,17 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     gap: 15px;
 
-    margin-bottom: 14px;
+    margin-bottom: 13px;
 }
 
 .tka-choice-title {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
 
     color: #1f2937;
 
-    font-size: .94rem;
+    font-size: .93rem;
     font-weight: 700;
 }
 
@@ -501,16 +705,18 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     background: #dcfce7;
     color: #15803d;
 
-    font-size: .68rem;
+    font-size: .65rem;
     font-weight: 700;
+
+    letter-spacing: .2px;
 }
 
 .tka-choice-item {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 13px;
 
-    min-height: 65px;
+    min-height: 64px;
 
     margin-top: 10px;
     padding: 11px 14px;
@@ -536,15 +742,40 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     background: #eaf3ff;
     color: #3b82f6;
 
-    font-size: .85rem;
+    font-size: .84rem;
     font-weight: 700;
 }
 
+.tka-choice-content {
+    min-width: 0;
+}
+
+.tka-choice-label {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: #8a94a6;
+
+    font-size: .67rem;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: .25px;
+}
+
 .tka-choice-mapel {
+    display: block;
+
+    overflow: hidden;
+
     color: #1f2937 !important;
 
-    font-size: .90rem;
-    font-weight: 600;
+    font-size: .89rem;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 
@@ -557,11 +788,11 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     align-items: center;
     gap: 13px;
 
-    margin-top: 22px;
+    margin-top: 18px;
     padding: 15px 17px;
 
-    border: 1px solid #e5eaf2;
-    border-radius: 15px;
+    border: 1px solid #e3e9f1;
+    border-radius: 14px;
 
     background: #ffffff;
 }
@@ -578,7 +809,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     border-radius: 11px;
 
-    background: #e8f5e9;
+    background: #e8f8ee;
 
     color: #25d366;
 
@@ -591,7 +822,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     color: #6b7280;
 
     font-size: .78rem;
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
 .tka-contact-title {
@@ -601,7 +832,7 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     color: #374151;
 
-    font-size: .80rem;
+    font-size: .79rem;
     font-weight: 700;
 }
 
@@ -619,20 +850,6 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
 
 /* =========================================================
-   FLASH MESSAGE
-========================================================= */
-
-.tka-alert {
-    margin-bottom: 20px;
-
-    border: 0;
-    border-radius: 13px;
-
-    font-size: .87rem;
-}
-
-
-/* =========================================================
    CONFIRM MODAL
 ========================================================= */
 
@@ -644,15 +861,14 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     z-index: 99999;
 
     display: none;
-
     align-items: center;
     justify-content: center;
 
     padding: 20px;
 
-    background: rgba(15,23,42,.60);
+    background: rgba(15,23,42,.62);
 
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(5px);
 }
 
 .tka-confirm-overlay.show {
@@ -670,9 +886,10 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     background: #ffffff;
 
     box-shadow:
-        0 20px 60px rgba(0,0,0,.20);
+        0 25px 70px rgba(0,0,0,.22);
 
-    animation: tkaConfirmIn .18s ease-out;
+    animation:
+        tkaConfirmIn .18s ease-out;
 }
 
 @keyframes tkaConfirmIn {
@@ -686,7 +903,6 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
         opacity: 1;
         transform: translateY(0) scale(1);
     }
-
 }
 
 .tka-confirm-icon {
@@ -705,70 +921,82 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     color: #3b82f6;
 
-    font-size: 24px;
+    font-size: 23px;
 }
 
 .tka-confirm-title {
     margin: 0;
 
-    text-align: center;
-
     color: #1f2937;
+
+    text-align: center;
 
     font-size: 1.12rem;
     font-weight: 700;
 }
 
 .tka-confirm-text {
-    margin: 9px 0 17px;
-
-    text-align: center;
+    margin: 9px 0 18px;
 
     color: #6b7280;
 
-    font-size: .85rem;
+    text-align: center;
+
+    font-size: .84rem;
     line-height: 1.6;
 }
 
 .tka-confirm-choice {
+    margin-bottom: 8px;
     padding: 13px 15px;
 
-    margin-bottom: 8px;
-
+    border: 1px solid #e5eaf2;
     border-radius: 12px;
 
     background: #f8fafc;
 
-    border: 1px solid #e5eaf2;
+    color: #374151;
 
-    font-size: .85rem;
+    font-size: .83rem;
 }
 
 .tka-confirm-choice strong {
+    display: block;
+
+    margin-bottom: 3px;
+
     color: #3b82f6;
+
+    font-size: .72rem;
+
+    text-transform: uppercase;
+    letter-spacing: .2px;
+}
+
+.tka-confirm-choice-value {
+    color: #1f2937;
+
+    font-size: .86rem;
+    font-weight: 700;
 }
 
 .tka-confirm-warning {
     margin-top: 14px;
-
     padding: 12px 14px;
 
+    border: 1px solid #fed7aa;
     border-radius: 11px;
 
     background: #fff7ed;
 
-    border: 1px solid #fed7aa;
-
     color: #9a3412;
 
-    font-size: .78rem;
-
-    line-height: 1.5;
+    font-size: .76rem;
+    line-height: 1.55;
 }
 
 .tka-confirm-actions {
     display: flex;
-
     gap: 10px;
 
     margin-top: 20px;
@@ -782,10 +1010,14 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
 
     border-radius: 11px;
 
-    font-size: .84rem;
+    font-size: .82rem;
     font-weight: 700;
 
-    transition: .2s ease;
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .2s ease;
 }
 
 .tka-confirm-cancel {
@@ -794,6 +1026,10 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     background: #ffffff;
 
     color: #4b5563;
+}
+
+.tka-confirm-cancel:hover {
+    background: #f3f4f6;
 }
 
 .tka-confirm-save {
@@ -808,8 +1044,9 @@ $wa_url = 'https://wa.me/' . $wa_riki . '?text=' . $wa_message;
     background: #2563eb;
 }
 
-.tka-confirm-cancel:hover {
-    background: #f3f4f6;
+.tka-confirm-save:disabled {
+    opacity: .75;
+    cursor: not-allowed;
 }
 
 
@@ -831,6 +1068,9 @@ body.dark-mode .tka-card {
         0 12px 35px rgba(0,0,0,.22);
 }
 
+
+/* student */
+
 body.dark-mode .tka-info-item {
     background: #292d40 !important;
     border-color: #3b4054 !important;
@@ -844,6 +1084,9 @@ body.dark-mode .tka-info-value {
     color: #f3f4f6 !important;
 }
 
+
+/* section */
+
 body.dark-mode .tka-section-title {
     color: #f3f4f6 !important;
 }
@@ -856,16 +1099,26 @@ body.dark-mode .tka-section-description {
     color: #aeb6c7 !important;
 }
 
+
+/* notice */
+
 body.dark-mode .tka-notice {
     background: #263650 !important;
     border-color: #354b6b !important;
     color: #c9dcf7 !important;
 }
 
+body.dark-mode .tka-notice strong {
+    color: #dceaff;
+}
+
 body.dark-mode .tka-notice-icon {
     background: #304a70 !important;
     color: #7db4ff !important;
 }
+
+
+/* form */
 
 body.dark-mode .tka-label {
     color: #f1f5f9 !important;
@@ -882,10 +1135,55 @@ body.dark-mode .tka-select {
     color: #f8fafc !important;
 }
 
+body.dark-mode .tka-select:hover {
+    border-color: #63718c !important;
+}
+
+body.dark-mode .tka-select:focus {
+    background: #292d40 !important;
+    border-color: #6ea8fe !important;
+    color: #ffffff !important;
+}
+
 body.dark-mode .tka-select option {
     background: #292d40 !important;
     color: #ffffff !important;
 }
+
+
+/* fixed mapel */
+
+body.dark-mode .tka-fixed-mapel {
+    background:
+        linear-gradient(
+            135deg,
+            #263650,
+            #293f63
+        ) !important;
+
+    border-color: #405a80 !important;
+}
+
+body.dark-mode .tka-fixed-icon {
+    background: #35547e !important;
+    color: #7eb4ff !important;
+}
+
+body.dark-mode .tka-fixed-label {
+    color: #aeb6c7 !important;
+}
+
+body.dark-mode .tka-fixed-name {
+    color: #f3f4f6 !important;
+}
+
+body.dark-mode .tka-fixed-badge {
+    background: #35547e !important;
+    color: #8bbcff !important;
+}
+
+
+/* locked */
 
 body.dark-mode .tka-locked-banner {
     background: #19392f !important;
@@ -905,6 +1203,9 @@ body.dark-mode .tka-locked-text {
     color: #a7dccc !important;
 }
 
+
+/* choices */
+
 body.dark-mode .tka-choice-box {
     background: #292d40 !important;
     border-color: #3c4255 !important;
@@ -919,9 +1220,21 @@ body.dark-mode .tka-choice-item {
     border-color: #3c4255 !important;
 }
 
+body.dark-mode .tka-choice-label {
+    color: #929caf !important;
+}
+
 body.dark-mode .tka-choice-mapel {
     color: #f1f5f9 !important;
 }
+
+body.dark-mode .tka-locked-badge {
+    background: #214936 !important;
+    color: #72e4ae !important;
+}
+
+
+/* contact */
 
 body.dark-mode .tka-contact {
     background: #292d40 !important;
@@ -935,6 +1248,13 @@ body.dark-mode .tka-contact-title {
 body.dark-mode .tka-contact-text {
     color: #aeb6c7 !important;
 }
+
+body.dark-mode .tka-contact-link {
+    color: #68e39a !important;
+}
+
+
+/* modal */
 
 body.dark-mode .tka-confirm-box {
     background: #202333 !important;
@@ -954,6 +1274,10 @@ body.dark-mode .tka-confirm-choice {
     color: #e5e7eb;
 }
 
+body.dark-mode .tka-confirm-choice-value {
+    color: #f3f4f6;
+}
+
 body.dark-mode .tka-confirm-warning {
     background: #402c1f;
     border-color: #68442d;
@@ -964,6 +1288,19 @@ body.dark-mode .tka-confirm-cancel {
     background: #292d40;
     border-color: #4a5064;
     color: #d1d5db;
+}
+
+
+/* alerts */
+
+body.dark-mode .tka-alert.alert-success {
+    background: #19392f !important;
+    color: #b8f5d6 !important;
+}
+
+body.dark-mode .tka-alert.alert-danger {
+    background: #47252c !important;
+    color: #ffd0d5 !important;
 }
 
 
@@ -985,22 +1322,53 @@ body.dark-mode .tka-confirm-cancel {
         padding: 23px 20px;
     }
 
-    .tka-title {
-        font-size: 1.2rem;
+    .tka-header-top {
+        align-items: flex-start;
     }
 
-    .tka-description {
-        font-size: .84rem;
+    .tka-icon {
+        width: 47px;
+        height: 47px;
+
+        border-radius: 13px;
+
+        font-size: 18px;
+    }
+
+    .tka-title {
+        font-size: 1.18rem;
+    }
+
+    .tka-subtitle {
+        font-size: .82rem;
     }
 
     .tka-body {
-        padding: 21px 17px 25px;
+        padding: 22px 18px 27px;
     }
 
     .tka-student-info {
         grid-template-columns: 1fr;
+
         gap: 9px;
-        margin-bottom: 22px;
+
+        margin-bottom: 23px;
+    }
+
+    .tka-info-item {
+        padding: 13px 15px;
+    }
+
+    .tka-notice {
+        padding: 13px 14px;
+    }
+
+    .tka-fixed-mapel {
+        align-items: flex-start;
+    }
+
+    .tka-fixed-badge {
+        margin-top: 1px;
     }
 
     .tka-choice-box {
@@ -1017,12 +1385,21 @@ body.dark-mode .tka-confirm-cancel {
         padding: 10px 12px;
     }
 
-    .tka-submit {
-        width: 100%;
+    .tka-choice-number {
+        width: 33px;
+        height: 33px;
     }
 
     .tka-contact {
         align-items: flex-start;
+    }
+
+    .tka-actions {
+        margin-top: 23px;
+    }
+
+    .tka-submit {
+        width: 100%;
     }
 
     .tka-confirm-box {
@@ -1037,6 +1414,26 @@ body.dark-mode .tka-confirm-cancel {
     .tka-confirm-cancel,
     .tka-confirm-save {
         width: 100%;
+    }
+}
+
+
+@media (max-width: 430px) {
+
+    .tka-header-top {
+        gap: 11px;
+    }
+
+    .tka-fixed-badge {
+        display: none;
+    }
+
+    .tka-fixed-mapel {
+        padding: 11px 12px;
+    }
+
+    .tka-contact {
+        padding: 13px;
     }
 }
 
@@ -1095,20 +1492,29 @@ body.dark-mode .tka-confirm-cancel {
 
             <div class="tka-header-content">
 
-                <div class="tka-icon">
+                <div class="tka-header-top">
 
-                    <i class="fas fa-graduation-cap"></i>
+                    <div class="tka-icon">
+
+                        <i class="fas fa-graduation-cap"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h1 class="tka-title">
+                            Pengisian TKA
+                        </h1>
+
+                        <p class="tka-subtitle">
+                            Lengkapi pilihan mata pelajaran TKA Anda
+                            dengan teliti sebelum disimpan.
+                        </p>
+
+                    </div>
 
                 </div>
-
-                <h1 class="tka-title">
-                    Pengisian TKA
-                </h1>
-
-                <p class="tka-description">
-                    Pilih dua mata pelajaran yang akan digunakan
-                    sebagai mata pelajaran pilihan TKA.
-                </p>
 
             </div>
 
@@ -1128,6 +1534,7 @@ body.dark-mode .tka-confirm-cancel {
 
             <div class="tka-student-info">
 
+
                 <div class="tka-info-item">
 
                     <span class="tka-info-label">
@@ -1135,7 +1542,11 @@ body.dark-mode .tka-confirm-cancel {
                     </span>
 
                     <span class="tka-info-value">
-                        <?= html_escape($siswa->nama); ?>
+
+                        <?= html_escape(
+                            $siswa->nama
+                        ); ?>
+
                     </span>
 
                 </div>
@@ -1148,7 +1559,11 @@ body.dark-mode .tka-confirm-cancel {
                     </span>
 
                     <span class="tka-info-value">
-                        <?= html_escape($siswa->nama_kelas); ?>
+
+                        <?= html_escape(
+                            $siswa->nama_kelas
+                        ); ?>
+
                     </span>
 
                 </div>
@@ -1161,10 +1576,15 @@ body.dark-mode .tka-confirm-cancel {
                     </span>
 
                     <span class="tka-info-value">
-                        <?= html_escape($siswa->tahun_ajaran); ?>
+
+                        <?= html_escape(
+                            $siswa->tahun_ajaran
+                        ); ?>
+
                     </span>
 
                 </div>
+
 
             </div>
 
@@ -1173,30 +1593,35 @@ body.dark-mode .tka-confirm-cancel {
 
 
                 <!-- =============================================
-                     FORM
+                     FORM BELUM DIISI
                 ============================================== -->
 
-                <div class="tka-section-title">
 
-                    <i class="fas fa-list-check"></i>
+                <div class="tka-section-header">
 
-                    Pilih Mata Pelajaran
+                    <h2 class="tka-section-title">
+
+                        <i class="fas fa-list-check"></i>
+
+                        Pilihan Mata Pelajaran
+
+                    </h2>
+
+                    <p class="tka-section-description">
+
+                        Pilihan pertama sudah ditentukan otomatis
+                        berdasarkan mata pelajaran <strong>Program
+                        Keahlian</strong>. Anda hanya perlu memilih
+                        satu mata pelajaran untuk pilihan kedua.
+
+                    </p>
 
                 </div>
 
 
-                <div class="tka-section-description">
-
-                    Silakan pilih
-                    <strong>2 mata pelajaran</strong>.
-                    Pastikan pilihan sudah benar sebelum menyimpan.
-                    Setelah disimpan, pilihan akan dikunci dan hanya
-                    dapat diubah oleh admin.
-
-                </div>
-
-
-                <!-- NOTICE -->
+                <!-- =============================================
+                     NOTICE
+                ============================================== -->
 
                 <div class="tka-notice">
 
@@ -1206,267 +1631,435 @@ body.dark-mode .tka-confirm-cancel {
 
                     </div>
 
+
                     <div>
 
-                        <strong>Perhatian</strong><br>
+                        <strong>Perhatikan sebelum menyimpan.</strong>
 
-                        Pilihan TKA hanya dapat disimpan satu kali.
-                        Setelah klik
-                        <strong>Simpan & Kunci Pilihan</strong>,
-                        pilihan tidak dapat diubah oleh siswa.
+                        <br>
+
+                        Pastikan pilihan kedua sudah sesuai.
+                        Setelah pilihan TKA disimpan, data akan
+                        <strong>dikunci</strong> dan tidak dapat
+                        diubah oleh siswa.
 
                     </div>
 
                 </div>
 
 
-                <!-- FORM -->
-
-                <form
-                    id="tkaForm"
-                    action="<?= site_url('Tka/simpan'); ?>"
-                    method="post"
-                >
-
-                    <input
-                        type="hidden"
-                        name="<?= $this->security->get_csrf_token_name(); ?>"
-                        value="<?= $this->security->get_csrf_hash(); ?>"
-                    >
+                <?php if (!$mapel_program): ?>
 
 
-                    <!-- PILIHAN 1 -->
+                    <!-- =========================================
+                         PROGRAM KEAHLIAN BELUM TERSEDIA
+                    ========================================== -->
 
-<div class="tka-form-group">
+                    <div class="alert alert-danger tka-alert">
 
-    <label class="tka-label">
-        <span class="tka-label-number">
-            1
-        </span>
+                        <i class="fas fa-triangle-exclamation mr-2"></i>
 
-        Mata Pelajaran Pilihan 1
-    </label>
-
-    <select
-        name="mapel_1_id"
-        id="mapel_1_id"
-        class="form-control tka-select"
-        required
-    >
-
-        <option value="">
-            -- Pilih Mata Pelajaran --
-        </option>
-
-        <?php foreach ($mapel as $m): ?>
-
-            <option
-                value="<?= (int) $m->id; ?>"
-            >
-                <?= html_escape($m->nama_mapel); ?>
-            </option>
-
-        <?php endforeach; ?>
-
-    </select>
-
-</div>
-
-
-<!-- PILIHAN 2 -->
-
-<div class="tka-form-group">
-
-    <label class="tka-label">
-
-        <span class="tka-label-number">
-            2
-        </span>
-
-        Mata Pelajaran Pilihan 2
-
-    </label>
-
-    <select
-        name="mapel_2_id"
-        id="mapel_2_id"
-        class="form-control tka-select"
-        required
-    >
-
-        <option value="">
-            -- Pilih Mata Pelajaran --
-        </option>
-
-        <?php foreach ($mapel as $m): ?>
-
-            <option
-                value="<?= (int) $m->id; ?>"
-            >
-                <?= html_escape($m->nama_mapel); ?>
-            </option>
-
-        <?php endforeach; ?>
-
-    </select>
-
-</div>
-
-
-                    <!-- BUTTON -->
-
-                    <div class="tka-actions">
-
-                        <button
-                            type="submit"
-                            class="btn tka-submit"
-                        >
-
-                            <i class="fas fa-lock"></i>
-
-                            Simpan & Kunci Pilihan
-
-                        </button>
+                        Mata pelajaran <strong>Program Keahlian</strong>
+                        belum tersedia. Silakan hubungi admin sekolah.
 
                     </div>
 
-                </form>
+
+                    <!-- CONTACT -->
+
+                    <div class="tka-contact">
+
+                        <div class="tka-contact-icon">
+
+                            <i class="fab fa-whatsapp"></i>
+
+                        </div>
+
+
+                        <div class="tka-contact-text">
+
+                            <span class="tka-contact-title">
+                                Mengalami kendala?
+                            </span>
+
+                            Silakan hubungi
+
+                            <a
+                                href="<?= $wa_url; ?>"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="tka-contact-link"
+                            >
+                                Pak Riki
+                            </a>
+
+                            melalui WhatsApp.
+
+                        </div>
+
+                    </div>
+
+
+                <?php else: ?>
+
+
+                    <!-- =========================================
+                         FORM
+                    ========================================== -->
+
+                    <form
+                        id="tkaForm"
+                        action="<?= site_url('Tka/simpan'); ?>"
+                        method="post"
+                        novalidate
+                    >
+
+
+                        <!-- CSRF -->
+
+                        <input
+                            type="hidden"
+                            name="<?= $this->security->get_csrf_token_name(); ?>"
+                            value="<?= $this->security->get_csrf_hash(); ?>"
+                        >
+
+
+                        <!-- =====================================
+                             PILIHAN 1
+                        ====================================== -->
+
+                        <div class="tka-form-group">
+
+                            <label class="tka-label">
+
+                                <span class="tka-label-number">
+                                    1
+                                </span>
+
+                                Mata Pelajaran Program Keahlian
+
+                            </label>
+
+
+                            <div class="tka-fixed-mapel">
+
+
+                                <div class="tka-fixed-icon">
+
+                                    <i class="fas fa-graduation-cap"></i>
+
+                                </div>
+
+
+                                <div class="tka-fixed-content">
+
+                                    <span class="tka-fixed-label">
+                                        Pilihan otomatis
+                                    </span>
+
+                                    <span class="tka-fixed-name">
+
+                                        <?= html_escape(
+                                            $mapel_program->nama_mapel
+                                        ); ?>
+
+                                    </span>
+
+                                </div>
+
+
+                                <div class="tka-fixed-badge">
+
+                                    <i class="fas fa-lock"></i>
+
+                                    OTOMATIS
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =====================================
+                             PILIHAN 2
+                        ====================================== -->
+
+                        <div class="tka-form-group">
+
+                            <label
+                                for="mapel_2_id"
+                                class="tka-label"
+                            >
+
+                                <span class="tka-label-number">
+                                    2
+                                </span>
+
+                                Mata Pelajaran Pilihan Anda
+
+                            </label>
+
+
+                            <select
+                                name="mapel_2_id"
+                                id="mapel_2_id"
+                                class="form-control tka-select"
+                                required
+                            >
+
+                                <option value="">
+                                    -- Pilih Mata Pelajaran --
+                                </option>
+
+
+                                <?php foreach ($mapel as $m): ?>
+
+                                    <?php
+                                    /*
+                                     * Pengaman tambahan:
+                                     * Program Keahlian tidak boleh
+                                     * tampil sebagai pilihan kedua.
+                                     */
+
+                                    if (
+                                        isset($m->kode) &&
+                                        strtoupper(
+                                            trim($m->kode)
+                                        ) === 'PK'
+                                    ) {
+                                        continue;
+                                    }
+                                    ?>
+
+
+                                    <option
+                                        value="<?= (int) $m->id; ?>"
+                                    >
+
+                                        <?= html_escape(
+                                            $m->nama_mapel
+                                        ); ?>
+
+                                    </option>
+
+
+                                <?php endforeach; ?>
+
+                            </select>
+
+
+                            <div class="tka-help">
+
+                                <i class="fas fa-circle-info"></i>
+
+                                Pilih satu mata pelajaran yang
+                                berbeda dari Program Keahlian.
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =====================================
+                             ACTION
+                        ====================================== -->
+
+                        <div class="tka-actions">
+
+                            <button
+                                type="submit"
+                                id="tkaSubmitButton"
+                                class="btn tka-submit"
+                            >
+
+                                <i class="fas fa-lock"></i>
+
+                                Simpan & Kunci Pilihan
+
+                            </button>
+
+                        </div>
+
+
+                    </form>
+
+
+                <?php endif; ?>
 
 
             <?php else: ?>
 
 
                 <!-- =============================================
-                     LOCKED
+                     DATA SUDAH TERKUNCI
                 ============================================== -->
 
-                <div class="tka-locked">
+
+                <div class="tka-locked-banner">
 
 
-                    <!-- LOCKED BANNER -->
+                    <div class="tka-locked-icon">
 
-                    <div class="tka-locked-banner">
-
-                        <div class="tka-locked-icon">
-
-                            <i class="fas fa-lock"></i>
-
-                        </div>
-
-                        <div>
-
-                            <p class="tka-locked-title">
-                                Pilihan TKA Sudah Terkunci
-                            </p>
-
-                            <p class="tka-locked-text">
-
-                                Pilihan mata pelajaran Anda sudah
-                                berhasil disimpan. Perubahan hanya
-                                dapat dilakukan oleh admin.
-
-                            </p>
-
-                        </div>
+                        <i class="fas fa-lock"></i>
 
                     </div>
 
 
-                    <!-- CHOICES -->
+                    <div>
 
-                    <div class="tka-choice-box">
+                        <p class="tka-locked-title">
+                            Pilihan TKA Sudah Terkunci
+                        </p>
 
-                        <div class="tka-choice-heading">
+                        <p class="tka-locked-text">
 
-                            <div class="tka-choice-title">
+                            Pilihan mata pelajaran Anda telah
+                            berhasil disimpan. Data tidak dapat
+                            diubah kembali oleh siswa.
 
-                                <i class="fas fa-check-circle"></i>
+                        </p>
 
-                                Pilihan TKA Anda
-
-                            </div>
+                    </div>
 
 
-                            <span class="tka-locked-badge">
+                </div>
 
-                                <i class="fas fa-lock"></i>
 
-                                TERKUNCI
+                <!-- =============================================
+                     CHOICES
+                ============================================== -->
+
+                <div class="tka-choice-box">
+
+
+                    <div class="tka-choice-heading">
+
+
+                        <div class="tka-choice-title">
+
+                            <i class="fas fa-circle-check"></i>
+
+                            Pilihan TKA Anda
+
+                        </div>
+
+
+                        <span class="tka-locked-badge">
+
+                            <i class="fas fa-lock"></i>
+
+                            TERKUNCI
+
+                        </span>
+
+
+                    </div>
+
+
+                    <!-- =========================================
+                         PILIHAN 1
+                    ========================================== -->
+
+                    <div class="tka-choice-item">
+
+
+                        <div class="tka-choice-number">
+                            1
+                        </div>
+
+
+                        <div class="tka-choice-content">
+
+                            <span class="tka-choice-label">
+                                Program Keahlian
+                            </span>
+
+                            <span class="tka-choice-mapel">
+
+                                <?= html_escape(
+                                    $pilihan->mapel_1
+                                ); ?>
 
                             </span>
 
                         </div>
 
 
-                        <div class="tka-choice-item">
+                    </div>
 
-                            <div class="tka-choice-number">
-                                1
-                            </div>
 
-                            <div class="tka-choice-mapel">
+                    <!-- =========================================
+                         PILIHAN 2
+                    ========================================== -->
 
-                                <?= html_escape(
-                                    $pilihan->mapel_1
-                                ); ?>
+                    <div class="tka-choice-item">
 
-                            </div>
 
+                        <div class="tka-choice-number">
+                            2
                         </div>
 
 
-                        <div class="tka-choice-item">
+                        <div class="tka-choice-content">
 
-                            <div class="tka-choice-number">
-                                2
-                            </div>
+                            <span class="tka-choice-label">
+                                Pilihan Siswa
+                            </span>
 
-                            <div class="tka-choice-mapel">
+                            <span class="tka-choice-mapel">
 
                                 <?= html_escape(
                                     $pilihan->mapel_2
                                 ); ?>
 
-                            </div>
+                            </span>
 
                         </div>
 
-
-                        <!-- CONTACT PERSON -->
-
-                        <div class="tka-contact">
-
-                            <div class="tka-contact-icon">
-
-                                <i class="fab fa-whatsapp"></i>
-
-                            </div>
-
-
-                            <div class="tka-contact-text">
-
-                                <span class="tka-contact-title">
-                                    Mengalami kendala?
-                                </span>
-
-                                Silakan hubungi
-
-                                <a
-                                    href="<?= $wa_url; ?>"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="tka-contact-link"
-                                >
-                                    Pak Riki
-                                </a>
-
-                                melalui WhatsApp.
-
-                            </div>
-
-                        </div>
 
                     </div>
+
+
+                    <!-- =========================================
+                         CONTACT PERSON
+                    ========================================== -->
+
+                    <div class="tka-contact">
+
+
+                        <div class="tka-contact-icon">
+
+                            <i class="fab fa-whatsapp"></i>
+
+                        </div>
+
+
+                        <div class="tka-contact-text">
+
+                            <span class="tka-contact-title">
+                                Mengalami kendala?
+                            </span>
+
+                            Silakan hubungi
+
+                            <a
+                                href="<?= $wa_url; ?>"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="tka-contact-link"
+                            >
+                                Pak Riki
+                            </a>
+
+                            melalui WhatsApp.
+
+                        </div>
+
+
+                    </div>
+
 
                 </div>
 
@@ -1482,113 +2075,146 @@ body.dark-mode .tka-confirm-cancel {
 
 
 <!-- =========================================================
-     KONFIRMASI SIMPAN
+     MODAL KONFIRMASI
 ========================================================= -->
 
-<?php if (!$tka_terkunci): ?>
+<?php if (!$tka_terkunci && $mapel_program): ?>
 
-<div
-    id="tkaConfirmOverlay"
-    class="tka-confirm-overlay"
->
 
     <div
-        class="tka-confirm-box"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="tkaConfirmTitle"
+        id="tkaConfirmOverlay"
+        class="tka-confirm-overlay"
+        aria-hidden="true"
     >
 
-        <div class="tka-confirm-icon">
 
-            <i class="fas fa-circle-question"></i>
-
-        </div>
-
-
-        <h5
-            id="tkaConfirmTitle"
-            class="tka-confirm-title"
+        <div
+            class="tka-confirm-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tkaConfirmTitle"
         >
-            Sudah yakin dengan pilihan Anda?
-        </h5>
 
 
-        <p class="tka-confirm-text">
+            <!-- ICON -->
 
-            Periksa kembali pilihan mata pelajaran Anda.
-            Setelah disimpan, pilihan akan
-            <strong>terkunci</strong> dan tidak dapat
-            diubah oleh siswa.
+            <div class="tka-confirm-icon">
 
-        </p>
+                <i class="fas fa-circle-question"></i>
 
-
-        <div class="tka-confirm-choice">
-
-            <strong>Pilihan 1</strong>
-
-            <div id="confirmMapel1">
-                -
             </div>
 
-        </div>
+
+            <!-- TITLE -->
+
+            <h5
+                id="tkaConfirmTitle"
+                class="tka-confirm-title"
+            >
+                Sudah yakin dengan pilihan Anda?
+            </h5>
 
 
-        <div class="tka-confirm-choice">
+            <!-- DESCRIPTION -->
 
-            <strong>Pilihan 2</strong>
+            <p class="tka-confirm-text">
 
-            <div id="confirmMapel2">
-                -
+                Silakan periksa kembali pilihan mata pelajaran
+                Anda. Setelah disimpan, pilihan akan
+                <strong>terkunci</strong> dan tidak dapat
+                diubah oleh siswa.
+
+            </p>
+
+
+            <!-- PILIHAN 1 -->
+
+            <div class="tka-confirm-choice">
+
+                <strong>
+                    Pilihan 1 · Program Keahlian
+                </strong>
+
+                <div class="tka-confirm-choice-value">
+
+                    <?= html_escape(
+                        $mapel_program->nama_mapel
+                    ); ?>
+
+                </div>
+
             </div>
 
-        </div>
+
+            <!-- PILIHAN 2 -->
+
+            <div class="tka-confirm-choice">
+
+                <strong>
+                    Pilihan 2 · Pilihan Anda
+                </strong>
+
+                <div
+                    id="confirmMapel2"
+                    class="tka-confirm-choice-value"
+                >
+                    -
+                </div>
+
+            </div>
 
 
-        <div class="tka-confirm-warning">
+            <!-- WARNING -->
 
-            <i class="fas fa-triangle-exclamation mr-1"></i>
+            <div class="tka-confirm-warning">
 
-            Pastikan kedua mata pelajaran sudah benar.
-            Jika Anda membatalkan, Anda akan kembali
-            ke form dan masih dapat mengganti pilihan.
+                <i class="fas fa-triangle-exclamation mr-1"></i>
 
-        </div>
+                Pastikan pilihan kedua sudah benar.
+                Jika memilih <strong>Batal</strong>,
+                Anda masih dapat mengganti pilihan.
 
-
-        <div class="tka-confirm-actions">
-
-            <button
-                type="button"
-                id="tkaCancelConfirm"
-                class="tka-confirm-cancel"
-            >
-
-                <i class="fas fa-arrow-left mr-1"></i>
-
-                Batal
-
-            </button>
+            </div>
 
 
-            <button
-                type="button"
-                id="tkaSaveConfirm"
-                class="tka-confirm-save"
-            >
+            <!-- ACTION -->
 
-                <i class="fas fa-lock mr-1"></i>
+            <div class="tka-confirm-actions">
 
-                Ya, Simpan & Kunci
 
-            </button>
+                <button
+                    type="button"
+                    id="tkaCancelConfirm"
+                    class="tka-confirm-cancel"
+                >
+
+                    <i class="fas fa-arrow-left mr-1"></i>
+
+                    Batal
+
+                </button>
+
+
+                <button
+                    type="button"
+                    id="tkaSaveConfirm"
+                    class="tka-confirm-save"
+                >
+
+                    <i class="fas fa-lock mr-1"></i>
+
+                    Ya, Simpan & Kunci
+
+                </button>
+
+
+            </div>
+
 
         </div>
 
     </div>
 
-</div>
 
 <?php endif; ?>
 
@@ -1600,7 +2226,15 @@ body.dark-mode .tka-confirm-cancel {
     'use strict';
 
 
-    var form = document.getElementById('tkaForm');
+    /*
+    |--------------------------------------------------------------------------
+    | ELEMENT
+    |--------------------------------------------------------------------------
+    */
+
+    var form = document.getElementById(
+        'tkaForm'
+    );
 
     var overlay = document.getElementById(
         'tkaConfirmOverlay'
@@ -1614,16 +2248,8 @@ body.dark-mode .tka-confirm-cancel {
         'tkaSaveConfirm'
     );
 
-    var mapel1 = document.getElementById(
-        'mapel_1_id'
-    );
-
     var mapel2 = document.getElementById(
         'mapel_2_id'
-    );
-
-    var confirmMapel1 = document.getElementById(
-        'confirmMapel1'
     );
 
     var confirmMapel2 = document.getElementById(
@@ -1633,7 +2259,7 @@ body.dark-mode .tka-confirm-cancel {
 
     /*
     |--------------------------------------------------------------------------
-    | PASTIKAN ELEMEN ADA
+    | CEK ELEMEN
     |--------------------------------------------------------------------------
     */
 
@@ -1642,8 +2268,8 @@ body.dark-mode .tka-confirm-cancel {
         !overlay ||
         !cancelButton ||
         !saveButton ||
-        !mapel1 ||
-        !mapel2
+        !mapel2 ||
+        !confirmMapel2
     ) {
         return;
     }
@@ -1660,10 +2286,14 @@ body.dark-mode .tka-confirm-cancel {
         function (event) {
 
             /*
-             * Biarkan HTML5 validation berjalan.
+             * HTML5 validation.
              */
 
             if (!form.checkValidity()) {
+
+                event.preventDefault();
+
+                form.reportValidity();
 
                 return;
             }
@@ -1673,18 +2303,19 @@ body.dark-mode .tka-confirm-cancel {
 
 
             /*
-             * Pastikan dua pilihan tidak sama.
+             * Ambil nama mapel pilihan 2.
              */
 
-            if (
-                mapel1.value &&
-                mapel2.value &&
-                mapel1.value === mapel2.value
-            ) {
+            var selectedOption =
+                mapel2.options[
+                    mapel2.selectedIndex
+                ];
 
-                alert(
-                    'Mata pelajaran pilihan 1 dan pilihan 2 tidak boleh sama.'
-                );
+
+            if (
+                !selectedOption ||
+                !mapel2.value
+            ) {
 
                 mapel2.focus();
 
@@ -1692,32 +2323,58 @@ body.dark-mode .tka-confirm-cancel {
             }
 
 
-            /*
-             * Tampilkan nama mapel
-             */
-
-            confirmMapel1.textContent =
-                mapel1.options[
-                    mapel1.selectedIndex
-                ].text;
-
-
             confirmMapel2.textContent =
-                mapel2.options[
-                    mapel2.selectedIndex
-                ].text;
+                selectedOption.text.trim();
 
 
             /*
-             * Tampilkan modal
+             * Tampilkan modal.
              */
 
             overlay.classList.add('show');
 
+            overlay.setAttribute(
+                'aria-hidden',
+                'false'
+            );
+
             document.body.style.overflow = 'hidden';
+
+
+            /*
+             * Fokus tombol batal.
+             */
+
+            setTimeout(
+                function () {
+
+                    cancelButton.focus();
+
+                },
+                50
+            );
 
         }
     );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TUTUP MODAL
+    |--------------------------------------------------------------------------
+    */
+
+    function closeModal()
+    {
+        overlay.classList.remove('show');
+
+        overlay.setAttribute(
+            'aria-hidden',
+            'true'
+        );
+
+        document.body.style.overflow = '';
+    }
 
 
     /*
@@ -1730,9 +2387,9 @@ body.dark-mode .tka-confirm-cancel {
         'click',
         function () {
 
-            overlay.classList.remove('show');
+            closeModal();
 
-            document.body.style.overflow = '';
+            mapel2.focus();
 
         }
     );
@@ -1749,10 +2406,13 @@ body.dark-mode .tka-confirm-cancel {
         function () {
 
             /*
-             * Disable tombol agar tidak double submit.
+             * Cegah double submit.
              */
 
             saveButton.disabled = true;
+
+            cancelButton.disabled = true;
+
 
             saveButton.innerHTML =
                 '<i class="fas fa-spinner fa-spin mr-1"></i>' +
@@ -1760,7 +2420,7 @@ body.dark-mode .tka-confirm-cancel {
 
 
             /*
-             * Submit asli
+             * Submit form asli.
              */
 
             form.submit();
@@ -1771,7 +2431,7 @@ body.dark-mode .tka-confirm-cancel {
 
     /*
     |--------------------------------------------------------------------------
-    | KLIK AREA LUAR MODAL
+    | KLIK AREA LUAR
     |--------------------------------------------------------------------------
     */
 
@@ -1779,11 +2439,11 @@ body.dark-mode .tka-confirm-cancel {
         'click',
         function (event) {
 
-            if (event.target === overlay) {
+            if (
+                event.target === overlay
+            ) {
 
-                overlay.classList.remove('show');
-
-                document.body.style.overflow = '';
+                closeModal();
 
             }
 
@@ -1806,9 +2466,7 @@ body.dark-mode .tka-confirm-cancel {
                 overlay.classList.contains('show')
             ) {
 
-                overlay.classList.remove('show');
-
-                document.body.style.overflow = '';
+                closeModal();
 
             }
 
@@ -1817,95 +2475,4 @@ body.dark-mode .tka-confirm-cancel {
 
 })();
 
-
-
-
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    const pilihan1 = document.getElementById('mapel_1_id');
-    const pilihan2 = document.getElementById('mapel_2_id');
-
-    if (!pilihan1 || !pilihan2) {
-        return;
-    }
-
-
-    function updatePilihan2() {
-
-        const selectedValue = pilihan1.value;
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Tampilkan kembali semua pilihan
-        |--------------------------------------------------------------------------
-        */
-
-        Array.from(pilihan2.options).forEach(function (option) {
-
-            option.hidden = false;
-
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Jika pilihan 1 sudah dipilih,
-        | sembunyikan pilihan yang sama di pilihan 2
-        |--------------------------------------------------------------------------
-        */
-
-        if (selectedValue !== '') {
-
-            const optionToHide =
-                pilihan2.querySelector(
-                    'option[value="' + selectedValue + '"]'
-                );
-
-            if (optionToHide) {
-
-                optionToHide.hidden = true;
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Kalau pilihan 2 kebetulan sama,
-            | kosongkan kembali
-            |--------------------------------------------------------------------------
-            */
-
-            if (pilihan2.value === selectedValue) {
-
-                pilihan2.value = '';
-
-            }
-        }
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Saat pilihan 1 berubah
-    |--------------------------------------------------------------------------
-    */
-
-    pilihan1.addEventListener(
-        'change',
-        updatePilihan2
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Jalankan pertama kali
-    |--------------------------------------------------------------------------
-    */
-
-    updatePilihan2();
-
-});
 </script>

@@ -12,11 +12,12 @@ class Tka extends CI_Controller
         $this->load->model('Siswa_model');
     }
 
-    /**
-     * =========================================================
-     * CEK LOGIN SISWA
-     * =========================================================
-     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | CEK LOGIN
+    |--------------------------------------------------------------------------
+    */
     private function cek_login()
     {
         if (!$this->session->userdata('siswa_login')) {
@@ -24,16 +25,17 @@ class Tka extends CI_Controller
         }
     }
 
-    /**
-     * =========================================================
-     * AMBIL DATA SISWA
-     * =========================================================
-     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | AMBIL DATA SISWA
+    |--------------------------------------------------------------------------
+    */
     private function getSiswa()
     {
-        $siswa_id = $this->session->userdata('siswa_id');
+        $siswa_id = (int) $this->session->userdata('siswa_id');
 
-        if (!$siswa_id) {
+        if ($siswa_id <= 0) {
             return null;
         }
 
@@ -44,29 +46,36 @@ class Tka extends CI_Controller
                 tahun_ajaran.tahun AS tahun_ajaran
             ')
             ->from('siswa')
+
             ->join(
                 'kelas',
                 'kelas.id = siswa.id_kelas',
                 'left'
             )
+
             ->join(
                 'tahun_ajaran',
                 'tahun_ajaran.id = siswa.tahun_id',
                 'left'
             )
+
             ->where(
                 'siswa.id',
                 $siswa_id
             )
+
+            ->limit(1)
+
             ->get()
             ->row();
     }
 
-    /**
-     * =========================================================
-     * CEK SISWA KELAS XII
-     * =========================================================
-     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | CEK KELAS XII
+    |--------------------------------------------------------------------------
+    */
     private function cek_kelas_xii($siswa)
     {
         if (!$siswa) {
@@ -74,12 +83,12 @@ class Tka extends CI_Controller
         }
 
         $nama_kelas = strtoupper(
-            trim($siswa->nama_kelas)
+            trim((string) $siswa->nama_kelas)
         );
 
         if (
-            strpos($nama_kelas, 'XII ') !== 0 &&
-            $nama_kelas !== 'XII'
+            $nama_kelas !== 'XII' &&
+            strpos($nama_kelas, 'XII ') !== 0
         ) {
 
             $this->session->set_flashdata(
@@ -91,11 +100,12 @@ class Tka extends CI_Controller
         }
     }
 
-    /**
-     * =========================================================
-     * HALAMAN TKA
-     * =========================================================
-     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | HALAMAN TKA
+    |--------------------------------------------------------------------------
+    */
     public function index()
     {
         $this->cek_login();
@@ -106,43 +116,71 @@ class Tka extends CI_Controller
             redirect('SiswaAuth/logout');
         }
 
-        // Hanya kelas XII
         $this->cek_kelas_xii($siswa);
 
         $tahun_id = (int) $siswa->tahun_id;
 
-        $data['siswa'] = $siswa;
 
         /*
-         * Ambil pilihan siswa pada tahun ajaran aktif
-         */
-        $data['pilihan'] = $this->Tka_model
-            ->get_pilihan(
-                $siswa->id,
-                $tahun_id
-            );
+        |--------------------------------------------------------------------------
+        | DATA PILIHAN YANG SUDAH TERSIMPAN
+        |--------------------------------------------------------------------------
+        */
+        $pilihan = $this->Tka_model->get_pilihan(
+            $siswa->id,
+            $tahun_id
+        );
+
 
         /*
-         * Hanya ambil master mapel jika
-         * siswa BELUM mempunyai pilihan.
-         *
-         * Kalau sudah terkunci, sebenarnya
-         * tidak perlu mengirim daftar mapel lagi.
-         */
-        $data['mapel'] = [];
+        |--------------------------------------------------------------------------
+        | MAPEL PROGRAM KEAHLIAN
+        |--------------------------------------------------------------------------
+        |
+        | Selalu berasal dari tka_mapel dengan kode PK.
+        |
+        */
+        $mapel_program = $this->Tka_model
+            ->get_mapel_program_keahlian();
 
-        if (!$data['pilihan']) {
 
-            $data['mapel'] = $this->Tka_model
-                ->get_mapel_aktif();
+        /*
+        |--------------------------------------------------------------------------
+        | MAPEL PILIHAN SISWA
+        |--------------------------------------------------------------------------
+        |
+        | Program Keahlian otomatis dikeluarkan dari pilihan 2.
+        |
+        */
+        $mapel_pilihan = [];
+
+        if (!$pilihan) {
+
+            $mapel_pilihan = $this->Tka_model
+                ->get_mapel_pilihan();
         }
 
-        /*
-         * Status pengisian
-         */
-        $data['tka_terkunci'] = !empty($data['pilihan']);
 
-        $data['active'] = 'tka';
+        /*
+        |--------------------------------------------------------------------------
+        | DATA VIEW
+        |--------------------------------------------------------------------------
+        */
+        $data = [
+
+            'siswa' => $siswa,
+
+            'pilihan' => $pilihan,
+
+            'mapel_program' => $mapel_program,
+
+            'mapel' => $mapel_pilihan,
+
+            'tka_terkunci' => !empty($pilihan),
+
+            'active' => 'tka'
+        ];
+
 
         $this->load->view(
             'siswa/layout/header',
@@ -164,17 +202,12 @@ class Tka extends CI_Controller
         );
     }
 
-    /**
-     * =========================================================
-     * SIMPAN PILIHAN TKA
-     * =========================================================
-     *
-     * PENTING:
-     * Method ini HANYA BOLEH INSERT.
-     *
-     * Jika siswa sudah mempunyai pilihan,
-     * maka ditolak.
-     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN PILIHAN TKA
+    |--------------------------------------------------------------------------
+    */
     public function simpan()
     {
         $this->cek_login();
@@ -185,136 +218,146 @@ class Tka extends CI_Controller
             redirect('SiswaAuth/logout');
         }
 
-        // Hanya XII
         $this->cek_kelas_xii($siswa);
 
         $tahun_id = (int) $siswa->tahun_id;
 
-        /*
-         * =====================================================
-         * CEK APAKAH SUDAH PERNAH MEMILIH
-         * =====================================================
-         */
 
-        $sudah_memilih = $this->Tka_model
-            ->get_pilihan(
-                $siswa->id,
-                $tahun_id
-            );
+        /*
+        |--------------------------------------------------------------------------
+        | CEK SUDAH MEMILIH
+        |--------------------------------------------------------------------------
+        */
+        $sudah_memilih = $this->Tka_model->get_pilihan(
+            $siswa->id,
+            $tahun_id
+        );
 
         if ($sudah_memilih) {
 
             $this->session->set_flashdata(
                 'error',
-                'Pilihan TKA Anda sudah dikunci dan tidak dapat diubah. Silakan hubungi admin jika ingin melakukan perubahan.'
+                'Pilihan TKA Anda sudah dikunci. Silakan hubungi admin jika terdapat kesalahan.'
             );
 
             redirect('Tka');
         }
 
-        /*
-         * =====================================================
-         * AMBIL INPUT
-         * =====================================================
-         */
-
-        $mapel_1_id = (int) $this->input->post('mapel_1_id');
-        $mapel_2_id = (int) $this->input->post('mapel_2_id');
 
         /*
-         * =====================================================
-         * VALIDASI
-         * =====================================================
-         */
+        |--------------------------------------------------------------------------
+        | MAPEL 1 OTOMATIS = PROGRAM KEAHLIAN
+        |--------------------------------------------------------------------------
+        */
+        $mapel_1 = $this->Tka_model
+            ->get_mapel_program_keahlian();
 
-        if (!$mapel_1_id) {
+
+        if (!$mapel_1) {
 
             $this->session->set_flashdata(
                 'error',
-                'Silakan pilih mata pelajaran TKA pertama.'
+                'Mata pelajaran Program Keahlian belum tersedia. Silakan hubungi admin.'
             );
 
             redirect('Tka');
         }
 
-        if (!$mapel_2_id) {
+
+        $mapel_1_id = (int) $mapel_1->id;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | MAPEL 2 = PILIHAN SISWA
+        |--------------------------------------------------------------------------
+        */
+        $mapel_2_id = (int) $this->input->post(
+            'mapel_2_id'
+        );
+
+
+        if ($mapel_2_id <= 0) {
 
             $this->session->set_flashdata(
                 'error',
-                'Silakan pilih mata pelajaran TKA kedua.'
+                'Silakan pilih mata pelajaran pilihan kedua.'
             );
 
             redirect('Tka');
         }
 
+
         /*
-         * Tidak boleh memilih mapel yang sama
-         */
-        if ($mapel_1_id === $mapel_2_id) {
+        |--------------------------------------------------------------------------
+        | MAPEL 2 TIDAK BOLEH PROGRAM KEAHLIAN
+        |--------------------------------------------------------------------------
+        */
+        if ($mapel_2_id === $mapel_1_id) {
 
             $this->session->set_flashdata(
                 'error',
-                'Mata pelajaran pilihan 1 dan 2 tidak boleh sama.'
+                'Mata pelajaran pilihan kedua tidak boleh Program Keahlian.'
             );
 
             redirect('Tka');
         }
 
-        /*
-         * =====================================================
-         * PASTIKAN MAPEL AKTIF
-         * =====================================================
-         */
 
-        $mapel_count = $this->db
-            ->where_in(
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDASI MAPEL 2
+        |--------------------------------------------------------------------------
+        */
+        $mapel_2 = $this->db
+            ->where(
                 'id',
-                [$mapel_1_id, $mapel_2_id]
+                $mapel_2_id
             )
             ->where(
                 'aktif',
                 1
             )
-            ->count_all_results('tka_mapel');
+            ->where(
+                'kode !=',
+                'PK'
+            )
+            ->limit(1)
+            ->get('tka_mapel')
+            ->row();
 
-        if ($mapel_count != 2) {
+
+        if (!$mapel_2) {
 
             $this->session->set_flashdata(
                 'error',
-                'Mata pelajaran TKA yang dipilih tidak valid.'
+                'Mata pelajaran pilihan kedua tidak valid.'
             );
 
             redirect('Tka');
         }
 
+
         /*
-         * =====================================================
-         * INSERT PERTAMA
-         * =====================================================
-         *
-         * Jangan menggunakan UPDATE.
-         */
+        |--------------------------------------------------------------------------
+        | SIMPAN
+        |--------------------------------------------------------------------------
+        */
+        $save = $this->Tka_model->save_pilihan(
+            $siswa->id,
+            $tahun_id,
+            $mapel_1_id,
+            $mapel_2_id
+        );
 
-        $data = [
-            'siswa_id'   => $siswa->id,
-            'tahun_id'   => $tahun_id,
-            'mapel_1_id' => $mapel_1_id,
-            'mapel_2_id' => $mapel_2_id
-        ];
-
-        $save = $this->db
-            ->insert(
-                'tka_siswa',
-                $data
-            );
 
         if (!$save) {
 
             log_message(
                 'error',
-                'GAGAL SIMPAN TKA SISWA ID: ' .
+                'GAGAL SIMPAN TKA | SISWA ID: ' .
                 $siswa->id .
-                ' | ' .
+                ' | QUERY: ' .
                 $this->db->last_query()
             );
 
@@ -326,15 +369,10 @@ class Tka extends CI_Controller
             redirect('Tka');
         }
 
-        /*
-         * =====================================================
-         * BERHASIL
-         * =====================================================
-         */
 
         $this->session->set_flashdata(
             'success',
-            'Pilihan TKA berhasil disimpan dan sekarang telah dikunci.'
+            'Pilihan TKA berhasil disimpan dan dikunci.'
         );
 
         redirect('Tka');
