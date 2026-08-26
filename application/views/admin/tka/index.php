@@ -1169,7 +1169,7 @@ body.dark-mode .tka-empty-text {
 
                     <div class="tka-stat-icon">
 
-                        <i class="fas fa-circle-check"></i>
+                        <i class="fas fa-check-circle"></i>
 
                     </div>
 
