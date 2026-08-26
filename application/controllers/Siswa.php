@@ -800,335 +800,1123 @@ $agamaRange  = "'Referensi'!\$D\$1:\$D\$" . count($agama_list);
 
 
 
- // IMPORT EXCEL (versi tolerant header + auto siswa_tahun)
+ // ============================================================
+// IMPORT EXCEL SISWA
+// ============================================================
 public function import_excel()
 {
-    if (!isset($_FILES['file']['name'])) {
+    if (
+        !isset($_FILES['file']) ||
+        empty($_FILES['file']['name']) ||
+        $_FILES['file']['error'] !== UPLOAD_ERR_OK
+    ) {
+        $this->session->set_flashdata(
+            'error',
+            'File Excel tidak ditemukan atau gagal diupload.'
+        );
+
         redirect('siswa');
         return;
     }
 
-    // ============================================================
-    // LOAD FILE EXCEL (SUPPORT PHPSPREADSHEET)
-    // ============================================================
-    $path = $_FILES['file']['tmp_name'];
-    $objSpreadsheet = IOFactory::load($path);
-    $sheet = $objSpreadsheet->getActiveSheet();
+    // ========================================================
+    // LOAD EXCEL
+    // ========================================================
+    try {
 
-    // FIX: toArray PhpSpreadsheet → key numeric menjadi A,B,C,D...
-    $rowsRaw = $sheet->toArray(null, true, true, false);
+        $path = $_FILES['file']['tmp_name'];
 
-// Convert numeric index → A,B,C...
-$rows = [];
-foreach ($rowsRaw as $rIndex => $cols) {
-    $newRow = [];
-    $colIndex = 1;
-    foreach ($cols as $v) {
-        $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex);
-        $newRow[$colLetter] = $v;
-        $colIndex++;
-    }
-    $rows[$rIndex] = $newRow;
-}
+        $spreadsheet = IOFactory::load($path);
+        $sheet       = $spreadsheet->getActiveSheet();
 
-    // ============================================================
+        $rowsRaw = $sheet->toArray(null, true, true, false);
 
+    } catch (Exception $e) {
 
-    if (count($rows) < 2) {
-        $this->session->set_flashdata('error', 'File Excel kosong atau hanya header.');
+        $this->session->set_flashdata(
+            'error',
+            'File Excel tidak dapat dibaca: ' . $e->getMessage()
+        );
+
         redirect('siswa');
         return;
     }
 
-    // ======= Daftar field yang kita dukung =======
-    $expected_fields = [
-        'nis','nisn','nik','nama','jk','agama','tempat_lahir','tgl_lahir','alamat',
-        'jalan','rt','rw','dusun','kecamatan','kode_pos','jenis_tinggal','alat_transportasi',
-        'telp','hp','email','skhun','penerima_kps','no_kps',
-        'nama_ayah','tahun_lahir_ayah','pendidikan_ayah','pekerjaan_ayah','penghasilan_ayah','nik_ayah',
-        'nama_ibu','tahun_lahir_ibu','pendidikan_ibu','pekerjaan_ibu','penghasilan_ibu','nik_ibu',
-        'no_hp_ortu',
-        'nama_wali','tahun_lahir_wali','pendidikan_wali','pekerjaan_wali','penghasilan_wali','nik_wali',
-        'sekolah_asal','hobi','cita_cita','anak_keberapa','nomor_kk','berat_badan',
-        'tinggi_badan','jumlah_saudara_kandung',
-        'id_kelas','tahun_id','status'
-    ];
+    if (empty($rowsRaw) || count($rowsRaw) < 2) {
 
-    // Normalize helper
-    $normalize = function($s) {
-        $s = strtolower(trim((string)$s));
-        $s = str_replace(["\r","\n","\t"], ' ', $s);
-        $s = preg_replace('/\s+/', ' ', $s);
-        $s = str_replace([' ', '_', '.', '-', '–', '—'], '', $s);
-        return $s;
+        $this->session->set_flashdata(
+            'error',
+            'File Excel kosong atau hanya berisi header.'
+        );
+
+        redirect('siswa');
+        return;
+    }
+
+    // ========================================================
+    // NORMALIZE FUNCTION
+    // ========================================================
+    $normalize = function ($value) {
+
+        $value = trim((string) $value);
+
+        $value = str_replace(
+            [
+                "\xc2\xa0",
+                "\r",
+                "\n",
+                "\t"
+            ],
+            ' ',
+            $value
+        );
+
+        $value = preg_replace('/\s+/', ' ', $value);
+
+        $value = strtolower($value);
+
+        // Buang karakter pemisah
+        $value = str_replace(
+            [
+                ' ',
+                '_',
+                '.',
+                '-',
+                '–',
+                '—',
+                '/',
+                '\\'
+            ],
+            '',
+            $value
+        );
+
+        return $value;
     };
 
-    // Build header mapping: kolom Excel → field DB
+    // ========================================================
+    // CONVERT ROW
+    // Numeric index → A, B, C...
+    // ========================================================
+    $rows = [];
+
+    foreach ($rowsRaw as $rowIndex => $columns) {
+
+        $newRow  = [];
+        $colIndex = 1;
+
+        foreach ($columns as $value) {
+
+            $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+
+            $newRow[$colLetter] = $value;
+
+            $colIndex++;
+        }
+
+        $rows[$rowIndex] = $newRow;
+    }
+
+    // ========================================================
+    // FIELD DATABASE YANG DIDUKUNG
+    // ========================================================
+    $expected_fields = [
+
+        'nis',
+        'nisn',
+        'nik',
+        'nama',
+        'jk',
+        'agama',
+        'tempat_lahir',
+        'tgl_lahir',
+
+        'alamat',
+        'jalan',
+        'rt',
+        'rw',
+        'dusun',
+        'kecamatan',
+        'kode_pos',
+        'jenis_tinggal',
+        'alat_transportasi',
+
+        'telp',
+        'hp',
+        'email',
+
+        'skhun',
+        'penerima_kps',
+        'no_kps',
+
+        'nama_ayah',
+        'tahun_lahir_ayah',
+        'pendidikan_ayah',
+        'pekerjaan_ayah',
+        'penghasilan_ayah',
+        'nik_ayah',
+
+        'nama_ibu',
+        'tahun_lahir_ibu',
+        'pendidikan_ibu',
+        'pekerjaan_ibu',
+        'penghasilan_ibu',
+        'nik_ibu',
+
+        'no_hp_ortu',
+
+        'nama_wali',
+        'tahun_lahir_wali',
+        'pendidikan_wali',
+        'pekerjaan_wali',
+        'penghasilan_wali',
+        'nik_wali',
+
+        'sekolah_asal',
+        'hobi',
+        'cita_cita',
+        'anak_keberapa',
+
+        'nomor_kk',
+        'berat_badan',
+        'tinggi_badan',
+        'jumlah_saudara_kandung',
+
+        'id_kelas',
+        'tahun_id',
+        'status'
+    ];
+
+    // ========================================================
+    // SINONIM HEADER EXCEL
+    // ========================================================
+    $synonyms = [
+
+        'nis' => [
+            'nis',
+            'no nis',
+            'nomor nis',
+            'no.nis'
+        ],
+
+        'nisn' => [
+            'nisn',
+            'no nisn',
+            'nomor nisn',
+            'no.nisn',
+            'nonisn',
+            'nis n'
+        ],
+
+        'nik' => [
+            'nik',
+            'no nik',
+            'nomor nik',
+            'no.nik'
+        ],
+
+        'nama' => [
+            'nama',
+            'nama siswa',
+            'nama lengkap',
+            'nama_lengkap'
+        ],
+
+        'jk' => [
+            'jk',
+            'jenis kelamin',
+            'jenis_kelamin',
+            'kelamin'
+        ],
+
+        'agama' => [
+            'agama'
+        ],
+
+        'tempat_lahir' => [
+            'tempat lahir',
+            'tempat_lahir'
+        ],
+
+        'tgl_lahir' => [
+            'tgl lahir',
+            'tanggal lahir',
+            'tgl_lahir',
+            'tanggal_lahir'
+        ],
+
+        'id_kelas' => [
+            'kelas',
+            'id kelas',
+            'id_kelas',
+            'nama kelas',
+            'nama_kelas',
+            'kelas nama'
+        ],
+
+        'tahun_id' => [
+            'tahun',
+            'tahun ajaran',
+            'tahun_ajaran',
+            'tahunajaran',
+            'tahun id',
+            'tahun_id',
+            'id tahun',
+            'id_tahun'
+        ],
+
+        'status' => [
+            'status'
+        ],
+
+        'no_kps' => [
+            'no kps',
+            'no_kps',
+            'nokps'
+        ],
+
+        'anak_keberapa' => [
+            'anak keberapa',
+            'anak_keberapa',
+            'anak ke',
+            'anak_ke'
+        ],
+
+        'nomor_kk' => [
+            'nomor kk',
+            'nomor_kk',
+            'no kk',
+            'no_kk',
+            'nokk'
+        ],
+
+        'no_hp_ortu' => [
+            'no hp ortu',
+            'no_hp_ortu',
+            'nomor hp orang tua',
+            'hp orang tua',
+            'no hp orang tua'
+        ]
+    ];
+
+    // ========================================================
+    // HEADER EXCEL
+    // ========================================================
     $header = $rows[0];
-    $colMap = [];
 
-    foreach ($header as $col => $text) {
-        // Normalisasi header agar pasti cocok
-$norm = strtolower(trim((string)$text));
-$norm = str_replace(["\xc2\xa0", " ", "_", ".", "-", "–", "—"], "", $norm); // hapus NBSP & simbol
-$norm = preg_replace('/[^a-z0-9]/', '', $norm); // keep alnum only
+    $fieldToCol = [];
 
-        if ($norm === '') continue;
+    foreach ($header as $col => $headerText) {
 
-        foreach ($expected_fields as $f) {
-            if ($norm === $normalize($f)) {
-                $colMap[$col] = $f;
+        $headerNorm = $normalize($headerText);
+
+        if ($headerNorm === '') {
+            continue;
+        }
+
+        // ----------------------------------------------------
+        // Cocokkan langsung dengan field DB
+        // ----------------------------------------------------
+        foreach ($expected_fields as $field) {
+
+            if (
+                $headerNorm ===
+                $normalize($field)
+            ) {
+
+                $fieldToCol[$field] = $col;
                 break;
             }
         }
-        if (isset($colMap[$col])) continue;
 
-        // Sinonim
-        $synonyms = [
-            'nis' => ['nis','no.nis','no nis','nomor nis'],
-            'nisn' => [
-    'nisn','no.nisn','nonisn','no nisn','nomor nisn','nis/n','nis n','nis n '
-],
+        // Kalau sudah ketemu
+        if (isset($fieldToCol[$field])) {
+            continue;
+        }
 
-            'nik' => ['nik','no.nik','no nik'],
-            'nama' => ['nama','nama siswa','nama_lengkap'],
-            'jk' => ['jk','jenis kelamin','jenis_kelamin'],
-            'hp' => ['hp','nohp','handphone','telepon seluler'],
-            'telp' => ['telp','telepon'],
-            'id_kelas' => ['kelas','id_kelas','nama_kelas','kelas_nama','kelas id','id kelas'],
-            'tahun_id' => ['tahun','tahunajaran','tahun_ajaran','tahun id'],
-            'no_kps' => ['no_kps','nokps','no kps'],
-            'anak_keberapa' => ['anakkeberapa','anak_ke','anak ke'],
-            'nomor_kk' => ['nomorkk','no_kk','nomor kk','no kk'],
-        ];
-
+        // ----------------------------------------------------
+        // Cocokkan sinonim
+        // ----------------------------------------------------
         foreach ($synonyms as $field => $variants) {
-            foreach ($variants as $v) {
-                if ($norm === $normalize($v)) {
-                    $colMap[$col] = $field;
+
+            foreach ($variants as $variant) {
+
+                if (
+                    $headerNorm ===
+                    $normalize($variant)
+                ) {
+
+                    $fieldToCol[$field] = $col;
+
                     break 2;
                 }
             }
         }
-
-        if (isset($colMap[$col])) continue;
-
-        // Containing words
-        foreach ($expected_fields as $f) {
-            if (strpos($norm, $normalize($f)) !== false) {
-                $colMap[$col] = $f;
-                break;
-            }
-        }
     }
 
-    // Invers mapping
-    $fieldToCol = [];
-    foreach ($colMap as $col => $f) {
-        $fieldToCol[$f] = $col;
+    // ========================================================
+    // VALIDASI HEADER WAJIB
+    // ========================================================
+    if (!isset($fieldToCol['nisn'])) {
+
+        $this->session->set_flashdata(
+            'error',
+            'Kolom NISN tidak ditemukan pada file Excel.'
+        );
+
+        redirect('siswa');
+        return;
     }
 
-    // alias kelas → id_kelas
-    if (!isset($fieldToCol['id_kelas'])) {
-        foreach ($colMap as $c => $fname) {
-            if (in_array($fname, ['kelas','nama_kelas'])) {
-                $fieldToCol['id_kelas'] = $c;
-                break;
-            }
-        }
+    // ========================================================
+    // AMBIL DATA REFERENSI
+    // ========================================================
+    $kelasDB = $this->db
+        ->get('kelas')
+        ->result();
+
+    $tahunDB = $this->db
+        ->get('tahun_ajaran')
+        ->result();
+
+    // ========================================================
+    // LOOKUP KELAS
+    // ========================================================
+    $kelasById   = [];
+    $kelasByName = [];
+
+    foreach ($kelasDB as $kelas) {
+
+        $kelasById[(string) $kelas->id] = $kelas->id;
+
+        $kelasByName[
+            $normalize($kelas->nama)
+        ] = $kelas->id;
     }
 
-    // alias tahun_id
-    if (!isset($fieldToCol['tahun_id']) && isset($fieldToCol['tahun_ajaran'])) {
-        $fieldToCol['tahun_id'] = $fieldToCol['tahun_ajaran'];
-    }
-
-    // Ambil data kelas & tahun
-    $kelasDB = $this->db->get('kelas')->result();
-    $tahunDB = $this->db->get('tahun_ajaran')->result();
-
-    $normalize = $normalize; // alias
-
-    $kelasLookupByNorm = [];
-    foreach ($kelasDB as $k) {
-        $kelasLookupByNorm[$normalize($k->nama)] = $k->id;
-    }
-
-    $tahunById = [];
+    // ========================================================
+    // LOOKUP TAHUN AJARAN
+    // ========================================================
+    $tahunById    = [];
     $tahunByValue = [];
-    foreach ($tahunDB as $t) {
-        $tahunById[(string)$t->id] = $t->id;
-        $tahunByValue[$normalize($t->tahun)] = $t->id;
+
+    foreach ($tahunDB as $tahun) {
+
+        $tahunById[
+            (string) $tahun->id
+        ] = $tahun->id;
+
+        $tahunByValue[
+            $normalize($tahun->tahun)
+        ] = $tahun->id;
     }
 
+    // ========================================================
+// TAHUN AJARAN AKTIF
+// ========================================================
+$tahunAktif = $this->db
+    ->where('aktif', 1)
+    ->order_by('id', 'DESC')
+    ->get('tahun_ajaran')
+    ->row();
+
+    // ========================================================
+    // COUNTER
+    // ========================================================
     $insert = 0;
     $update = 0;
-    $gagal = [];
+    $gagal  = [];
 
-    // ======================================================================
-    // LOOP DATA ROW
-    // ======================================================================
+    // ========================================================
+    // FIELD YANG TIDAK BOLEH KOSONG SAAT INSERT
+    // ========================================================
+    $requiredInsert = [
+        'nisn',
+        'nama'
+    ];
+
+    // ========================================================
+    // FIELD YANG HARUS TEXT
+    // ========================================================
+    $textFields = [
+        'nis',
+        'nisn',
+        'nik',
+        'nomor_kk',
+        'nik_ayah',
+        'nik_ibu',
+        'nik_wali',
+        'no_hp_ortu',
+        'hp',
+        'telp'
+    ];
+
+    // ========================================================
+    // LOOP DATA EXCEL
+    // ========================================================
     foreach ($rows as $rowIdx => $row) {
-        if ($rowIdx == 0) continue;
 
-        $data = [];
-        foreach ($expected_fields as $field) {
-            if ($field === 'id' || $field === 'created_at') continue;
-            if (isset($fieldToCol[$field])) {
-                $col = $fieldToCol[$field];
-                $val = isset($row[$col]) ? trim($row[$col]) : '';
-                $data[$field] = $val;
-            } else {
-                $data[$field] = '';
-            }
-        }
-
-        // Map kelas
-        $kelasRaw = trim((string)($data['id_kelas'] ?? ''));
-
-        if ($kelasRaw !== '') {
-            if (ctype_digit($kelasRaw)) {
-                $kelasRow = $this->db->get_where('kelas', ['id' => $kelasRaw])->row();
-                if ($kelasRow) {
-                    $data['id_kelas'] = $kelasRow->id;
-                } else {
-                    $gagal[] = "Baris $rowIdx: Kelas tidak valid ('$kelasRaw')";
-                    continue;
-                }
-            } else {
-                $kNorm = $normalize($kelasRaw);
-                if (isset($kelasLookupByNorm[$kNorm])) {
-                    $data['id_kelas'] = $kelasLookupByNorm[$kNorm];
-                } else {
-                    $gagal[] = "Baris $rowIdx: Kelas tidak valid ('$kelasRaw')";
-                    continue;
-                }
-            }
-        } else {
-            $data['id_kelas'] = null;
-        }
-
-        // Map tahun ajaran
-        $tahunRaw = trim((string)($data['tahun_id'] ?? ''));
-        if ($tahunRaw !== '') {
-            if (ctype_digit($tahunRaw)) {
-                if (isset($tahunById[$tahunRaw])) {
-                    $data['tahun_id'] = $tahunById[$tahunRaw];
-                } else {
-                    $gagal[] = "Baris $rowIdx: Tahun ajaran id tidak ditemukan ('$tahunRaw')";
-                    continue;
-                }
-            } else {
-                $tNorm = $normalize($tahunRaw);
-                if (isset($tahunByValue[$tNorm])) {
-                    $data['tahun_id'] = $tahunByValue[$tNorm];
-                } else {
-                    $gagal[] = "Baris $rowIdx: Tahun ajaran tidak valid ('$tahunRaw')";
-                    continue;
-                }
-            }
-        } else {
-            $data['tahun_id'] = null;
-        }
-
-        // NISN wajib
-        $nisnVal = trim($data['nisn']);
-        if ($nisnVal === '') {
-            $gagal[] = "Baris $rowIdx: NISN wajib diisi.";
+        // Header
+        if ($rowIdx === 0) {
             continue;
         }
 
-        // JK normalize
-        if (!empty($data['jk'])) {
-            $data['jk'] = strtoupper(substr($data['jk'], 0, 1)) === 'P' ? 'P' : 'L';
+        // ----------------------------------------------------
+        // Ambil data dari Excel
+        // HANYA FIELD YANG ADA DI HEADER
+        // ----------------------------------------------------
+        $excelData = [];
+
+        foreach ($fieldToCol as $field => $col) {
+
+            $value = isset($row[$col])
+                ? trim((string) $row[$col])
+                : '';
+
+            $excelData[$field] = $value;
         }
 
-        // Prepare save data
+        // ----------------------------------------------------
+        // NISN
+        // ----------------------------------------------------
+        $nisn = trim(
+            $excelData['nisn'] ?? ''
+        );
+
+        if ($nisn === '') {
+
+            $gagal[] =
+                "Baris $rowIdx: NISN wajib diisi.";
+
+            continue;
+        }
+
+        // ----------------------------------------------------
+        // Cari siswa berdasarkan NISN
+        // ----------------------------------------------------
+        $exist = $this->db
+            ->where('nisn', $nisn)
+            ->get('siswa')
+            ->row();
+
+        // ====================================================
+        // DATA YANG AKAN DISIMPAN
+        // ====================================================
         $save = [];
-        foreach ($expected_fields as $f) {
-            if ($f === 'id' || $f == 'created_at') continue;
-            $save[$f] = ($data[$f] === '') ? null : $data[$f];
-        }
 
-        // Insert / Update siswa
-        $exist = $this->db->get_where('siswa', ['nisn' => $nisnVal])->row();
+        // ====================================================
+        // INSERT / UPDATE
+        // ====================================================
         if ($exist) {
-            $this->db->where('nisn', $nisnVal)->update('siswa', $save);
+
+            // =================================================
+            // UPDATE SISWA LAMA
+            // =================================================
+            //
+            // HANYA field yang TIDAK KOSONG dari Excel
+            // yang akan di-update.
+            //
+            // Data lama tidak akan ditimpa NULL.
+            // =================================================
+
+            foreach ($excelData as $field => $value) {
+
+                if ($value === '') {
+                    continue;
+                }
+
+                // Jangan masukkan field relasi sebelum mapping
+                if (
+                    $field === 'id_kelas' ||
+                    $field === 'tahun_id' ||
+                    $field === 'status'
+                ) {
+                    continue;
+                }
+
+                $save[$field] = $value;
+            }
+
+            // -------------------------------------------------
+            // KELAS
+            // -------------------------------------------------
+            if (
+                isset($excelData['id_kelas']) &&
+                $excelData['id_kelas'] !== ''
+            ) {
+
+                $kelasRaw = trim(
+                    $excelData['id_kelas']
+                );
+
+                if (ctype_digit($kelasRaw)) {
+
+                    if (
+                        isset($kelasById[$kelasRaw])
+                    ) {
+
+                        $save['id_kelas'] =
+                            $kelasById[$kelasRaw];
+
+                    } else {
+
+                        $gagal[] =
+                            "Baris $rowIdx: Kelas tidak ditemukan ('$kelasRaw').";
+
+                        continue;
+                    }
+
+                } else {
+
+                    $kelasNorm =
+                        $normalize($kelasRaw);
+
+                    if (
+                        isset($kelasByName[$kelasNorm])
+                    ) {
+
+                        $save['id_kelas'] =
+                            $kelasByName[$kelasNorm];
+
+                    } else {
+
+                        $gagal[] =
+                            "Baris $rowIdx: Kelas tidak valid ('$kelasRaw').";
+
+                        continue;
+                    }
+                }
+            }
+
+            // -------------------------------------------------
+            // TAHUN AJARAN
+            // -------------------------------------------------
+            if (
+                isset($excelData['tahun_id']) &&
+                $excelData['tahun_id'] !== ''
+            ) {
+
+                $tahunRaw = trim(
+                    $excelData['tahun_id']
+                );
+
+                if (ctype_digit($tahunRaw)) {
+
+                    if (
+                        isset($tahunById[$tahunRaw])
+                    ) {
+
+                        $save['tahun_id'] =
+                            $tahunById[$tahunRaw];
+
+                    } else {
+
+                        $gagal[] =
+                            "Baris $rowIdx: ID tahun ajaran tidak ditemukan ('$tahunRaw').";
+
+                        continue;
+                    }
+
+                } else {
+
+                    $tahunNorm =
+                        $normalize($tahunRaw);
+
+                    if (
+                        isset($tahunByValue[$tahunNorm])
+                    ) {
+
+                        $save['tahun_id'] =
+                            $tahunByValue[$tahunNorm];
+
+                    } else {
+
+                        $gagal[] =
+                            "Baris $rowIdx: Tahun ajaran tidak valid ('$tahunRaw').";
+
+                        continue;
+                    }
+                }
+
+            } else {
+
+                // Excel kosong → pertahankan tahun lama
+                $save['tahun_id'] =
+                    $exist->tahun_id;
+            }
+
+            // -------------------------------------------------
+            // STATUS
+            // -------------------------------------------------
+            if (
+                isset($excelData['status']) &&
+                $excelData['status'] !== ''
+            ) {
+
+                $save['status'] =
+                    $excelData['status'];
+
+            } else {
+
+                // Pertahankan status lama
+                $save['status'] =
+                    $exist->status;
+            }
+
+            // -------------------------------------------------
+            // Pastikan tahun_id tidak NULL
+            // -------------------------------------------------
+            if (
+                empty($save['tahun_id'])
+            ) {
+
+                if (!empty($exist->tahun_id)) {
+
+                    $save['tahun_id'] =
+                        $exist->tahun_id;
+
+                } elseif ($tahunAktif) {
+
+                    $save['tahun_id'] =
+                        $tahunAktif->id;
+
+                } else {
+
+                    $gagal[] =
+                        "Baris $rowIdx: Tahun ajaran tidak tersedia.";
+
+                    continue;
+                }
+            }
+
+            // -------------------------------------------------
+            // Update database
+            // -------------------------------------------------
+            if (!empty($save)) {
+
+                $this->db
+                    ->where('id', $exist->id)
+                    ->update('siswa', $save);
+            }
+
             $siswa_id = $exist->id;
+
             $update++;
+
         } else {
-            $this->db->insert('siswa', $save);
-            $siswa_id = $this->db->insert_id();
+
+            // =================================================
+            // INSERT SISWA BARU
+            // =================================================
+
+            foreach ($excelData as $field => $value) {
+
+                if ($field === 'id_kelas') {
+                    continue;
+                }
+
+                if ($field === 'tahun_id') {
+                    continue;
+                }
+
+                if ($field === 'status') {
+                    continue;
+                }
+
+                $save[$field] =
+                    ($value === '')
+                        ? null
+                        : $value;
+            }
+
+            // -------------------------------------------------
+            // Validasi field wajib
+            // -------------------------------------------------
+            foreach ($requiredInsert as $required) {
+
+                if (
+                    !isset($save[$required]) ||
+                    $save[$required] === null ||
+                    trim((string) $save[$required]) === ''
+                ) {
+
+                    $gagal[] =
+                        "Baris $rowIdx: " .
+                        strtoupper($required) .
+                        " wajib diisi.";
+
+                    continue 2;
+                }
+            }
+
+            // -------------------------------------------------
+            // Map Kelas
+            // -------------------------------------------------
+            $kelasRaw =
+                trim(
+                    $excelData['id_kelas'] ?? ''
+                );
+
+            if ($kelasRaw !== '') {
+
+                if (ctype_digit($kelasRaw)) {
+
+                    if (
+                        isset($kelasById[$kelasRaw])
+                    ) {
+
+                        $save['id_kelas'] =
+                            $kelasById[$kelasRaw];
+
+                    } else {
+
+                        $gagal[] =
+                            "Baris $rowIdx: Kelas tidak ditemukan ('$kelasRaw').";
+
+                        continue;
+                    }
+
+                } else {
+
+                    $kelasNorm =
+                        $normalize($kelasRaw);
+
+                    if (
+                        isset($kelasByName[$kelasNorm])
+                    ) {
+
+                        $save['id_kelas'] =
+                            $kelasByName[$kelasNorm];
+
+                    } else {
+
+                        $gagal[] =
+                            "Baris $rowIdx: Kelas tidak valid ('$kelasRaw').";
+
+                        continue;
+                    }
+                }
+
+            } else {
+
+                $save['id_kelas'] = null;
+            }
+
+            // -------------------------------------------------
+            // Map Tahun Ajaran
+            // -------------------------------------------------
+            $tahunRaw =
+                trim(
+                    $excelData['tahun_id'] ?? ''
+                );
+
+            if ($tahunRaw !== '') {
+
+                if (ctype_digit($tahunRaw)) {
+
+                    if (
+                        isset($tahunById[$tahunRaw])
+                    ) {
+
+                        $save['tahun_id'] =
+                            $tahunById[$tahunRaw];
+
+                    } else {
+
+                        $gagal[] =
+                            "Baris $rowIdx: ID tahun ajaran tidak ditemukan ('$tahunRaw').";
+
+                        continue;
+                    }
+
+                } else {
+
+                    $tahunNorm =
+                        $normalize($tahunRaw);
+
+                    if (
+                        isset($tahunByValue[$tahunNorm])
+                    ) {
+
+                        $save['tahun_id'] =
+                            $tahunByValue[$tahunNorm];
+
+                    } else {
+
+                        $gagal[] =
+                            "Baris $rowIdx: Tahun ajaran tidak valid ('$tahunRaw').";
+
+                        continue;
+                    }
+                }
+
+            } else {
+
+                // Excel kosong → tahun aktif
+                if ($tahunAktif) {
+
+                    $save['tahun_id'] =
+                        $tahunAktif->id;
+
+                } else {
+
+                    $gagal[] =
+                        "Baris $rowIdx: Tahun ajaran kosong dan tidak ada tahun ajaran aktif.";
+
+                    continue;
+                }
+            }
+
+            // -------------------------------------------------
+            // Status
+            // -------------------------------------------------
+            $statusExcel =
+                trim(
+                    $excelData['status'] ?? ''
+                );
+
+            $allowedStatus = [
+                'aktif',
+                'mutasi_keluar',
+                'mutasi_masuk',
+                'lulus',
+                'keluar'
+            ];
+
+            if ($statusExcel !== '') {
+
+                if (
+                    !in_array(
+                        $statusExcel,
+                        $allowedStatus,
+                        true
+                    )
+                ) {
+
+                    $gagal[] =
+                        "Baris $rowIdx: Status tidak valid ('$statusExcel').";
+
+                    continue;
+                }
+
+                $save['status'] =
+                    $statusExcel;
+
+            } else {
+
+                $save['status'] =
+                    'aktif';
+            }
+
+            // -------------------------------------------------
+            // created_at
+            // -------------------------------------------------
+            $save['created_at'] =
+                date('Y-m-d H:i:s');
+
+            // -------------------------------------------------
+            // Insert
+            // -------------------------------------------------
+            $this->db->insert(
+                'siswa',
+                $save
+            );
+
+            $siswa_id =
+                $this->db->insert_id();
+
+            if (!$siswa_id) {
+
+                $gagal[] =
+                    "Baris $rowIdx: Gagal menyimpan siswa.";
+
+                continue;
+            }
+
             $insert++;
         }
 
-        // QR Generator (PAKAI NISN)
-if (!$exist || empty($exist->token_qr)) {
-    require_once APPPATH . 'libraries/phpqrcode/qrlib.php';
+        // ====================================================
+        // NORMALIZE JK
+        // ====================================================
+        if (
+            isset($save['jk']) &&
+            $save['jk'] !== null &&
+            $save['jk'] !== ''
+        ) {
 
-    $qr_folder = FCPATH . 'uploads/qr/';
-    if (!file_exists($qr_folder)) {
-        mkdir($qr_folder, 0777, true);
-    }
+            $jk =
+                strtoupper(
+                    trim((string) $save['jk'])
+                );
 
-    $nisn = $nisnVal; // sudah divalidasi di atas
-    $qr_file = $qr_folder . $nisn . '.png';
+            if (
+                $jk === 'P' ||
+                $jk === 'PEREMPUAN'
+            ) {
 
-    if (!file_exists($qr_file)) {
-        QRcode::png(
-            $nisn,          // 🔥 ISI QR = NISN
-            $qr_file,
-            QR_ECLEVEL_H,
-            10,
-            2
-        );
-    }
+                $jk = 'P';
 
-    // simpan token_qr = NISN (biar backward compatible)
-    $this->db->where('id', $siswa_id)->update('siswa', [
-        'token_qr' => $nisn
-    ]);
-}
-
-
-        // siswa_tahun update
-        $kelas_id = $save['id_kelas'];
-        $tahun_id = $save['tahun_id'];
-        if ($kelas_id && $tahun_id) {
-            $st = $this->db->get_where('siswa_tahun', [
-                'siswa_id' => $siswa_id,
-                'tahun_id' => $tahun_id
-            ])->row();
-
-            if ($st) {
-                $this->db->where('id', $st->id)->update('siswa_tahun', [
-                    'kelas_id' => $kelas_id,
-                    'status' => 'aktif'
-                ]);
             } else {
-                $this->db->insert('siswa_tahun', [
-                    'siswa_id' => $siswa_id,
-                    'kelas_id' => $kelas_id,
-                    'tahun_id' => $tahun_id,
-                    'status' => 'aktif'
+
+                $jk = 'L';
+            }
+
+            $this->db
+                ->where('id', $siswa_id)
+                ->update('siswa', [
+                    'jk' => $jk
                 ]);
+        }
+
+        // ====================================================
+        // QR CODE
+        // ====================================================
+        require_once APPPATH .
+            'libraries/phpqrcode/qrlib.php';
+
+        $qr_folder =
+            FCPATH . 'uploads/qr/';
+
+        if (!file_exists($qr_folder)) {
+
+            mkdir(
+                $qr_folder,
+                0777,
+                true
+            );
+        }
+
+        $qr_file =
+            $qr_folder . $nisn . '.png';
+
+        if (!file_exists($qr_file)) {
+
+            QRcode::png(
+                $nisn,
+                $qr_file,
+                QR_ECLEVEL_H,
+                10,
+                2
+            );
+        }
+
+        // Simpan token QR = NISN
+        $this->db
+            ->where('id', $siswa_id)
+            ->update('siswa', [
+                'token_qr' => $nisn
+            ]);
+
+        // ====================================================
+        // SINKRON SISWA_TAHUN
+        // ====================================================
+        $siswaFinal =
+            $this->db
+                ->where('id', $siswa_id)
+                ->get('siswa')
+                ->row();
+
+        if ($siswaFinal) {
+
+            $kelas_id =
+                $siswaFinal->id_kelas;
+
+            $tahun_id =
+                $siswaFinal->tahun_id;
+
+            // -----------------------------------------------
+            // Hanya sinkron kalau keduanya valid
+            // -----------------------------------------------
+            if (
+                !empty($kelas_id) &&
+                !empty($tahun_id)
+            ) {
+
+                $st =
+                    $this->db
+                        ->where(
+                            'siswa_id',
+                            $siswa_id
+                        )
+                        ->where(
+                            'tahun_id',
+                            $tahun_id
+                        )
+                        ->get('siswa_tahun')
+                        ->row();
+
+                if ($st) {
+
+                    $this->db
+                        ->where(
+                            'id',
+                            $st->id
+                        )
+                        ->update(
+                            'siswa_tahun',
+                            [
+                                'kelas_id' => $kelas_id,
+                                'status'   => 'aktif'
+                            ]
+                        );
+
+                } else {
+
+                    $this->db
+                        ->insert(
+                            'siswa_tahun',
+                            [
+                                'siswa_id' => $siswa_id,
+                                'kelas_id' => $kelas_id,
+                                'tahun_id' => $tahun_id,
+                                'status'   => 'aktif'
+                            ]
+                        );
+                }
             }
         }
     }
 
-    // Finish message
-    if (!empty($gagal)) {
-        $msg = "<b>Import selesai dengan catatan:</b><br>Insert: $insert<br>Update: $update<br><ul>";
-        foreach ($gagal as $e) $msg .= "<li>$e</li>";
-        $msg .= "</ul>";
-        $this->session->set_flashdata('error', $msg);
+    // ========================================================
+    // HASIL IMPORT
+    // ========================================================
+    $totalGagal = count($gagal);
+
+    if ($totalGagal > 0) {
+
+        $message =
+            '<b>Import selesai dengan catatan.</b><br><br>' .
+            'Insert: <b>' . $insert . '</b><br>' .
+            'Update: <b>' . $update . '</b><br>' .
+            'Gagal: <b>' . $totalGagal . '</b><br><br>' .
+            '<ul>';
+
+        foreach ($gagal as $error) {
+
+            $message .=
+                '<li>' . $error . '</li>';
+        }
+
+        $message .= '</ul>';
+
+        $this->session->set_flashdata(
+            'error',
+            $message
+        );
+
     } else {
-        $this->session->set_flashdata('success', "Import selesai. Insert: <b>$insert</b>, Update: <b>$update</b>");
+
+        $this->session->set_flashdata(
+            'success',
+            'Import berhasil. ' .
+            'Insert: <b>' . $insert . '</b>, ' .
+            'Update: <b>' . $update . '</b>.'
+        );
     }
 
     redirect('siswa');
 }
-
 
 public function cetak($id)
 {
