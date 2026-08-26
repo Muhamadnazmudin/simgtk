@@ -564,29 +564,70 @@ $group_tka = in_array($active, [
 <?php endif; ?>
 
 
+<?php if ($isKesiswaan): ?>
+
 <!-- ==============================
-     ROLE: KESISWAAN (FLAT MENU)
+     MANAJEMEN DATA KESISWAAN
 ================================= -->
-<?php if ($role == 'kesiswaan'): ?>
 <div class="sidebar-heading">Manajemen Data</div>
 
-<li class="nav-item <?= $active=='siswa'?'active':'' ?>">
-    <a class="nav-link" href="<?= site_url('siswa') ?>">
-        <i class="fas fa-user-graduate"></i>
-        <span>Data Siswa</span>
+<?php
+$group_kesiswaan_data = in_array($active, [
+    'siswa',
+    'kelas'
+]);
+?>
+
+<li class="nav-item <?= $group_kesiswaan_data ? 'active' : '' ?>">
+
+    <a class="nav-link collapsed"
+       href="#"
+       data-toggle="collapse"
+       data-target="#mDataKesiswaan">
+
+        <i class="fas fa-database"></i>
+        <span>Manajemen Data</span>
+
     </a>
+
+    <div id="mDataKesiswaan"
+         class="collapse <?= $group_kesiswaan_data ? 'show' : '' ?>">
+
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <!-- DATA SISWA -->
+            <a class="collapse-item <?= $active == 'siswa' ? 'active' : '' ?>"
+               href="<?= site_url('siswa') ?>">
+
+                <i class="fas fa-user-graduate mr-2"></i>
+                Data Siswa
+
+            </a>
+
+            <!-- DATA KELAS -->
+            <a class="collapse-item <?= $active == 'kelas' ? 'active' : '' ?>"
+               href="<?= site_url('kelas') ?>">
+
+                <i class="fas fa-school mr-2"></i>
+                Data Kelas
+
+            </a>
+
+        </div>
+
+    </div>
+
 </li>
+
 <hr class="sidebar-divider">
 
-<li class="nav-item <?= $active=='tka'?'active':'' ?>">
+<!-- TKA -->
+<li class="nav-item <?= $active == 'tka' ? 'active' : '' ?>">
 
-    <a
-        class="nav-link"
-        href="<?= site_url('Tka_admin') ?>"
-    >
+    <a class="nav-link"
+       href="<?= site_url('Tka_admin') ?>">
 
         <i class="fas fa-graduation-cap"></i>
-
         <span>Peserta TKA</span>
 
     </a>
@@ -595,35 +636,36 @@ $group_tka = in_array($active, [
 
 <div class="sidebar-heading">Mutasi</div>
 
-<li class="nav-item <?= $active=='mutasi'?'active':'' ?>">
+<!-- MUTASI -->
+<li class="nav-item <?= $active == 'mutasi' ? 'active' : '' ?>">
     <a class="nav-link" href="<?= site_url('mutasi') ?>">
         <i class="fas fa-random"></i>
         <span>Mutasi Siswa</span>
     </a>
 </li>
 
-<li class="nav-item <?= $active=='kenaikan'?'active':'' ?>">
+<li class="nav-item <?= $active == 'kenaikan' ? 'active' : '' ?>">
     <a class="nav-link" href="<?= site_url('kenaikan') ?>">
         <i class="fas fa-level-up-alt"></i>
         <span>Kenaikan Kelas</span>
     </a>
 </li>
 
-<li class="nav-item <?= $active=='siswa_keluar'?'active':'' ?>">
+<li class="nav-item <?= $active == 'siswa_keluar' ? 'active' : '' ?>">
     <a class="nav-link" href="<?= site_url('siswa_keluar') ?>">
         <i class="fas fa-sign-out-alt"></i>
         <span>Siswa Keluar</span>
     </a>
 </li>
 
-<li class="nav-item <?= $active=='siswa_lulus'?'active':'' ?>">
+<li class="nav-item <?= $active == 'siswa_lulus' ? 'active' : '' ?>">
     <a class="nav-link" href="<?= site_url('siswa_lulus') ?>">
         <i class="fas fa-graduation-cap"></i>
         <span>Siswa Lulus</span>
     </a>
 </li>
 
-<li class="nav-item <?= $active=='laporan'?'active':'' ?>">
+<li class="nav-item <?= $active == 'laporan' ? 'active' : '' ?>">
     <a class="nav-link" href="<?= site_url('laporan') ?>">
         <i class="fas fa-file-alt"></i>
         <span>Laporan Mutasi</span>
