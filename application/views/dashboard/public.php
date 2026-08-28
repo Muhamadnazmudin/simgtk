@@ -1297,14 +1297,14 @@ body.dark-mode #chatbot {
 
 <h2>
 
-Selamat Datang di Sistem Mutasi Siswa 👋
+Selamat datang di Sistem Informasi Murid, Guru dan Tenaga Kependidikan
 
 </h2>
 
 
 <p>
 
-Dashboard informasi siswa dan mutasi sekolah
+Dashboard informasi siswa
 
 </p>
 

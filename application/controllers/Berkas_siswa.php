@@ -587,44 +587,438 @@ $this->load->view('templates/footer');
 }
 
     /**
-     * Lihat file
-     */
-    public function lihat($id)
-    {
-        $id = (int) $id;
+ * Lihat / preview file
+ */
+public function lihat($id)
+{
+    $id = (int) $id;
 
-        $berkas = $this->db
-            ->where('id', $id)
-            ->get('siswa_berkas')
-            ->row();
+    $berkas = $this->db
+        ->where('id', $id)
+        ->get('siswa_berkas')
+        ->row();
 
-        if (!$berkas) {
-            show_404();
-        }
-
-        $file = FCPATH .
-            'uploads/berkas_siswa/' .
-            $berkas->siswa_id . '/' .
-            $berkas->nama_file;
-
-        if (!is_file($file)) {
-            show_404();
-        }
-
-        $mime = $berkas->tipe_file;
-
-        if (!$mime) {
-            $mime = mime_content_type($file);
-        }
-
-        header('Content-Type: ' . $mime);
-        header('Content-Length: ' . filesize($file));
-        header('Content-Disposition: inline; filename="' .
-            basename($berkas->nama_file_asli) . '"');
-
-        readfile($file);
-        exit;
+    if (!$berkas) {
+        show_404();
+        return;
     }
+
+    $file = FCPATH .
+        'uploads/berkas_siswa/' .
+        $berkas->siswa_id . '/' .
+        $berkas->nama_file;
+
+    if (!is_file($file)) {
+        show_404();
+        return;
+    }
+
+    $data['title'] = 'Lihat Berkas';
+    $data['active'] = 'berkas_siswa';
+    $data['berkas'] = $berkas;
+
+    $data['file_url'] = site_url(
+        'berkas_siswa/preview/' . $berkas->id
+    );
+
+    $data['download_url'] = site_url(
+        'berkas_siswa/download/' . $berkas->id
+    );
+
+    $mime = $berkas->tipe_file;
+
+    if (!$mime) {
+        $mime = mime_content_type($file);
+    }
+
+    $data['mime'] = $mime;
+
+    $data['is_image'] = in_array(
+        strtolower($mime),
+        [
+            'image/jpeg',
+            'image/jpg',
+            'image/png'
+        ],
+        TRUE
+    );
+
+    $data['is_pdf'] = (
+        strtolower($mime) === 'application/pdf'
+    );
+
+    $this->load->view(
+        'templates/header',
+        $data
+    );
+
+    $this->load->view(
+        'templates/sidebar',
+        $data
+    );
+
+    $this->load->view(
+        'admin/berkas_siswa/lihat',
+        $data
+    );
+
+    $this->load->view(
+        'templates/footer'
+    );
+}
+
+
+/**
+ * Preview file secara langsung
+ */
+public function preview($id)
+{
+    $id = (int) $id;
+
+    $berkas = $this->db
+        ->where('id', $id)
+        ->get('siswa_berkas')
+        ->row();
+
+    if (!$berkas) {
+        show_404();
+        return;
+    }
+
+    $file = FCPATH .
+        'uploads/berkas_siswa/' .
+        $berkas->siswa_id . '/' .
+        $berkas->nama_file;
+
+    if (!is_file($file)) {
+        show_404();
+        return;
+    }
+
+    $mime = $berkas->tipe_file;
+
+    if (!$mime) {
+        $mime = mime_content_type($file);
+    }
+
+    /*
+     * Hanya izinkan file yang memang
+     * didukung oleh sistem.
+     */
+    $allowed_mime = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'application/pdf'
+    ];
+
+    if (!in_array($mime, $allowed_mime, TRUE)) {
+        show_404();
+        return;
+    }
+
+    header(
+        'Content-Type: ' . $mime
+    );
+
+    header(
+        'Content-Length: ' . filesize($file)
+    );
+
+    header(
+        'Content-Disposition: inline; filename="' .
+        basename($berkas->nama_file_asli) .
+        '"'
+    );
+
+    header(
+        'Cache-Control: private, max-age=3600'
+    );
+
+    readfile($file);
+    exit;
+}
+
+
+/**
+ * Simpan rotasi gambar
+ */
+public function rotate($id)
+{
+    $id = (int) $id;
+
+    /*
+     * Hanya POST
+     */
+    if ($this->input->method(TRUE) !== 'POST') {
+        show_404();
+        return;
+    }
+
+    /*
+     * Ambil data berkas
+     */
+    $berkas = $this->db
+        ->where('id', $id)
+        ->get('siswa_berkas')
+        ->row();
+
+    if (!$berkas) {
+        show_404();
+        return;
+    }
+
+    /*
+     * File fisik
+     */
+    $file = FCPATH .
+        'uploads/berkas_siswa/' .
+        $berkas->siswa_id . '/' .
+        $berkas->nama_file;
+
+    if (!is_file($file)) {
+        $this->session->set_flashdata(
+            'error',
+            'File berkas tidak ditemukan.'
+        );
+
+        redirect(
+            'berkas_siswa/lihat/' . $id
+        );
+
+        return;
+    }
+
+    /*
+     * Hanya gambar yang bisa diputar
+     */
+    $mime = strtolower(
+        $berkas->tipe_file
+    );
+
+    if (!in_array(
+        $mime,
+        [
+            'image/jpeg',
+            'image/jpg',
+            'image/png'
+        ],
+        TRUE
+    )) {
+
+        $this->session->set_flashdata(
+            'error',
+            'File ini tidak dapat diputar.'
+        );
+
+        redirect(
+            'berkas_siswa/lihat/' . $id
+        );
+
+        return;
+    }
+
+    /*
+     * Arah rotasi
+     *
+     * right = 90 derajat
+     * left  = -90 derajat
+     */
+    $direction =
+        $this->input->post(
+            'direction',
+            TRUE
+        );
+
+    if (!in_array(
+        $direction,
+        ['left', 'right'],
+        TRUE
+    )) {
+
+        $this->session->set_flashdata(
+            'error',
+            'Arah rotasi tidak valid.'
+        );
+
+        redirect(
+            'berkas_siswa/lihat/' . $id
+        );
+
+        return;
+    }
+
+    /*
+     * Baca gambar
+     */
+    if (
+        $mime === 'image/jpeg' ||
+        $mime === 'image/jpg'
+    ) {
+
+        $image = @imagecreatefromjpeg(
+            $file
+        );
+
+    } elseif ($mime === 'image/png') {
+
+        $image = @imagecreatefrompng(
+            $file
+        );
+
+    } else {
+
+        $image = false;
+    }
+
+    if (!$image) {
+
+        $this->session->set_flashdata(
+            'error',
+            'Gambar tidak dapat diproses.'
+        );
+
+        redirect(
+            'berkas_siswa/lihat/' . $id
+        );
+
+        return;
+    }
+
+    /*
+     * Sudut rotasi
+     */
+    $angle =
+        ($direction === 'right')
+            ? -90
+            : 90;
+
+    /*
+     * Untuk PNG pertahankan transparansi.
+     */
+    if ($mime === 'image/png') {
+
+        imagealphablending(
+            $image,
+            FALSE
+        );
+
+        imagesavealpha(
+            $image,
+            TRUE
+        );
+    }
+
+    /*
+     * Rotasi
+     */
+    $rotated = @imagerotate(
+        $image,
+        $angle,
+        0
+    );
+
+    imagedestroy($image);
+
+    if (!$rotated) {
+
+        $this->session->set_flashdata(
+            'error',
+            'Gagal memutar gambar.'
+        );
+
+        redirect(
+            'berkas_siswa/lihat/' . $id
+        );
+
+        return;
+    }
+
+    /*
+     * Simpan kembali ke file asli
+     */
+    $saved = false;
+
+    if (
+        $mime === 'image/jpeg' ||
+        $mime === 'image/jpg'
+    ) {
+
+        /*
+         * Quality 92 agar kualitas tetap bagus
+         */
+        $saved = @imagejpeg(
+            $rotated,
+            $file,
+            92
+        );
+
+    } elseif ($mime === 'image/png') {
+
+        /*
+         * PNG compression 6
+         */
+        imagealphablending(
+            $rotated,
+            FALSE
+        );
+
+        imagesavealpha(
+            $rotated,
+            TRUE
+        );
+
+        $saved = @imagepng(
+            $rotated,
+            $file,
+            6
+        );
+    }
+
+    imagedestroy($rotated);
+
+    if (!$saved) {
+
+        $this->session->set_flashdata(
+            'error',
+            'Gagal menyimpan hasil rotasi.'
+        );
+
+        redirect(
+            'berkas_siswa/lihat/' . $id
+        );
+
+        return;
+    }
+
+    /*
+     * Update ukuran file
+     */
+    $this->db
+        ->where('id', $id)
+        ->update(
+            'siswa_berkas',
+            [
+                'ukuran_file' =>
+                    filesize($file),
+
+                'updated_at' =>
+                    date('Y-m-d H:i:s')
+            ]
+        );
+
+    /*
+     * Success
+     */
+    $this->session->set_flashdata(
+        'success',
+        'Berkas berhasil diputar.'
+    );
+
+    redirect(
+        'berkas_siswa/lihat/' . $id
+    );
+}
 
     /**
      * Download file
