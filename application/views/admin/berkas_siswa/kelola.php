@@ -70,7 +70,9 @@ $status = !empty($siswa->status)
 $nama_kelas = !empty($siswa->nama_kelas)
     ? $siswa->nama_kelas
     : '';
-
+$nama_walikelas = !empty($siswa->nama_walikelas)
+    ? $siswa->nama_walikelas
+    : '';
 
 /*
 |--------------------------------------------------------------------------
@@ -408,25 +410,32 @@ if (!empty($siswa->foto)) {
 
                         <?php if ($nama_kelas !== ''): ?>
 
-                            <div class="student-info-item">
+    <div class="student-info-item">
 
-                                <div class="student-label">
+        <div class="student-label">
+            Kelas
+        </div>
 
-                                    Kelas
+        <div class="student-value class-info">
 
-                                </div>
+            <span class="class-name">
+                <?= html_escape($nama_kelas); ?>
+            </span>
 
-                                <div class="student-value">
+            <?php if ($nama_walikelas !== ''): ?>
 
-                                    <?= html_escape(
-                                        $nama_kelas
-                                    ); ?>
+                <span class="class-walikelas">
+                    <i class="fas fa-user-tie mr-1"></i>
+                    <?= html_escape($nama_walikelas); ?>
+                </span>
 
-                                </div>
+            <?php endif; ?>
 
-                            </div>
+        </div>
 
-                        <?php endif; ?>
+    </div>
+
+<?php endif; ?>
 
 
 
@@ -2436,7 +2445,38 @@ $('#modalUpload form').on(
 
 }
 
+.class-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
 
+.class-name {
+    font-weight: 700;
+    color: #3a3b45;
+}
+
+.class-walikelas {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(78,115,223,.10);
+    color: #4e73df;
+    font-size: .72rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+body.dark-mode .class-name {
+    color: #f1f3f5;
+}
+
+body.dark-mode .class-walikelas {
+    background: rgba(125,162,255,.12);
+    color: #7da2ff;
+}
 
 /*
 |--------------------------------------------------------------------------
