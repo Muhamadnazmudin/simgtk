@@ -91,6 +91,10 @@ $group_tka = in_array($active, [
     'tka_edit'
 ]);
 
+$group_sptjm = in_array($active, [
+    'sptjm_upload',
+    'sptjm_riwayat'
+]);
 ?>
 
 <hr class="sidebar-divider">
@@ -347,7 +351,60 @@ $group_tka = in_array($active, [
 
 <?php endif; ?>
 
+<!-- ==============================
+     SPTJM DAPODIK
+================================= -->
+<?php if ($isAdmin): ?>
 
+<li class="nav-item <?= $group_sptjm ? 'active' : '' ?>">
+
+    <a
+        class="nav-link collapsed"
+        href="#"
+        data-toggle="collapse"
+        data-target="#mSPTJMDapodik"
+        aria-expanded="<?= $group_sptjm ? 'true' : 'false' ?>"
+        aria-controls="mSPTJMDapodik"
+    >
+
+        <i class="fas fa-file-signature"></i>
+
+        <span>SPTJM Dapodik</span>
+
+    </a>
+
+    <div
+        id="mSPTJMDapodik"
+        class="collapse <?= $group_sptjm ? 'show' : '' ?>"
+    >
+
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <!-- UPLOAD SPTJM -->
+            <a
+                class="collapse-item <?= $active == 'sptjm_upload' ? 'active' : '' ?>"
+                href="<?= site_url('sptjm/upload') ?>"
+            >
+                <i class="fas fa-upload mr-2"></i>
+                Upload SPTJM
+            </a>
+
+            <!-- RIWAYAT SPTJM -->
+            <a
+                class="collapse-item <?= $active == 'sptjm_riwayat' ? 'active' : '' ?>"
+                href="<?= site_url('sptjm/riwayat') ?>"
+            >
+                <i class="fas fa-history mr-2"></i>
+                Riwayat SPTJM
+            </a>
+
+        </div>
+
+    </div>
+
+</li>
+
+<?php endif; ?>
 <!-- ==============================
      AKUN BELAJAR / BELAJARID
 ================================= -->
