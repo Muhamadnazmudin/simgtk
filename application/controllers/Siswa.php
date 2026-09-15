@@ -1918,6 +1918,473 @@ $tahunAktif = $this->db
     redirect('siswa');
 }
 
+
+// ============================================================
+// IMPORT FOTO SISWA VIA ZIP
+// NAMA FILE = NISN
+// Contoh:
+// 00012292.jpg
+// 00012293.png
+// 00012294.jpeg
+// ============================================================
+public function import_foto_zip()
+{
+    // ========================================================
+    // VALIDASI FILE
+    // ========================================================
+    if (
+        !isset($_FILES['file']) ||
+        empty($_FILES['file']['name']) ||
+        $_FILES['file']['error'] !== UPLOAD_ERR_OK
+    ) {
+
+        $this->session->set_flashdata(
+            'error',
+            'File ZIP tidak ditemukan atau gagal diupload.'
+        );
+
+        redirect('siswa');
+        return;
+    }
+
+    // ========================================================
+    // VALIDASI EXTENSION
+    // ========================================================
+    $originalName = $_FILES['file']['name'];
+    $extension    = strtolower(
+        pathinfo($originalName, PATHINFO_EXTENSION)
+    );
+
+    if ($extension !== 'zip') {
+
+        $this->session->set_flashdata(
+            'error',
+            'File yang diupload harus berformat ZIP.'
+        );
+
+        redirect('siswa');
+        return;
+    }
+
+    // ========================================================
+    // VALIDASI ZIP
+    // ========================================================
+    if (!class_exists('ZipArchive')) {
+
+        $this->session->set_flashdata(
+            'error',
+            'PHP ZipArchive tidak tersedia di server.'
+        );
+
+        redirect('siswa');
+        return;
+    }
+
+    $zip = new ZipArchive();
+
+    if (
+        $zip->open($_FILES['file']['tmp_name'])
+        !== true
+    ) {
+
+        $this->session->set_flashdata(
+            'error',
+            'File ZIP tidak dapat dibuka atau rusak.'
+        );
+
+        redirect('siswa');
+        return;
+    }
+
+    // ========================================================
+    // FOLDER FOTO
+    // ========================================================
+    $fotoFolder = FCPATH . 'uploads/foto/';
+
+    if (!is_dir($fotoFolder)) {
+
+        if (!mkdir($fotoFolder, 0777, true)) {
+
+            $zip->close();
+
+            $this->session->set_flashdata(
+                'error',
+                'Folder uploads/foto tidak dapat dibuat.'
+            );
+
+            redirect('siswa');
+            return;
+        }
+    }
+
+    // ========================================================
+    // COUNTER
+    // ========================================================
+    $berhasil       = 0;
+    $tidakDitemukan = 0;
+    $fileTidakValid = 0;
+    $gagal          = 0;
+
+    $detailTidakDitemukan = [];
+    $detailTidakValid     = [];
+    $detailGagal          = [];
+
+    // ========================================================
+    // LOOP FILE ZIP
+    // ========================================================
+    for ($i = 0; $i < $zip->numFiles; $i++) {
+
+        $entryName = $zip->getNameIndex($i);
+
+        if ($entryName === false) {
+            continue;
+        }
+
+        // ----------------------------------------------------
+        // Normalisasi path
+        // ----------------------------------------------------
+        $entryName = str_replace('\\', '/', $entryName);
+
+        // Abaikan folder
+        if (substr($entryName, -1) === '/') {
+            continue;
+        }
+
+        // Ambil nama file saja
+        $fileName = basename($entryName);
+
+        // ----------------------------------------------------
+        // Abaikan file tersembunyi / file sistem
+        // ----------------------------------------------------
+        if (
+            $fileName === '' ||
+            $fileName === '.' ||
+            $fileName === '..' ||
+            stripos($fileName, '__MACOSX') !== false ||
+            stripos($fileName, '.DS_Store') !== false
+        ) {
+            continue;
+        }
+
+        // ====================================================
+        // EXTENSION
+        // ====================================================
+        $ext = strtolower(
+            pathinfo($fileName, PATHINFO_EXTENSION)
+        );
+
+        if (
+            !in_array(
+                $ext,
+                ['jpg', 'jpeg', 'png'],
+                true
+            )
+        ) {
+
+            $fileTidakValid++;
+
+            $detailTidakValid[] =
+                $fileName . ' — format tidak didukung.';
+
+            continue;
+        }
+
+        // ====================================================
+        // AMBIL NISN DARI NAMA FILE
+        // ====================================================
+        $nisn = pathinfo(
+            $fileName,
+            PATHINFO_FILENAME
+        );
+
+        $nisn = trim($nisn);
+
+        // ----------------------------------------------------
+        // NISN hanya angka
+        // ----------------------------------------------------
+        if (
+            $nisn === '' ||
+            !preg_match('/^\d+$/', $nisn)
+        ) {
+
+            $fileTidakValid++;
+
+            $detailTidakValid[] =
+                $fileName . ' — nama file bukan NISN yang valid.';
+
+            continue;
+        }
+
+        // ====================================================
+        // CARI SISWA BERDASARKAN NISN
+        // ====================================================
+        $siswa = $this->db
+            ->where('nisn', $nisn)
+            ->get('siswa')
+            ->row();
+
+        if (!$siswa) {
+
+            $tidakDitemukan++;
+
+            $detailTidakDitemukan[] =
+                $fileName . ' — NISN tidak ditemukan.';
+
+            continue;
+        }
+
+        // ====================================================
+        // AMBIL DATA FILE DARI ZIP
+        // ====================================================
+        $fileContent = $zip->getFromIndex($i);
+
+        if ($fileContent === false) {
+
+            $gagal++;
+
+            $detailGagal[] =
+                $fileName . ' — gagal membaca isi file ZIP.';
+
+            continue;
+        }
+
+        // ====================================================
+        // VALIDASI GAMBAR
+        // ====================================================
+        $imageInfo = @getimagesizefromstring($fileContent);
+
+        if ($imageInfo === false) {
+
+            $fileTidakValid++;
+
+            $detailTidakValid[] =
+                $fileName . ' — file bukan gambar yang valid.';
+
+            continue;
+        }
+
+        // ====================================================
+        // VALIDASI MIME
+        // ====================================================
+        $allowedMime = [
+            'image/jpeg',
+            'image/png'
+        ];
+
+        if (
+            !in_array(
+                $imageInfo['mime'],
+                $allowedMime,
+                true
+            )
+        ) {
+
+            $fileTidakValid++;
+
+            $detailTidakValid[] =
+                $fileName . ' — MIME gambar tidak didukung.';
+
+            continue;
+        }
+
+        // ====================================================
+        // NAMA FILE BARU
+        // ====================================================
+        //
+        // Kita simpan dengan nama:
+        //
+        // 00012292.jpg
+        //
+        // sehingga gampang dilacak berdasarkan NISN.
+        //
+        $newFileName = $nisn . '.' . $ext;
+
+        $destination =
+            $fotoFolder . $newFileName;
+
+        // ====================================================
+        // HAPUS FOTO LAMA
+        // ====================================================
+        if (
+            !empty($siswa->foto) &&
+            $siswa->foto !== $newFileName
+        ) {
+
+            $oldFile =
+                $fotoFolder . basename($siswa->foto);
+
+            if (
+                file_exists($oldFile) &&
+                is_file($oldFile)
+            ) {
+
+                @unlink($oldFile);
+            }
+        }
+
+        // ====================================================
+        // SIMPAN FILE
+        // ====================================================
+        if (
+            file_put_contents(
+                $destination,
+                $fileContent
+            ) === false
+        ) {
+
+            $gagal++;
+
+            $detailGagal[] =
+                $fileName . ' — gagal menyimpan file.';
+
+            continue;
+        }
+
+        // ====================================================
+        // UPDATE DATABASE
+        // ====================================================
+        $update = $this->db
+            ->where('id', $siswa->id)
+            ->update(
+                'siswa',
+                [
+                    'foto' => $newFileName
+                ]
+            );
+
+        if (!$update) {
+
+            // Kalau database gagal, hapus file yang baru ditulis
+            if (
+                file_exists($destination)
+            ) {
+
+                @unlink($destination);
+            }
+
+            $gagal++;
+
+            $detailGagal[] =
+                $fileName . ' — gagal memperbarui database.';
+
+            continue;
+        }
+
+        // ====================================================
+        // BERHASIL
+        // ====================================================
+        $berhasil++;
+    }
+
+    // ========================================================
+    // TUTUP ZIP
+    // ========================================================
+    $zip->close();
+
+    // ========================================================
+    // HASIL IMPORT
+    // ========================================================
+    $totalDiproses =
+        $berhasil +
+        $tidakDitemukan +
+        $fileTidakValid +
+        $gagal;
+
+    $message =
+        '<b>Import foto selesai.</b><br><br>' .
+
+        'Berhasil: <b>' .
+        $berhasil .
+        '</b><br>' .
+
+        'NISN tidak ditemukan: <b>' .
+        $tidakDitemukan .
+        '</b><br>' .
+
+        'File tidak valid: <b>' .
+        $fileTidakValid .
+        '</b><br>' .
+
+        'Gagal: <b>' .
+        $gagal .
+        '</b><br>';
+
+    // ========================================================
+    // DETAIL ERROR
+    // ========================================================
+
+    if (!empty($detailTidakDitemukan)) {
+
+        $message .=
+            '<br><b>NISN tidak ditemukan:</b><ul>';
+
+        foreach (
+            $detailTidakDitemukan
+            as $item
+        ) {
+
+            $message .=
+                '<li>' . html_escape($item) . '</li>';
+        }
+
+        $message .= '</ul>';
+    }
+
+    if (!empty($detailTidakValid)) {
+
+        $message .=
+            '<br><b>File tidak valid:</b><ul>';
+
+        foreach (
+            $detailTidakValid
+            as $item
+        ) {
+
+            $message .=
+                '<li>' . html_escape($item) . '</li>';
+        }
+
+        $message .= '</ul>';
+    }
+
+    if (!empty($detailGagal)) {
+
+        $message .=
+            '<br><b>File gagal diproses:</b><ul>';
+
+        foreach (
+            $detailGagal
+            as $item
+        ) {
+
+            $message .=
+                '<li>' . html_escape($item) . '</li>';
+        }
+
+        $message .= '</ul>';
+    }
+
+    // ========================================================
+    // FLASH MESSAGE
+    // ========================================================
+    if ($berhasil > 0) {
+
+        $this->session->set_flashdata(
+            'success',
+            $message
+        );
+
+    } else {
+
+        $this->session->set_flashdata(
+            'error',
+            $message
+        );
+    }
+
+    redirect('siswa');
+}
+
 public function cetak($id)
 {
     // Ambil data siswa
