@@ -247,7 +247,92 @@
     font-size: .9rem;
 }
 
+/* ================= FOTO PROFIL SISWA ================= */
 
+.siswa-welcome-content {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.siswa-profile-photo {
+    width: 78px;
+    height: 78px;
+
+    min-width: 78px;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    background: rgba(255,255,255,.18);
+
+    border: 3px solid rgba(255,255,255,.75);
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.18);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.siswa-profile-photo img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.siswa-profile-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: rgba(255,255,255,.85);
+
+    font-size: 34px;
+}
+
+.siswa-welcome-info {
+    flex: 1;
+}
+
+.siswa-welcome-info h4 {
+    margin-bottom: 5px;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 767.98px) {
+
+    .siswa-welcome-content {
+        gap: 14px;
+    }
+
+    .siswa-profile-photo {
+        width: 62px;
+        height: 62px;
+
+        min-width: 62px;
+
+        border-width: 2px;
+    }
+
+    .siswa-profile-placeholder {
+        font-size: 27px;
+    }
+
+}
 /* ================= LULUS ================= */
 
 .lulus-card {
@@ -639,19 +724,59 @@ body.dark-mode .empty-jadwal {
 
     <div class="siswa-welcome">
 
-        <h4>
-            Selamat Datang, <?= htmlspecialchars($siswa->nama) ?> 👋
-        </h4>
+    <div class="siswa-welcome-content">
 
-        <p>
-            <i class="fas fa-user-graduate mr-1"></i>
-            Dashboard Siswa
-            <?php if (!empty($siswa->nama_kelas)): ?>
-                &bull; <?= htmlspecialchars($siswa->nama_kelas) ?>
+        <!-- FOTO SISWA -->
+        <div class="siswa-profile-photo">
+
+            <?php if (!empty($siswa->foto)): ?>
+
+                <img
+                    src="<?= base_url('uploads/foto/' . $siswa->foto) ?>"
+                    alt="Foto <?= htmlspecialchars($siswa->nama) ?>"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                >
+
+                <div class="siswa-profile-placeholder" style="display:none;">
+                    <i class="fas fa-user"></i>
+                </div>
+
+            <?php else: ?>
+
+                <div class="siswa-profile-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+
             <?php endif; ?>
-        </p>
+
+        </div>
+
+
+        <!-- INFORMASI SISWA -->
+        <div class="siswa-welcome-info">
+
+            <h4>
+                Selamat Datang, <?= htmlspecialchars($siswa->nama) ?> 👋
+            </h4>
+
+            <p>
+                <i class="fas fa-user-graduate mr-1"></i>
+                Dashboard Siswa
+
+                <?php if (!empty($siswa->nama_kelas)): ?>
+
+                    &bull;
+                    <?= htmlspecialchars($siswa->nama_kelas) ?>
+
+                <?php endif; ?>
+
+            </p>
+
+        </div>
 
     </div>
+
+</div>
 
 
     <?php $is_lulus = strtolower(trim($siswa->status)) == 'lulus'; ?>
