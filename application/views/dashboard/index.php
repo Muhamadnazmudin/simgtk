@@ -698,205 +698,184 @@ body.light-mode .admin-summary {
 
 <div class="row">
 
+    <!-- =====================================================
+         GURU
+    ===================================================== -->
 
-<!-- =====================================================
-     GURU
-===================================================== -->
+    <div class="col-xl-3 col-md-6 mb-4">
 
-<div class="col-xl-4 col-md-6 mb-4">
+        <div class="card admin-summary shadow h-100">
 
+            <div class="card-body">
 
-    <div class="card admin-summary shadow h-100">
+                <div class="d-flex justify-content-between align-items-center">
 
+                    <div>
 
-        <div class="card-body">
+                        <div class="admin-summary-title">
+                            Jumlah Guru
+                        </div>
 
+                        <div class="admin-summary-number text-success">
+                            <?= number_format($jumlah_guru, 0, ',', '.') ?>
+                        </div>
 
-            <div class="d-flex justify-content-between align-items-center">
-
-
-                <div>
-
-
-                    <div class="admin-summary-title">
-
-                        Jumlah Guru
-
-                    </div>
-
-
-                    <div class="admin-summary-number text-success">
-
-                        <?= number_format($jumlah_guru, 0, ',', '.') ?>
+                        <div class="admin-summary-desc">
+                            Tenaga pendidik sekolah
+                        </div>
 
                     </div>
 
-
-                    <div class="admin-summary-desc">
-
-                        Tenaga pendidik sekolah
-
+                    <div class="admin-summary-icon admin-success">
+                        <i class="fas fa-chalkboard-teacher"></i>
                     </div>
-
 
                 </div>
-
-
-                <div class="admin-summary-icon admin-success">
-
-                    <i class="fas fa-chalkboard-teacher"></i>
-
-                </div>
-
 
             </div>
 
-
         </div>
-
 
     </div>
 
 
-</div>
+    <!-- =====================================================
+         TENDIK
+    ===================================================== -->
 
+    <div class="col-xl-3 col-md-6 mb-4">
 
-<!-- =====================================================
-     SISWA
-===================================================== -->
+        <div class="card admin-summary shadow h-100">
 
-<div class="col-xl-4 col-md-6 mb-4">
+            <div class="card-body">
 
+                <div class="d-flex justify-content-between align-items-center">
 
-    <div class="card admin-summary shadow h-100">
+                    <div>
 
+                        <div class="admin-summary-title">
+                            Jumlah Tendik
+                        </div>
 
-        <div class="card-body">
+                        <div class="admin-summary-number text-primary">
+                            <?= number_format($jumlah_tendik, 0, ',', '.') ?>
+                        </div>
 
-
-            <div class="d-flex justify-content-between align-items-center">
-
-
-                <div>
-
-
-                    <div class="admin-summary-title">
-
-                        Peserta Didik Aktif
-
-                    </div>
-
-
-                    <div class="admin-summary-number text-info">
-
-                        <?= number_format(
-                            $jumlah_siswa_aktif,
-                            0,
-                            ',',
-                            '.'
-                        ) ?>
+                        <div class="admin-summary-desc">
+                            Tenaga kependidikan sekolah
+                        </div>
 
                     </div>
 
-
-                    <div class="admin-summary-desc">
-
-                        Siswa aktif tahun ajaran ini
-
+                    <div class="admin-summary-icon admin-primary">
+                        <i class="fas fa-user-tie"></i>
                     </div>
-
 
                 </div>
-
-
-                <div class="admin-summary-icon admin-info">
-
-                    <i class="fas fa-user-graduate"></i>
-
-                </div>
-
 
             </div>
 
-
         </div>
-
 
     </div>
 
 
-</div>
+    <!-- =====================================================
+         SISWA
+    ===================================================== -->
 
+    <div class="col-xl-3 col-md-6 mb-4">
 
-<!-- =====================================================
-     ROMBEL
-===================================================== -->
+        <div class="card admin-summary shadow h-100">
 
-<div class="col-xl-4 col-md-6 mb-4">
+            <div class="card-body">
 
+                <div class="d-flex justify-content-between align-items-center">
 
-    <div class="card admin-summary shadow h-100">
+                    <div>
 
+                        <div class="admin-summary-title">
+                            Peserta Didik Aktif
+                        </div>
 
-        <div class="card-body">
+                        <div class="admin-summary-number text-info">
 
+                            <?= number_format(
+                                $jumlah_siswa_aktif,
+                                0,
+                                ',',
+                                '.'
+                            ) ?>
 
-            <div class="d-flex justify-content-between align-items-center">
+                        </div>
 
-
-                <div>
-
-
-                    <div class="admin-summary-title">
-
-                        Jumlah Rombel
-
-                    </div>
-
-
-                    <div class="admin-summary-number text-warning">
-
-                        <?= number_format(
-                            $jumlah_rombel,
-                            0,
-                            ',',
-                            '.'
-                        ) ?>
+                        <div class="admin-summary-desc">
+                            Siswa aktif tahun ajaran ini
+                        </div>
 
                     </div>
 
-
-                    <div class="admin-summary-desc">
-
-                        Rombel / kelas aktif
-
+                    <div class="admin-summary-icon admin-info">
+                        <i class="fas fa-user-graduate"></i>
                     </div>
-
 
                 </div>
-
-
-                <div class="admin-summary-icon admin-warning">
-
-                    <i class="fas fa-school"></i>
-
-                </div>
-
 
             </div>
 
-
         </div>
-
 
     </div>
 
 
+    <!-- =====================================================
+         ROMBEL
+    ===================================================== -->
+
+    <div class="col-xl-3 col-md-6 mb-4">
+
+        <div class="card admin-summary shadow h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <div class="admin-summary-title">
+                            Jumlah Rombel
+                        </div>
+
+                        <div class="admin-summary-number text-warning">
+
+                            <?= number_format(
+                                $jumlah_rombel,
+                                0,
+                                ',',
+                                '.'
+                            ) ?>
+
+                        </div>
+
+                        <div class="admin-summary-desc">
+                            Rombel / kelas aktif
+                        </div>
+
+                    </div>
+
+                    <div class="admin-summary-icon admin-warning">
+                        <i class="fas fa-school"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
-
-
-</div>
-
 
 <!-- =========================================================
      ROMBEL + SISWA AKTIF
@@ -1766,68 +1745,82 @@ body.light-mode .admin-summary {
 
         <div class="row">
 
+    <!-- GURU -->
 
-            <div class="col-md-4 mb-3 mb-md-0">
+    <div class="col-xl-3 col-md-6 mb-3">
 
+        <div class="alert alert-primary admin-info-box mb-0">
 
-                <div class="alert alert-primary admin-info-box mb-0">
+            <i class="fas fa-chalkboard-teacher mr-2"></i>
 
+            <strong>
+                <?= number_format($jumlah_guru, 0, ',', '.') ?>
+            </strong>
 
-                    <i class="fas fa-chalkboard-teacher mr-2"></i>
-
-                    <strong>
-                        <?= number_format($jumlah_guru, 0, ',', '.') ?>
-                    </strong>
-
-                    guru tercatat dalam sistem.
-
-                </div>
-
-
-            </div>
-
-
-            <div class="col-md-4 mb-3 mb-md-0">
-
-
-                <div class="alert alert-success admin-info-box mb-0">
-
-
-                    <i class="fas fa-user-graduate mr-2"></i>
-
-                    <strong>
-                        <?= number_format($jumlah_siswa_aktif, 0, ',', '.') ?>
-                    </strong>
-
-                    peserta didik aktif.
-
-                </div>
-
-
-            </div>
-
-
-            <div class="col-md-4">
-
-
-                <div class="alert alert-warning admin-info-box mb-0">
-
-
-                    <i class="fas fa-school mr-2"></i>
-
-                    <strong>
-                        <?= number_format($jumlah_rombel, 0, ',', '.') ?>
-                    </strong>
-
-                    rombel aktif.
-
-                </div>
-
-
-            </div>
-
+            guru tercatat dalam sistem.
 
         </div>
+
+    </div>
+
+
+    <!-- TENDIK -->
+
+    <div class="col-xl-3 col-md-6 mb-3">
+
+        <div class="alert alert-info admin-info-box mb-0">
+
+            <i class="fas fa-user-tie mr-2"></i>
+
+            <strong>
+                <?= number_format($jumlah_tendik, 0, ',', '.') ?>
+            </strong>
+
+            tendik tercatat dalam sistem.
+
+        </div>
+
+    </div>
+
+
+    <!-- SISWA -->
+
+    <div class="col-xl-3 col-md-6 mb-3">
+
+        <div class="alert alert-success admin-info-box mb-0">
+
+            <i class="fas fa-user-graduate mr-2"></i>
+
+            <strong>
+                <?= number_format($jumlah_siswa_aktif, 0, ',', '.') ?>
+            </strong>
+
+            peserta didik aktif.
+
+        </div>
+
+    </div>
+
+
+    <!-- ROMBEL -->
+
+    <div class="col-xl-3 col-md-6 mb-3">
+
+        <div class="alert alert-warning admin-info-box mb-0">
+
+            <i class="fas fa-school mr-2"></i>
+
+            <strong>
+                <?= number_format($jumlah_rombel, 0, ',', '.') ?>
+            </strong>
+
+            rombel aktif.
+
+        </div>
+
+    </div>
+
+</div>
 
 
     </div>

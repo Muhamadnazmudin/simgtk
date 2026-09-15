@@ -64,6 +64,8 @@ if (!in_array($role, $allowed)) {
 // ===============================
 $data['jumlah_guru'] = $this->db->count_all('guru');
 
+$data['jumlah_tendik'] = $this->db->count_all('tendik');
+
 $data['jumlah_siswa_aktif'] = $this->db
     ->where('status', 'aktif')
     ->count_all_results('siswa');
