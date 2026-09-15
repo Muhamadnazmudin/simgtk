@@ -41,7 +41,7 @@ href="<?=
   </li>
 
 <?php
-$group_data    = in_array($active, ['guru','tendik','kelas','siswa','buku_induk','kartu_osis','idcard_premium']);
+$group_data    = in_array($active, ['guru','tendik','kelas','siswa','buku_induk','berkas_siswa','kartu_osis','idcard_premium']);
 $group_berkas  = in_array($active, ['berkas_siswa']);
 $group_mutasi  = in_array($active, ['mutasi','kenaikan','siswa_keluar','siswa_lulus','laporan']);
 $group_absen   = in_array($active, ['absensi','laporan_absensi']);
