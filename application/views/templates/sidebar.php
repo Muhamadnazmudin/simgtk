@@ -41,7 +41,7 @@ href="<?=
   </li>
 
 <?php
-$group_data    = in_array($active, ['guru','kelas','siswa','buku_induk','kartu_osis','idcard_premium']);
+$group_data    = in_array($active, ['guru','tendik','kelas','siswa','buku_induk','kartu_osis','idcard_premium']);
 $group_berkas  = in_array($active, ['berkas_siswa']);
 $group_mutasi  = in_array($active, ['mutasi','kenaikan','siswa_keluar','siswa_lulus','laporan']);
 $group_absen   = in_array($active, ['absensi','laporan_absensi']);
@@ -116,11 +116,19 @@ $group_sptjm = in_array($active, [
         <div class="bg-white py-2 collapse-inner rounded">
             
             <a class="collapse-item <?= $active=='guru'?'active':'' ?>" 
-               href="<?= site_url('guru') ?>">Data Guru</a>
+   href="<?= site_url('guru') ?>">
+    Data Guru
+</a>
 
-            <a class="collapse-item <?= $active=='kelas'?'active':'' ?>" 
-               href="<?= site_url('kelas') ?>">Data Kelas</a>
+<a class="collapse-item <?= $active=='tendik'?'active':'' ?>" 
+   href="<?= site_url('tendik') ?>">
+    Data Tendik
+</a>
 
+<a class="collapse-item <?= $active=='kelas'?'active':'' ?>" 
+   href="<?= site_url('kelas') ?>">
+    Data Kelas
+</a>
 <!-- Data Siswa : Admin, Operator, BPBK -->
 <?php if($isAdmin || $isOperator || $isBPBK): ?>
 <a class="collapse-item <?= $active=='siswa'?'active':'' ?>" 
