@@ -56,7 +56,7 @@ class Berkas_siswa extends CI_Controller
     // PAGINATION
     // ==========================================
 
-    $limit = 20;
+    $limit = 36;
 
     // Pastikan offset angka
     $offset = (int) $offset;
