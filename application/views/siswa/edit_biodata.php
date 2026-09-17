@@ -169,7 +169,7 @@ $penghasilan_list = [
 }
 
 input[readonly] {
-    background: #f3f6fb;
+    background: #d8d8d8;
 }
 
         
