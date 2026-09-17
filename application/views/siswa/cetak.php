@@ -378,7 +378,7 @@ BIODATA PESERTA DIDIK
 <tr><td class="label">Hobi</td><td class="titik">:</td><td class="value"><?= v($siswa->hobi) ?></td></tr>
 <tr><td class="label">Cita-cita</td><td class="titik">:</td><td class="value"><?= v($siswa->cita_cita) ?></td></tr>
 <tr><td class="label">Sekolah Asal</td><td class="titik">:</td><td class="value"><?= v($siswa->sekolah_asal) ?></td></tr>
-<tr><td class="label">Nomor SKHUN</td><td class="titik">:</td><td class="value"><?= v($siswa->skhun) ?></td></tr>
+<tr><td class="label">Nomor Ijazah</td><td class="titik">:</td><td class="value"><?= v($siswa->skhun) ?></td></tr>
 </table>
 </div>
 
