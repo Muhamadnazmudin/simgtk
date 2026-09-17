@@ -346,7 +346,7 @@ input[readonly] {
                 <!-- E. DATA AYAH KANDUNG -->
                 <div class="section-title">E. DATA AYAH KANDUNG</div>
                 <table class="table bio-table">
-                    <tr><td class="bio-label">Nama Ayah</td><td><input type="text" name="nama_ayah" value="<?= $siswa->nama_ayah ?>"></td></tr>
+                    <tr><td class="bio-label">Nama Ayah</td><td><input type="text" name="nama_ayah" value="<?= $siswa->nama_ayah ?>"readonly></td></tr>
                     <tr><td class="bio-label">NIK Ayah</td><td><input type="text" name="nik_ayah" value="<?= $siswa->nik_ayah ?>"></td></tr>
                     <tr><td class="bio-label">Tahun Lahir Ayah</td><td><input type="text" name="tahun_lahir_ayah" value="<?= $siswa->tahun_lahir_ayah ?>"></td></tr>
 
