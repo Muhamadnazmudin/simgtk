@@ -95,25 +95,58 @@
 </td>
 
                        <td class="text-center">
+
     <?php $qs = $_SERVER['QUERY_STRING']; ?>
 
-<a href="<?= site_url('verval/valid/'.$s->id.'?'.$qs) ?>"
-   class="btn btn-success btn-sm"
-   title="Valid">
-    <i class="fas fa-check"></i>
-</a>
+    <!-- VALID -->
+    <a href="<?= site_url('verval/valid/'.$s->id.'?'.$qs) ?>"
+       class="btn btn-success btn-sm"
+       title="Valid">
 
-    <button class="btn btn-warning btn-sm" title="Perbaikan" data-id="<?= $s->id ?>" onclick="openPerbaikan(this)">
+        <i class="fas fa-check"></i>
+
+    </a>
+
+
+    <!-- PERBAIKAN -->
+    <button class="btn btn-warning btn-sm"
+            title="Perbaikan"
+            data-id="<?= $s->id ?>"
+            onclick="openPerbaikan(this)">
+
         <i class="fas fa-edit"></i>
+
     </button>
+
+
+    <!-- RESET -->
     <?php if ($s->status_verval != 0): ?>
-    <a href="<?= site_url('verval/reset/'.$s->id.'?'.$qs) ?>"
-   class="btn btn-secondary btn-sm"
-   title="Reset">
-    <i class="fas fa-undo"></i>
-</a>
+
+        <a href="<?= site_url('verval/reset/'.$s->id.'?'.$qs) ?>"
+           class="btn btn-secondary btn-sm"
+           title="Reset">
+
+            <i class="fas fa-undo"></i>
+
+        </a>
 
     <?php endif; ?>
+
+
+    <!-- SURAT PERNYATAAN -->
+    <?php if ((int) $s->status_verval === 1): ?>
+
+        <a href="<?= site_url('siswa/surat_pernyataan/'.$s->id) ?>"
+           class="btn btn-info btn-sm"
+           target="_blank"
+           title="Cetak Surat Pernyataan">
+
+            <i class="fas fa-envelope"></i>
+
+        </a>
+
+    <?php endif; ?>
+
 </td>
 
                     </tr>

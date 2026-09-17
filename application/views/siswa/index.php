@@ -331,14 +331,19 @@ $isViewOnly = in_array($role, ['operator', 'bpbk']);
           </a>
 
 
-          <a href="<?= site_url('siswa/surat_pernyataan/' . $s->id) ?>"
-             class="btn btn-info btn-sm"
-             target="_blank"
-             title="Cetak Surat Pernyataan">
+          <!-- CETAK SURAT PERNYATAAN -->
+<?php if ((int) $s->status_verval === 1): ?>
 
-            <i class="fas fa-envelope"></i>
+  <a href="<?= site_url('siswa/surat_pernyataan/' . $s->id) ?>"
+     class="btn btn-info btn-sm"
+     target="_blank"
+     title="Cetak Surat Pernyataan">
 
-          </a>
+    <i class="fas fa-envelope"></i>
+
+  </a>
+
+<?php endif; ?>
 
         </td>
 
