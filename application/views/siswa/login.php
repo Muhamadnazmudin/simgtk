@@ -878,7 +878,35 @@
 
 
                     <!-- LOGIN -->
+<!-- MATEMATIKA -->
 
+<div class="form-group-modern">
+
+    <label
+        for="jawaban_matematika"
+        class="form-label-modern"
+    >
+        <?= htmlspecialchars($math_soal) ?>
+    </label>
+
+    <div class="input-wrapper">
+
+        <i class="fas fa-calculator input-icon"></i>
+
+        <input
+            type="number"
+            name="jawaban_matematika"
+            id="jawaban_matematika"
+            class="form-control-modern"
+            placeholder="Masukkan jawaban"
+            inputmode="numeric"
+            autocomplete="off"
+            required
+        >
+
+    </div>
+
+</div>
                     <button
                         type="submit"
                         class="btn btn-login"
