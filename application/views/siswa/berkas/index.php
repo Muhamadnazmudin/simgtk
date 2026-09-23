@@ -445,7 +445,7 @@ $persentase =
                   ); ?>">
 
 
-                <!-- CSRF -->
+                <!-- CSRF lock upload berkas -->
 
                 <input type="hidden"
                        name="<?= $this->security->get_csrf_token_name(); ?>"

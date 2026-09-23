@@ -95,7 +95,7 @@ class Riwayat_biodata extends CI_Controller
     // =========================================================
     // PAGINATION
     // =========================================================
-    $per_page = 25;
+    $per_page = 36;
 
     $page = (int) $this->input->get(
         'page',
