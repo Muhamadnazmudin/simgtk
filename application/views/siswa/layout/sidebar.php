@@ -379,7 +379,7 @@ $is_xii = (
 
     <hr class="sidebar-divider">
 
-    <li class="nav-item <?= ($active == 'tka') ? 'active' : ''; ?>">
+    <!-- <li class="nav-item <?= ($active == 'tka') ? 'active' : ''; ?>">
 
         <a
             class="nav-link"
@@ -392,7 +392,7 @@ $is_xii = (
 
         </a>
 
-    </li>
+    </li> -->
 
 <?php endif; ?>
 
@@ -406,12 +406,12 @@ $is_xii = (
     <!-- Kartu -->
     <?php if(!$is_lulus): ?>
 
-<li class="nav-item <?= ($active=='kartu'?'active':''); ?>">
+<!-- <li class="nav-item <?= ($active=='kartu'?'active':''); ?>">
     <a class="nav-link" href="<?= site_url('SiswaDashboard/kartu'); ?>">
         <i class="fas fa-id-badge"></i>
         <span>Kartu Siswa</span>
     </a>
-</li>
+</li> -->
 
 <li class="nav-item <?= ($active=='idcard'?'active':''); ?>">
     <a class="nav-link" href="<?= site_url('SiswaDashboard/idcard'); ?>">
