@@ -47,7 +47,20 @@ $group_mutasi  = in_array($active, ['mutasi','kenaikan','siswa_keluar','siswa_lu
 $group_absen   = in_array($active, ['absensi','laporan_absensi']);
 $group_izin    = in_array($active, ['izin','laporan_izin']);
 $group_setting = in_array($active, ['hari_libur','tahun','jadwal_absensi','Sekolah']);
-$group_qr      = in_array($active, ['absensiqr_siswa','laporan_absensiqr']);
+
+$group_qr = in_array($active, [
+    'absensiqr_siswa',
+    'laporan_absensiqr'
+]);
+
+// Grup menu Absensi Salat
+$group_solat = in_array($active, [
+    'absensi_solat',
+    'absensi_solat_scan',
+    'absensi_solat_rekap',
+    'absensi_solat_pengaturan'
+]);
+
 $group_verval = in_array($active, ['verval_siswa','laporan_verval']);
 $group_riwayat = in_array($active, ['riwayat_biodata']);
 $group_sync    = in_array($active, ['sync_google']);
@@ -510,6 +523,46 @@ $group_sptjm = in_array($active, [
         </div>
     </div>
 </li>
+<?php endif; ?>
+
+<!-- ==============================
+     ABSENSI SOLAT (ADMIN)
+================================= -->
+<?php if ($isAdmin): ?>
+<li class="nav-item <?= $group_solat ? 'active' : '' ?>">
+
+    <a class="nav-link <?= $group_solat ? '' : 'collapsed' ?>"
+       href="#"
+       data-toggle="collapse"
+       data-target="#mAbsensiSolat"
+       aria-expanded="<?= $group_solat ? 'true' : 'false' ?>"
+       aria-controls="mAbsensiSolat">
+
+        <i class="fas fa-mosque"></i>
+        <span>Absensi Salat</span>
+    </a>
+
+    <div id="mAbsensiSolat"
+         class="collapse <?= $group_solat ? 'show' : '' ?>">
+
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <a class="collapse-item <?= $active == 'absensi_solat' ? 'active' : '' ?>"
+               href="<?= site_url('absensi_solat') ?>">
+                <i class="fas fa-tachometer-alt mr-2"></i>
+                Dashboard Salat
+            </a>
+            
+            <a class="collapse-item <?= $active == 'absensi_solat_rekap' ? 'active' : '' ?>"
+               href="<?= site_url('absensi_solat/rekap') ?>">
+                <i class="fas fa-clipboard-list mr-2"></i>
+                Rekap Absensi
+            </a>
+
+        </div>
+    </div>
+</li>
+
 <?php endif; ?>
 
 <!-- Izin -->

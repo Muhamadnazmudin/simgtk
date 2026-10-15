@@ -76,6 +76,12 @@ $route['install/run'] = 'install/run';
 $route['chatbot/reply'] = 'chatbot/reply';
 $route['id_card_premium'] = 'idcard_premium';
 $route['id_card_premium/cetak/(:num)'] = 'idcard_premium/cetak/$1';
+$route['absensi_solat'] = 'absensi_solat/index';
+$route['absensi_solat/buat_sesi'] = 'absensi_solat/buat_sesi';
+$route['absensi_solat/scan/(:num)'] = 'absensi_solat/scan/$1';
+$route['absensi_solat/proses_scan'] = 'absensi_solat/proses_scan';
+$route['absensi_solat/tutup_sesi/(:num)'] = 'absensi_solat/tutup_sesi/$1';
+$route['absensi_solat/rekap'] = 'absensi_solat/rekap';
 
 
 
