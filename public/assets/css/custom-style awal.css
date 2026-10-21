@@ -1,0 +1,624 @@
+/* ===============================
+   MODE TOGGLE SUPPORT
+   =============================== */
+
+body {
+	transition: background-color 0.3s, color 0.3s;
+	font-family: "Nunito", sans-serif;
+	overflow-y: auto !important;
+}
+
+/* --- LIGHT MODE DEFAULT --- */
+body:not(.dark-mode) {
+	background-color: #f8f9fc;
+	color: #212529;
+}
+
+body:not(.dark-mode) .sidebar {
+	background: linear-gradient(180deg, #4e73df 10%, #224abe 100%) !important;
+}
+
+body:not(.dark-mode) .topbar {
+	background-color: #ffffff !important;
+}
+
+body:not(.dark-mode) .card {
+	background-color: #ffffff !important;
+	color: #000;
+}
+
+body:not(.dark-mode) footer.sticky-footer {
+	background-color: #f8f9fc;
+	color: #666;
+}
+
+/* ===============================
+   DARK MODE (DEFAULT AKTIF)
+   =============================== */
+
+body.dark-mode {
+	background-color: #1e1e2f;
+	color: #e0e0e0;
+}
+
+/* ========== DARK MODE ONLY ========== */
+body.dark-mode #wrapper {
+	background-color: #1e1e2f !important;
+}
+
+body.dark-mode #content-wrapper {
+	background-color: #1e1e2f !important;
+}
+
+body.dark-mode #content {
+	background-color: #1e1e2f !important;
+}
+
+/* --- SIDEBAR --- */
+body.dark-mode .sidebar {
+	background: linear-gradient(180deg, #2b2b3c 10%, #23232e 100%) !important;
+	color: #ffffff;
+}
+
+body.dark-mode .sidebar .nav-item .nav-link {
+	color: #c9c9d1;
+	transition: all 0.2s ease-in-out;
+}
+
+body.dark-mode .sidebar .nav-item .nav-link i {
+	color: #a5a5b1;
+}
+
+body.dark-mode .sidebar .nav-item.active .nav-link,
+body.dark-mode .sidebar .nav-item .nav-link:hover {
+	background-color: #34344a;
+	color: #fff;
+}
+
+body.dark-mode .sidebar .sidebar-heading {
+	color: #9fa0b3;
+	font-weight: 600;
+}
+
+/* --- TOPBAR --- */
+body.dark-mode .topbar {
+	background-color: #2b2b3c !important;
+	border-bottom: 1px solid #38384a;
+}
+
+body.dark-mode .topbar .nav-link,
+body.dark-mode .topbar .navbar-nav .nav-item .nav-link {
+	color: #ddd !important;
+}
+
+body.dark-mode .topbar .nav-link:hover {
+	color: #fff !important;
+}
+
+/* --- CARD & TABLE --- */
+body.dark-mode .card {
+	background-color: #2b2b3c !important;
+	border: 1px solid #38384a;
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+	color: #e0e0e0;
+}
+
+body.dark-mode .card-header {
+	background-color: #34344a !important;
+	color: #fff;
+	font-weight: 600;
+}
+
+body.dark-mode .table {
+	color: #ddd;
+}
+
+body.dark-mode .table thead th {
+	background-color: #34344a;
+	color: #fff;
+}
+
+body.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+	background-color: #2e2e40;
+}
+
+body.dark-mode .table-hover tbody tr:hover {
+	background-color: #3a3a52;
+}
+body.dark-mode .table-secondary.fw-bold td {
+	color: #000 !important; /* hitam, biar kontras */
+	font-weight: 700;
+}
+body.dark-mode .table-secondary td,
+body.dark-mode .table-secondary th {
+	color: #000 !important;
+}
+
+/* --- BUTTONS --- */
+.btn {
+	border-radius: 8px;
+	transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+	background-color: #4b6cb7;
+	border-color: #4b6cb7;
+}
+
+.btn-primary:hover {
+	background-color: #395591;
+	border-color: #395591;
+}
+
+.btn-danger {
+	background-color: #c0392b;
+	border-color: #c0392b;
+}
+
+.btn-danger:hover {
+	background-color: #a93226;
+}
+
+/* --- FOOTER --- */
+body.dark-mode footer.sticky-footer {
+	background-color: #2b2b3c;
+	color: #bbb;
+	border-top: 1px solid #38384a;
+}
+
+/* --- SCROLLBAR --- */
+::-webkit-scrollbar {
+	width: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: #1e1e2f;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: #444;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: #666;
+}
+
+/* --- DATATABLES --- */
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+	background-color: #2b2b3c;
+	border: 1px solid #444;
+	color: #ddd;
+}
+
+/* --- SWEETALERT DARK THEME --- */
+.swal-modal {
+	background-color: #2b2b3c !important;
+	color: #fff !important;
+}
+
+.swal-title {
+	color: #fff !important;
+}
+
+.swal-text {
+	color: #ccc !important;
+}
+
+/* --- CHART --- */
+.chartjs-render-monitor {
+	background-color: transparent !important;
+}
+
+/* --- LINK TEXT --- */
+a {
+	color: #4b6cb7;
+}
+
+a:hover {
+	color: #5d7de2;
+}
+/* =====================================================
+   FIX DROPDOWN PENCARIAN SISWA — DARK MODE SUPPORT
+   ===================================================== */
+
+/* background dropdown */
+body.dark-mode #hasilCari {
+	background: #2d2f3f !important;
+	border: 1px solid #444 !important;
+}
+
+/* tiap item */
+body.dark-mode #hasilCari .item-siswa {
+	color: #ffffff !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* warna id / nisn */
+body.dark-mode #hasilCari .item-id {
+	color: #6bb6ff !important;
+}
+
+/* warna kelas */
+body.dark-mode #hasilCari .item-kelas {
+	color: #ffcc8a !important;
+}
+
+/* hover */
+body.dark-mode #hasilCari .item-siswa:hover {
+	background: #3b3d52 !important;
+	color: #fff !important;
+}
+body.dark-mode #hasilCari * {
+	opacity: 1 !important;
+}
+/* =========================
+   MODE TERANG (Light mode)
+========================= */
+body.light-mode {
+	background-color: #f8f9fc !important;
+	color: #1a1a1a !important;
+}
+/* ========== LIGHT MODE ========== */
+body.light-mode #wrapper,
+body.light-mode #content-wrapper,
+body.light-mode #content {
+	background-color: #ffffff !important;
+}
+/* Card, box, panel */
+body.light-mode .card,
+body.light-mode .modal-content,
+body.light-mode .content-wrapper,
+body.light-mode .container-fluid,
+body.light-mode #content {
+	background: #ffffff !important;
+	color: #1a1a1a !important;
+}
+
+/* Semua teks */
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode h4,
+body.light-mode p,
+body.light-mode label,
+body.light-mode a,
+body.light-mode span {
+	color: #1a1a1a !important;
+}
+/* ============================================
+   FIX SB-ADMIN2 LIGHT MODE — FINAL
+=============================================== */
+
+/* Wrapper dan konten utama */
+body.light-mode #wrapper,
+body.light-mode #content-wrapper,
+body.light-mode #content,
+body.light-mode .content,
+body.light-mode .container-fluid {
+	background-color: #ffffff !important;
+	color: #000 !important;
+}
+
+/* Tabel */
+body.light-mode .table,
+body.light-mode .table-responsive {
+	background-color: #ffffff !important;
+	color: #000 !important;
+}
+
+body.light-mode .table thead th {
+	background-color: #e9ecef !important;
+	color: #000 !important;
+}
+
+/* Card */
+body.light-mode .card,
+body.light-mode .card-body,
+body.light-mode .card-header {
+	background-color: #ffffff !important;
+	color: #000 !important;
+}
+
+/* Topbar */
+body.light-mode .topbar,
+body.light-mode #topbar {
+	background-color: #ffffff !important;
+	color: #000 !important;
+}
+
+/* Hilangkan semua class gelap bawaan SBAdmin2 */
+body.light-mode .bg-dark,
+body.light-mode .bg-gray-900,
+body.light-mode .bg-secondary,
+body.light-mode .bg-gradient-primary {
+	background-color: #ffffff !important;
+	background-image: none !important;
+}
+/* ============================================
+   SUPER OVERRIDE — BIKIN LIGHT MODE BENAR-BENAR TERANG
+   ============================================ */
+
+body.light-mode,
+body.light-mode #wrapper,
+body.light-mode #content-wrapper,
+body.light-mode #content,
+body.light-mode .container-fluid,
+body.light-mode .page-content,
+body.light-mode .content,
+body.light-mode .bg-dark,
+body.light-mode .bg-gray-900,
+body.light-mode .bg-gradient-primary,
+body.light-mode .bg-secondary,
+body.light-mode .card,
+body.light-mode .card-body,
+body.light-mode .card-header,
+body.light-mode table,
+body.light-mode .table-responsive,
+body.light-mode nav,
+body.light-mode .navbar,
+body.light-mode .navbar-nav,
+body.light-mode .modal-content {
+	background-color: #ffffff !important;
+	color: #000 !important;
+}
+
+/* Teks apa pun dalam light mode */
+body.light-mode * {
+	color: #000 !important;
+}
+
+/* Hilangkan shadow gelap */
+body.light-mode .shadow,
+body.light-mode .shadow-sm,
+body.light-mode .shadow-lg {
+	box-shadow: none !important;
+}
+/* ===============================================
+   FINAL FIX — LIGHT MODE BENAR-BENAR TERANG
+   =============================================== */
+
+/* Paksa wrapper dan content jadi putih */
+body.light-mode #wrapper,
+body.light-mode #content {
+	background-color: #ffffff !important;
+	color: #000 !important;
+}
+
+/* Container putih */
+body.light-mode .container-fluid {
+	background-color: #ffffff !important;
+}
+
+/* Sidebar tetap biru */
+body.light-mode #wrapper .sidebar {
+	background: linear-gradient(180deg, #4e73df 10%, #224abe 100%) !important;
+}
+
+/* Elemen apapun yang masih gelap diperbaiki */
+body.light-mode * {
+	color: #000 !important;
+}
+/* Warna submenu mengikuti sidebar dark mode */
+.sidebar .collapse-inner {
+	background-color: #2c2f48 !important; /* warna sesuai dark sidebar */
+	color: #fff !important;
+}
+
+/* Warna teks submenu */
+.sidebar .collapse-inner .collapse-item {
+	color: #d1d1d1 !important;
+}
+
+/* Warna hover submenu */
+.sidebar .collapse-inner .collapse-item:hover {
+	background-color: #3a3d5c !important;
+	color: #fff !important;
+}
+
+/* Warna item submenu aktif */
+.sidebar .collapse-inner .collapse-item.active {
+	background-color: #4c5177 !important;
+	color: #fff !important;
+}
+/* =====================================================
+   FIX SUBMENU — FORCE FOLLOW LIGHT & DARK MODE
+   ===================================================== */
+
+/* ---- DARK MODE ---- */
+body.dark-mode .sidebar .collapse-inner {
+	background-color: #2c2f48 !important;
+}
+
+body.dark-mode .sidebar .collapse-inner .collapse-item {
+	color: #d1d1d1 !important;
+}
+
+body.dark-mode .sidebar .collapse-inner .collapse-item:hover {
+	background-color: #3a3d5c !important;
+	color: #fff !important;
+}
+
+body.dark-mode .sidebar .collapse-inner .collapse-item.active {
+	background-color: #4c5177 !important;
+	color: #fff !important;
+}
+
+/* ---- LIGHT MODE ---- */
+body.light-mode .sidebar .collapse-inner {
+	background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+body.light-mode .sidebar .collapse-inner .collapse-item {
+	color: #fff !important;
+}
+
+body.light-mode .sidebar .collapse-inner .collapse-item:hover {
+	background-color: rgba(255, 255, 255, 0.25) !important;
+	color: #fff !important;
+}
+
+body.light-mode .sidebar .collapse-inner .collapse-item.active {
+	background-color: rgba(255, 255, 255, 0.35) !important;
+	color: #fff !important;
+}
+/* ===============================
+   FINAL FIX SIDEBAR & TOGGLE
+   =============================== */
+
+/* Fix body supaya konten yang scroll, bukan body */
+html,
+body {
+	height: 100%;
+	overflow: hidden !important;
+}
+
+/* Sidebar selalu fixed */
+#accordionSidebar {
+	width: 224px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	overflow-y: auto;
+	transition: width 0.25s ease;
+	z-index: 1031;
+}
+
+/* Content wrapper mengikuti posisi sidebar */
+#content-wrapper {
+	margin-left: 224px;
+	height: 100vh;
+	overflow-y: auto;
+	padding-top: 80px; /* ruang topbar */
+	transition: margin-left 0.25s ease;
+}
+
+/* Topbar fixed ikut geser */
+.topbar {
+	position: fixed !important;
+	top: 0;
+	left: 224px;
+	right: 0;
+	z-index: 1040;
+	transition: left 0.25s ease;
+}
+
+/* Saat sidebar COLLAPSE */
+.sidebar.toggled {
+	width: 80px !important;
+}
+
+/* Content ikut geser saat collapse */
+.sidebar.toggled ~ #content-wrapper {
+	margin-left: 80px !important;
+}
+
+/* Topbar ikut geser juga */
+.sidebar.toggled ~ .topbar {
+	left: 80px !important;
+}
+.topbar.bg-success {
+	background-color: #28a745 !important;
+}
+/* =====================================================
+   FINAL FIX — MODAL MOBILE SBADMIN2 (PORTRAIT)
+   ===================================================== */
+
+/* RESET BUG TOUCH MOBILE */
+@media (max-width: 767px) and (orientation: portrait) {
+	/* saat modal aktif */
+	body.modal-open {
+		overflow: hidden !important;
+		touch-action: none !important;
+	}
+
+	/* sidebar & topbar JANGAN nangkap klik */
+	body.modal-open #accordionSidebar,
+	body.modal-open .sidebar,
+	body.modal-open .topbar {
+		pointer-events: none !important;
+	}
+
+	/* modal WAJIB bisa disentuh */
+	body.modal-open .modal,
+	body.modal-open .modal * {
+		pointer-events: auto !important;
+		touch-action: manipulation !important;
+	}
+
+	/* z-index dipaksa naik */
+	body.modal-open .modal {
+		z-index: 3000 !important;
+		position: fixed !important;
+	}
+
+	body.modal-open .modal-backdrop {
+		z-index: 2990 !important;
+	}
+}
+
+/* FIX ANDROID CHROME BUG */
+.modal {
+	-webkit-overflow-scrolling: touch;
+}
+
+.modal-dialog {
+	margin: 1rem auto !important;
+}
+
+/* AMANKAN FIXED LAYOUT SAAT MODAL */
+body.modal-open #content-wrapper {
+	overflow: hidden !important;
+}
+/* =====================================================
+   FIX TOTAL TOPBAR MOBILE — SB ADMIN 2
+   ===================================================== */
+
+@media (max-width: 767px) {
+	/* paksa struktur navbar normal */
+	.topbar .navbar {
+		display: flex !important;
+		flex-direction: row !important;
+		align-items: center !important;
+	}
+
+	/* =============================
+	   HAMBURGER MENU
+	   ============================= */
+
+	/* tombol toggle */
+	#sidebarToggleTop {
+		position: relative !important;
+		left: 0 !important;
+		right: auto !important;
+		margin-left: 0 !important;
+		margin-right: auto !important;
+		order: 1 !important;
+		z-index: 3001 !important;
+	}
+
+	/* container hamburger (SBAdmin2) */
+	.topbar .navbar-nav.mr-auto {
+		display: flex !important;
+		flex-direction: row !important;
+		align-items: center !important;
+		margin-right: auto !important;
+	}
+
+	/* =============================
+	   USER MENU (KANAN)
+	   ============================= */
+	.topbar .navbar-nav.ml-auto {
+		display: flex !important;
+		margin-left: auto !important;
+		order: 3 !important;
+	}
+
+	/* jangan biarkan navbar collapse aneh */
+	.topbar .navbar-collapse {
+		display: flex !important;
+		flex-basis: auto !important;
+	}
+}

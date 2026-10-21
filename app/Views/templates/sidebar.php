@@ -1,0 +1,848 @@
+<!-- ================= SIDEBAR.PHP ================= -->
+<?php 
+$role  = $this->session->userdata('role_name'); 
+$role_id = $this->session->userdata('role_id');
+$isAdmin      = ($role == 'admin');
+$isOperator   = ($role == 'operator');
+$isKesiswaan  = ($role == 'kesiswaan');
+$isBPBK       = ($role == 'bpbk');
+if (!isset($active)) $active = ''; 
+?>
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+  <!-- Brand -->
+  <a class="sidebar-brand d-flex align-items-center justify-content-center"
+href="<?=
+($role_id == 3) ? site_url('walikelas') :
+(($role_id == 6) ? site_url('bpbk') : site_url('dashboard'))
+?>">
+    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-exchange-alt"></i></div>
+    <div class="sidebar-brand-text mx-3">SimSGTK</div>
+  </a>
+
+  <hr class="sidebar-divider my-0">
+
+  <!-- Dashboard -->
+  <li class="nav-item <?= $active=='dashboard'?'active':'' ?>">
+    <a class="nav-link"
+       href="<?=
+       ($role_id == 3)
+            ? site_url('walikelas')
+            : (
+                ($role_id == 6)
+                    ? site_url('bpbk')
+                    : site_url('dashboard')
+              )
+       ?>">
+      <i class="fas fa-fw fa-tachometer-alt"></i>
+      <span>Dashboard</span>
+    </a>
+  </li>
+
+<?php
+$group_data    = in_array($active, ['guru','tendik','kelas','siswa','buku_induk','berkas_siswa','kartu_osis','idcard_premium']);
+$group_berkas  = in_array($active, ['berkas_siswa']);
+$group_mutasi  = in_array($active, ['mutasi','kenaikan','siswa_keluar','siswa_lulus','laporan']);
+$group_absen   = in_array($active, ['absensi','laporan_absensi']);
+$group_izin    = in_array($active, ['izin','laporan_izin']);
+$group_setting = in_array($active, ['hari_libur','tahun','jadwal_absensi','Sekolah']);
+
+$group_qr = in_array($active, [
+    'absensiqr_siswa',
+    'laporan_absensiqr'
+]);
+
+// Grup menu Absensi Salat
+$group_solat = in_array($active, [
+    'absensi_solat',
+    'absensi_solat_scan',
+    'absensi_solat_rekap',
+    'absensi_solat_pengaturan'
+]);
+
+$group_verval = in_array($active, ['verval_siswa','laporan_verval']);
+$group_riwayat = in_array($active, ['riwayat_biodata']);
+$group_sync    = in_array($active, ['sync_google']);
+$group_guru = in_array($active, [
+    'data_guru',
+    'monitoring_mengajar',
+    'rekap_jjm',
+    'guru_sertifikasi',
+    'guru_pendidikan',
+    'guru_anak',
+    'guru_tugas',
+    'guru_gaji',
+    'guru_kepangkatan',
+    'guru_karir'
+]);
+$group_buku_tamu = in_array($active, ['buku_tamu']);
+$group_kurikulum = in_array($active, [
+    'jadwal_mengajar',
+    'laporan_mengajar',
+    'laporan_pembelajaran_siswa',
+    'mapel',
+    'jam_sekolah',
+    'bacaan_import',
+    'buku'
+]);
+$group_rapor = in_array($active, [
+    'nilai_input',
+    'nilai_import',
+    'nilai_daftar'
+]);
+$group_belajarid = in_array($active, [
+    'akun_belajar'
+]);
+$group_tutorial = in_array($active, [
+    'tutorial',
+    'tutorial_add',
+    'tutorial_edit'
+]);
+$group_tka = in_array($active, [
+    'tka',
+    'tka_edit'
+]);
+
+$group_sptjm = in_array($active, [
+    'sptjm_upload',
+    'sptjm_riwayat'
+]);
+?>
+
+<hr class="sidebar-divider">
+
+<!-- ==============================
+     ROLE: ADMIN
+================================= -->
+<?php if ($isAdmin || $isOperator || $isBPBK): ?>
+
+<div class="sidebar-heading">Manajemen Data</div>
+
+<!-- Manajemen Data -->
+<li class="nav-item <?= $group_data ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mDataAdmin">
+        <i class="fas fa-database"></i>
+        <span>Manajemen Data</span>
+    </a>
+    <div id="mDataAdmin" class="collapse <?= $group_data ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            
+            <a class="collapse-item <?= $active=='guru'?'active':'' ?>" 
+   href="<?= site_url('guru') ?>">
+    Data Guru
+</a>
+
+<a class="collapse-item <?= $active=='tendik'?'active':'' ?>" 
+   href="<?= site_url('tendik') ?>">
+    Data Tendik
+</a>
+
+<a class="collapse-item <?= $active=='kelas'?'active':'' ?>" 
+   href="<?= site_url('kelas') ?>">
+    Data Kelas
+</a>
+<!-- Data Siswa : Admin, Operator, BPBK -->
+<?php if($isAdmin || $isOperator || $isBPBK): ?>
+<a class="collapse-item <?= $active=='siswa'?'active':'' ?>" 
+   href="<?= site_url('siswa') ?>">
+    Data Siswa
+</a>
+<?php endif; ?>
+
+<!-- Buku Induk : Admin & Operator -->
+<?php if($isAdmin || $isOperator): ?>
+<a class="collapse-item <?= $active=='buku_induk'?'active':'' ?>"
+   href="<?= site_url('buku_induk') ?>">
+    Buku Induk
+</a>
+<?php endif; ?>
+
+<!-- Upload Berkas Siswa : Admin & Operator -->
+<?php if($isAdmin || $isOperator): ?>
+<a class="collapse-item <?= $active=='berkas_siswa'?'active':'' ?>"
+   href="<?= site_url('berkas_siswa') ?>">
+    Upload Berkas
+</a>
+<?php endif; ?>
+
+            <!-- MENU BARU ID CARD PREMIUM -->
+<?php if($isAdmin || $isOperator): ?>
+            <a class="collapse-item <?= $active=='idcard_premium'?'active':'' ?>" 
+                href="<?= site_url('idcard_premium') ?>">
+                ID Card Premium
+            </a>
+            <?php endif; ?>
+        </div>
+    </div>
+</li>
+
+<!-- ==============================
+     GURU (ADMIN)
+================================= -->
+<?php if($isAdmin): ?>
+<li class="nav-item <?= $group_guru ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mGuruAdmin">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <span>Guru</span>
+    </a>
+    <div id="mGuruAdmin" class="collapse <?= $group_guru ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <!-- <a class="collapse-item <?= $active=='guru'?'active':'' ?>"
+               href="<?= site_url('guru') ?>">
+               Data Guru
+            </a> -->
+
+            <a class="collapse-item <?= $active=='monitoring_mengajar'?'active':'' ?>"
+               href="<?= site_url('monitoring_mengajar') ?>">
+               Data Mengajar
+            </a>
+            <a class="collapse-item <?= $active=='rekap_jjm'?'active':'' ?>"
+               href="<?= site_url('rekap_jjm') ?>">
+               Rekap JJM Guru
+            </a>
+
+            <a class="collapse-item <?= $active=='guru_sertifikasi'?'active':'' ?>"
+               href="<?= site_url('guru_sertifikasi') ?>">
+               Riwayat Sertifikasi
+            </a>
+
+            <a class="collapse-item <?= $active=='guru_pendidikan'?'active':'' ?>"
+               href="<?= site_url('guru_pendidikan') ?>">
+               Riwayat Pendidikan Formal
+            </a>
+
+            <a class="collapse-item <?= $active=='guru_anak'?'active':'' ?>"
+               href="<?= site_url('guru_anak') ?>">
+               Anak
+            </a>
+
+            <a class="collapse-item <?= $active=='guru_tugas'?'active':'' ?>"
+               href="<?= site_url('guru_tugas') ?>">
+               Tugas Tambahan
+            </a>
+
+            <a class="collapse-item <?= $active=='guru_gaji'?'active':'' ?>"
+               href="<?= site_url('guru_gaji') ?>">
+               Riwayat Gaji Berkala
+            </a>
+
+            <a class="collapse-item <?= $active=='guru_kepangkatan'?'active':'' ?>"
+               href="<?= site_url('guru_kepangkatan') ?>">
+               Riwayat Kepangkatan
+            </a>
+
+            <a class="collapse-item <?= $active=='guru_karir'?'active':'' ?>"
+               href="<?= site_url('guru_karir') ?>">
+               Riwayat Karir Guru
+            </a>
+
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+<!-- ==============================
+     KURIKULUM (ADMIN)
+================================= -->
+<?php if($isAdmin): ?>
+<li class="nav-item <?= $group_kurikulum ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mKurikulumAdmin">
+        <i class="fas fa-book-open"></i>
+        <span>Kurikulum</span>
+    </a>
+    <div id="mKurikulumAdmin" class="collapse <?= $group_kurikulum ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item <?= $active=='mapel'?'active':'' ?>"
+               href="<?= site_url('mapel') ?>">
+               Mata Pelajaran
+            </a>
+            <a class="collapse-item <?= $active=='jam_sekolah'?'active':'' ?>"
+               href="<?= site_url('jam_sekolah') ?>">
+               Jam Sekolah
+            </a>
+            <a class="collapse-item <?= $active=='jadwal_mengajar'?'active':'' ?>"
+               href="<?= site_url('jadwal_mengajar') ?>">
+               Jadwal Mengajar Guru
+            </a>
+
+            <a class="collapse-item <?= $active=='laporan_mengajar'?'active':'' ?>"
+               href="<?= site_url('laporan_mengajar') ?>">
+               Laporan Mengajar Guru
+            </a>
+            <a class="collapse-item <?= $active=='laporan_pembelajaran_siswa'?'active':'' ?>"
+            href="<?= site_url('AdminLaporanPembelajaran') ?>">
+            Report Siswa
+            </a>
+            <a class="collapse-item <?= $active=='bacaan_import'?'active':'' ?>"
+               href="<?= site_url('AdminBacaan/import') ?>">
+               Import Buku
+            </a>
+            <a class="collapse-item <?= $active=='buku'?'active':'' ?>"
+               href="<?= site_url('AdminBacaan') ?>">
+               Daftar Buku
+            </a>
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+<!-- ==============================
+     NILAI RAPOR
+================================= -->
+<?php if($isAdmin || $isOperator): ?>
+<li class="nav-item <?= $group_rapor ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mNilaiRapor">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Nilai Rapor</span>
+    </a>
+
+    <div id="mNilaiRapor" class="collapse <?= $group_rapor ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <?php if ($isAdmin || $isOperator): ?>
+
+                <a class="collapse-item <?= $active=='nilai_daftar'?'active':'' ?>"
+                   href="<?= site_url('Nilairapor_admin/rekap') ?>">
+                    Daftar Nilai
+                </a>
+
+            <?php else: ?>
+
+                <a class="collapse-item <?= $active=='nilai_input'?'active':'' ?>"
+                   href="<?= site_url('Nilairapor_admin') ?>">
+                    Input Nilai
+                </a>
+
+                <a class="collapse-item <?= $active=='nilai_import'?'active':'' ?>"
+                   href="<?= site_url('Nilairapor_admin/import') ?>">
+                    Import Nilai (Excel)
+                </a>
+
+                <a class="collapse-item <?= $active=='nilai_daftar'?'active':'' ?>"
+                   href="<?= site_url('Nilairapor_admin/rekap') ?>">
+                    Daftar Nilai
+                </a>
+
+            <?php endif; ?>
+
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+
+
+<!-- ==============================
+     TKA
+================================= -->
+<?php if ($isAdmin): ?>
+
+<li class="nav-item <?= $group_tka ? 'active' : '' ?>">
+
+    <a
+        class="nav-link collapsed"
+        href="#"
+        data-toggle="collapse"
+        data-target="#mTKAAdmin"
+    >
+
+        <i class="fas fa-graduation-cap"></i>
+
+        <span>TKA</span>
+
+    </a>
+
+    <div
+        id="mTKAAdmin"
+        class="collapse <?= $group_tka ? 'show' : '' ?>"
+    >
+
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <a
+                class="collapse-item <?= $active=='tka'?'active':'' ?>"
+                href="<?= site_url('Tka_admin') ?>"
+            >
+                Peserta TKA
+            </a>
+
+        </div>
+
+    </div>
+
+</li>
+
+<?php endif; ?>
+
+<!-- ==============================
+     SPTJM DAPODIK
+================================= -->
+<?php if ($isAdmin): ?>
+
+<li class="nav-item <?= $group_sptjm ? 'active' : '' ?>">
+
+    <a
+        class="nav-link collapsed"
+        href="#"
+        data-toggle="collapse"
+        data-target="#mSPTJMDapodik"
+        aria-expanded="<?= $group_sptjm ? 'true' : 'false' ?>"
+        aria-controls="mSPTJMDapodik"
+    >
+
+        <i class="fas fa-file-signature"></i>
+
+        <span>SPTJM Dapodik</span>
+
+    </a>
+
+    <div
+        id="mSPTJMDapodik"
+        class="collapse <?= $group_sptjm ? 'show' : '' ?>"
+    >
+
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <!-- UPLOAD SPTJM -->
+            <a
+                class="collapse-item <?= $active == 'sptjm_upload' ? 'active' : '' ?>"
+                href="<?= site_url('sptjm/upload') ?>"
+            >
+                <i class="fas fa-upload mr-2"></i>
+                Upload SPTJM
+            </a>
+
+            <!-- RIWAYAT SPTJM -->
+            <a
+                class="collapse-item <?= $active == 'sptjm_riwayat' ? 'active' : '' ?>"
+                href="<?= site_url('sptjm/riwayat') ?>"
+            >
+                <i class="fas fa-history mr-2"></i>
+                Riwayat SPTJM
+            </a>
+
+        </div>
+
+    </div>
+
+</li>
+
+<?php endif; ?>
+<!-- ==============================
+     AKUN BELAJAR / BELAJARID
+================================= -->
+<?php if($isAdmin || $isOperator): ?>
+<li class="nav-item <?= $group_belajarid ? 'active' : '' ?>">
+
+
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mBelajarID">
+        <i class="fas fa-envelope-open-text"></i>
+        <span>Akun Belajar</span>
+    </a>
+    <div id="mBelajarID" class="collapse <?= $group_belajarid ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <a class="collapse-item <?= $active=='akun_belajar'?'active':'' ?>"
+               href="<?= site_url('akun_belajar') ?>">
+               Distribusi Akun Belajar
+            </a>
+
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+<!-- ==============================
+     TUTORIAL (ADMIN)
+================================= -->
+<?php if($isAdmin): ?>
+<li class="nav-item <?= $group_tutorial ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mTutorialAdmin">
+        <i class="fas fa-video"></i>
+        <span>Tutorial</span>
+    </a>
+    <div id="mTutorialAdmin" class="collapse <?= $group_tutorial ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item <?= $active=='tutorial'?'active':'' ?>"
+               href="<?= site_url('tutorial') ?>">
+               Daftar Tutorial
+            </a>
+
+            <a class="collapse-item <?= $active=='tutorial_add'?'active':'' ?>"
+               href="<?= site_url('tutorial/add') ?>">
+               Tambah Tutorial
+            </a>
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+
+<!-- Mutasi -->
+ <?php if($isAdmin): ?>
+<li class="nav-item <?= $group_mutasi ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mMutasiAdmin">
+        <i class="fas fa-random"></i>
+        <span>Mutasi</span>
+    </a>
+    <div id="mMutasiAdmin" class="collapse <?= $group_mutasi ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="<?= site_url('mutasi') ?>">Mutasi Siswa</a>
+            <a class="collapse-item" href="<?= site_url('kenaikan') ?>">Kenaikan Kelas</a>
+            <a class="collapse-item" href="<?= site_url('siswa_keluar') ?>">Siswa Keluar</a>
+            <a class="collapse-item" href="<?= site_url('siswa_lulus') ?>">Siswa Lulus</a>
+            <a class="collapse-item" href="<?= site_url('laporan') ?>">Laporan Mutasi</a>
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+
+
+<!-- Absensi -->
+ <?php if($isAdmin || $isBPBK): ?>
+<li class="nav-item <?= $group_absen ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mAbsensiAdmin">
+        <i class="fas fa-user-check"></i>
+        <span>Absensi</span>
+    </a>
+    <div id="mAbsensiAdmin" class="collapse <?= $group_absen ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="<?= base_url('index.php/Absensi/Absensi') ?>">Absensi Siswa</a>
+            <a class="collapse-item" href="<?= site_url('Absensi/Laporan') ?>">Laporan Absensi</a>
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+<?php if($isAdmin): ?>
+<!-- Absensi QR -->
+<li class="nav-item <?= $group_qr ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mQRAdmin">
+        <i class="fas fa-qrcode"></i>
+        <span>Absensi QR</span>
+    </a>
+    <div id="mQRAdmin" class="collapse <?= $group_qr ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="<?= base_url('index.php/AbsensiQRAdmin') ?>">Absensi QR Siswa</a>
+            <a class="collapse-item" href="<?= base_url('index.php/AbsensiQRAdmin/laporan') ?>">Laporan Absensi QR</a>
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+
+<!-- ==============================
+     ABSENSI SOLAT (ADMIN)
+================================= -->
+<?php if ($isAdmin): ?>
+<li class="nav-item <?= $group_solat ? 'active' : '' ?>">
+
+    <a class="nav-link <?= $group_solat ? '' : 'collapsed' ?>"
+       href="#"
+       data-toggle="collapse"
+       data-target="#mAbsensiSolat"
+       aria-expanded="<?= $group_solat ? 'true' : 'false' ?>"
+       aria-controls="mAbsensiSolat">
+
+        <i class="fas fa-mosque"></i>
+        <span>Absensi Salat</span>
+    </a>
+
+    <div id="mAbsensiSolat"
+         class="collapse <?= $group_solat ? 'show' : '' ?>">
+
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <a class="collapse-item <?= $active == 'absensi_solat' ? 'active' : '' ?>"
+               href="<?= site_url('absensi_solat') ?>">
+                <i class="fas fa-tachometer-alt mr-2"></i>
+                Dashboard Salat
+            </a>
+            
+            <a class="collapse-item <?= $active == 'absensi_solat_rekap' ? 'active' : '' ?>"
+               href="<?= site_url('absensi_solat/rekap') ?>">
+                <i class="fas fa-clipboard-list mr-2"></i>
+                Rekap Absensi
+            </a>
+
+        </div>
+    </div>
+</li>
+
+<?php endif; ?>
+
+<!-- Izin -->
+ <?php if($isAdmin || $isBPBK): ?>
+<li class="nav-item <?= $group_izin ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mIzinAdmin">
+        <i class="fas fa-door-open"></i>
+        <span>Izin Siswa</span>
+    </a>
+    <div id="mIzinAdmin" class="collapse <?= $group_izin ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="<?= site_url('izin/scan') ?>">Scan Manual</a>
+            <a class="collapse-item" href="<?= site_url('izin/rfid') ?>">Scan RFID</a>
+            <a class="collapse-item" href="<?= site_url('izin') ?>">Izin Keluar Siswa</a>
+            <a class="collapse-item" href="<?= site_url('izin/laporan') ?>">Laporan Izin</a>
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+
+<!-- ==============================
+     VERVAl DATA (ADMIN)
+================================= -->
+<?php if($isAdmin): ?>
+<li class="nav-item <?= $group_verval ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mVervalAdmin">
+        <i class="fas fa-check-double"></i>
+        <span>Verval Data</span>
+    </a>
+    <div id="mVervalAdmin" class="collapse <?= $group_verval ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item <?= $active=='verval_siswa'?'active':'' ?>" 
+               href="<?= site_url('verval/siswa') ?>">
+               Verval Siswa
+            </a>
+            <a class="collapse-item <?= $active=='laporan_verval'?'active':'' ?>" 
+               href="<?= site_url('verval/laporan') ?>">
+               Laporan Verval
+            </a>
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+
+
+<!-- ==============================
+     RIWAYAT PERUBAHAN BIODATA
+================================= -->
+<?php if($isAdmin): ?>
+
+<li class="nav-item <?= $group_riwayat ? 'active' : '' ?>">
+
+    <a class="nav-link"
+       href="<?= site_url('riwayat_biodata') ?>">
+
+        <i class="fas fa-history"></i>
+
+        <span>Riwayat Perubahan</span>
+
+    </a>
+
+</li>
+
+<?php endif; ?>
+
+
+<!-- ==============================
+     SINKRONISASI GOOGLE (ADMIN)
+================================= -->
+<?php if($isAdmin): ?>
+
+<li class="nav-item <?= $group_sync ? 'active' : '' ?>">
+
+    <a
+        class="nav-link"
+        href="<?= site_url('Sync_google') ?>"
+    >
+
+        <i class="fas fa-sync-alt"></i>
+
+        <span>Sinkronisasi Google</span>
+
+    </a>
+
+</li>
+
+<?php endif; ?>
+<!-- ==============================
+     BUKU TAMU (ADMIN)
+================================= -->
+<li class="nav-item <?= $active=='buku_tamu' ? 'active' : '' ?>">
+    <a class="nav-link" href="<?= site_url('buku_tamu') ?>">
+        <i class="fas fa-book"></i>
+        <span>Buku Tamu</span>
+    </a>
+</li>
+
+<!-- Pengaturan -->
+ <?php if($isAdmin): ?>
+<li class="nav-item <?= $group_setting ? 'active' : '' ?>">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mSettingAdmin">
+        <i class="fas fa-cog"></i>
+        <span>Pengaturan</span>
+    </a>
+    <div id="mSettingAdmin" class="collapse <?= $group_setting ? 'show' : '' ?>">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="<?= base_url('index.php/Sekolah') ?>">Profil sekolah</a>
+            <a class="collapse-item" href="<?= base_url('index.php/HariLibur') ?>">Hari Libur</a>
+            <a class="collapse-item" href="<?= site_url('tahun') ?>">Tahun Ajaran</a>
+            <a class="collapse-item" href="<?= base_url('index.php/jadwalabsensi') ?>">Setting Jam Absen</a>
+            <a class="collapse-item" href="<?= base_url('index.php/backup') ?>">Backup DB</a>
+            <a class="collapse-item" href="<?= base_url('index.php/backup/restore') ?>">Restore DB</a>
+        </div>
+    </div>
+</li>
+<?php endif; ?>
+<?php endif; ?>
+
+
+<?php if ($isKesiswaan): ?>
+
+<!-- ==============================
+     MANAJEMEN DATA KESISWAAN
+================================= -->
+<div class="sidebar-heading">Manajemen Data</div>
+
+<?php
+$group_kesiswaan_data = in_array($active, [
+    'siswa',
+    'kelas'
+]);
+?>
+
+<li class="nav-item <?= $group_kesiswaan_data ? 'active' : '' ?>">
+
+    <a class="nav-link collapsed"
+       href="#"
+       data-toggle="collapse"
+       data-target="#mDataKesiswaan">
+
+        <i class="fas fa-database"></i>
+        <span>Manajemen Data</span>
+
+    </a>
+
+    <div id="mDataKesiswaan"
+         class="collapse <?= $group_kesiswaan_data ? 'show' : '' ?>">
+
+        <div class="bg-white py-2 collapse-inner rounded">
+
+            <!-- DATA SISWA -->
+            <a class="collapse-item <?= $active == 'siswa' ? 'active' : '' ?>"
+               href="<?= site_url('siswa') ?>">
+
+                <i class="fas fa-user-graduate mr-2"></i>
+                Data Siswa
+
+            </a>
+
+            <!-- DATA KELAS -->
+            <a class="collapse-item <?= $active == 'kelas' ? 'active' : '' ?>"
+               href="<?= site_url('kelas') ?>">
+
+                <i class="fas fa-school mr-2"></i>
+                Data Kelas
+
+            </a>
+
+        </div>
+
+    </div>
+
+</li>
+
+<hr class="sidebar-divider">
+
+<!-- TKA -->
+<li class="nav-item <?= $active == 'tka' ? 'active' : '' ?>">
+
+    <a class="nav-link"
+       href="<?= site_url('Tka_admin') ?>">
+
+        <i class="fas fa-graduation-cap"></i>
+        <span>Peserta TKA</span>
+
+    </a>
+
+</li>
+
+<div class="sidebar-heading">Mutasi</div>
+
+<!-- MUTASI -->
+<li class="nav-item <?= $active == 'mutasi' ? 'active' : '' ?>">
+    <a class="nav-link" href="<?= site_url('mutasi') ?>">
+        <i class="fas fa-random"></i>
+        <span>Mutasi Siswa</span>
+    </a>
+</li>
+
+<li class="nav-item <?= $active == 'kenaikan' ? 'active' : '' ?>">
+    <a class="nav-link" href="<?= site_url('kenaikan') ?>">
+        <i class="fas fa-level-up-alt"></i>
+        <span>Kenaikan Kelas</span>
+    </a>
+</li>
+
+<li class="nav-item <?= $active == 'siswa_keluar' ? 'active' : '' ?>">
+    <a class="nav-link" href="<?= site_url('siswa_keluar') ?>">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Siswa Keluar</span>
+    </a>
+</li>
+
+<li class="nav-item <?= $active == 'siswa_lulus' ? 'active' : '' ?>">
+    <a class="nav-link" href="<?= site_url('siswa_lulus') ?>">
+        <i class="fas fa-graduation-cap"></i>
+        <span>Siswa Lulus</span>
+    </a>
+</li>
+
+<li class="nav-item <?= $active == 'laporan' ? 'active' : '' ?>">
+    <a class="nav-link" href="<?= site_url('laporan') ?>">
+        <i class="fas fa-file-alt"></i>
+        <span>Laporan Mutasi</span>
+    </a>
+</li>
+
+<?php endif; ?>
+
+
+<hr class="sidebar-divider d-none d-md-block">
+
+<div class="text-center mb-2">
+    <a href="<?= site_url('auth/logout') ?>" class="btn btn-danger btn-sm w-75 shadow-sm">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+</div>
+
+<div class="text-center d-none d-md-inline mb-3">
+    <button class="rounded-circle border-0 bg-white shadow-sm" id="sidebarToggle">
+      <i class="fas fa-angle-double-left text-primary"></i>
+    </button>
+</div>
+
+</ul>
+<!-- End of Sidebar -->
+
+
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+  <!-- Main Content -->
+  <div id="content">
+
+    <!-- Topbar -->
+    <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        <!-- Sidebar Toggle (Topbar untuk HP) -->
+<button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+    <i class="fa fa-bars"></i>
+</button>
+
+  <ul class="navbar-nav ml-auto align-items-center">
+    <!-- Tombol Toggle Mode -->
+    <li class="nav-item">
+      <button id="toggleMode" class="btn btn-sm btn-outline-secondary mr-3">
+        <i class="fas fa-moon"></i>
+      </button>
+    </li>
+    
+    <!-- User info -->
+    <li class="nav-item dropdown no-arrow">
+      <span class="nav-link text-gray-800">
+        <?= $this->session->userdata('nama'); ?> |
+        <strong><?= ucfirst($this->session->userdata('role_name')); ?></strong>
+      </span>
+    </li>
+    
+  </ul>
+</nav>
+
+
+    <!-- Page Content -->
+    <div class="container-fluid">
