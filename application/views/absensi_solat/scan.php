@@ -927,12 +927,12 @@ $status_sesi = isset($sesi->status)
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
+
 <script>
 (function () {
     'use strict';
 
     const page = document.getElementById('scanPage');
-    const form = document.getElementById('form-scan');
     const tokenInput = document.getElementById('token');
     const metodeInput = document.getElementById('metode');
     const rfidInput = document.getElementById('rfidInput');
@@ -943,11 +943,12 @@ $status_sesi = isset($sesi->status)
 
     const sesiId = document.getElementById('sesi-id').value;
     const csrfName = <?= json_encode($csrf_name); ?>;
-    const csrfInitial = <?= json_encode($csrf_hash); ?>;
-    const sesiStatus = <?= json_encode($status_sesi); ?>;
+    let csrfHash = <?= json_encode($csrf_hash); ?>;
 
-    let csrfHash = csrfInitial;
-    let zoom = 1;
+    const SCAN_URL = <?= json_encode(
+        base_url('absensi_solat/proses_scan')
+    ); ?>;
+
     let scanner = null;
     let scannerAktif = false;
     let requestBerjalan = false;
@@ -955,16 +956,7 @@ $status_sesi = isset($sesi->status)
     let toastTimer = null;
     let lastScanKey = '';
     let lastScanTime = 0;
-
-    const SCAN_URL = <?= json_encode(
-        base_url('absensi_solat/proses_scan')
-    ); ?>;
-
-    const csrfCookieName = <?= json_encode(
-        $this->config->item('csrf_cookie_name')
-            ? $this->config->item('csrf_cookie_name')
-            : 'csrf_cookie_name'
-    ); ?>;
+    let zoom = 1;
 
     function escapeHtml(value) {
         return String(value == null ? '' : value).replace(
@@ -1019,7 +1011,9 @@ $status_sesi = isset($sesi->status)
             const nama = escapeHtml(data.nama || 'Siswa');
             const nis = escapeHtml(data.nis || '-');
             const nisn = escapeHtml(data.nisn || '-');
-            const kelas = escapeHtml(data.kelas || data.nama_kelas || '-');
+            const kelas = escapeHtml(
+                data.kelas || data.nama_kelas || '-'
+            );
             const status = escapeHtml(
                 String(data.status || 'hadir').toUpperCase()
             );
@@ -1037,7 +1031,7 @@ $status_sesi = isset($sesi->status)
                 '&nbsp;&nbsp;NISN: ' + nisn + '<br>' +
                 '&nbsp;&nbsp;KELAS: ' + kelas + '<br>' +
                 '&nbsp;&nbsp;STATUS: ' + status + '<br>' +
-                '&nbsp;&nbsp;METHOD: ' + metode;
+                '&nbsp;&nbsp;METODE: ' + metode;
 
             jumlahBerhasil++;
             jumlahHadir.textContent = jumlahBerhasil;
@@ -1052,12 +1046,11 @@ $status_sesi = isset($sesi->status)
 
             detail.textContent = data.duplicate
                 ? 'Siswa sudah tercatat pada sesi ini.'
-                : 'Periksa data siswa, status sesi, dan koneksi server.';
+                : 'Periksa data siswa, jadwal, dan koneksi server.';
         }
 
         entry.appendChild(baris);
         entry.appendChild(detail);
-
         hasil.prepend(entry);
 
         while (hasil.children.length > 100) {
@@ -1065,12 +1058,23 @@ $status_sesi = isset($sesi->status)
         }
     }
 
-    function setScannerButtons() {
-        const tombol = document.querySelectorAll(
-            '#reader button, #reader select'
-        );
+    function logInfo(pesan) {
+        const entry = document.createElement('div');
+        entry.className = 'sc-log-entry warning';
 
-        tombol.forEach(function (element) {
+        const baris = document.createElement('div');
+        baris.className = 'sc-log-line';
+        baris.textContent = '[' + waktuSekarang() + '] ' + pesan;
+
+        entry.appendChild(baris);
+        hasil.querySelector('.sc-log-empty')?.remove();
+        hasil.prepend(entry);
+    }
+
+    function setScannerButtons() {
+        document.querySelectorAll(
+            '#reader button, #reader select'
+        ).forEach(function (element) {
             element.style.maxWidth = '100%';
         });
     }
@@ -1078,22 +1082,12 @@ $status_sesi = isset($sesi->status)
     async function prosesScan(token, metode) {
         token = String(token || '').trim();
 
-        if (!token) {
+        if (!token || requestBerjalan) {
             return;
         }
 
-        if (sesiStatus !== 'buka') {
-            tampilToast('Sesi absensi sedang ditutup.', 'error');
-            return;
-        }
-
-        if (requestBerjalan) {
-            return;
-        }
-
-        // Mencegah QR yang sama terkirim berkali-kali dalam waktu singkat.
-        const scanKey = metode + ':' + token;
         const sekarang = Date.now();
+        const scanKey = metode + ':' + token;
 
         if (
             scanKey === lastScanKey &&
@@ -1128,13 +1122,15 @@ $status_sesi = isset($sesi->status)
             });
 
             const responseText = await response.text();
-
             let data;
 
             try {
                 data = JSON.parse(responseText);
             } catch (error) {
-                console.error('Respons asli server:', responseText);
+                console.error(
+                    'Respons asli server:',
+                    responseText
+                );
 
                 tambahLog({
                     success: false,
@@ -1146,7 +1142,6 @@ $status_sesi = isset($sesi->status)
                     'Respons server tidak valid. Periksa log PHP.',
                     'error'
                 );
-
                 return;
             }
 
@@ -1157,13 +1152,15 @@ $status_sesi = isset($sesi->status)
 
             if (response.ok && data.success) {
                 tambahLog(data, '');
-
                 tampilToast(
                     'Absensi berhasil: ' + (data.nama || 'Siswa'),
                     'success'
                 );
             } else {
-                tambahLog(data, data.duplicate ? 'warning' : 'error');
+                tambahLog(
+                    data,
+                    data.duplicate ? 'warning' : 'error'
+                );
 
                 tampilToast(
                     data.message || 'Absensi gagal.',
@@ -1181,36 +1178,36 @@ $status_sesi = isset($sesi->status)
             tampilToast('Koneksi ke server gagal.', 'error');
         } finally {
             requestBerjalan = false;
-
             tokenInput.value = '';
 
             if (metode === 'rfid') {
                 rfidInput.value = '';
-                rfidInput.focus();
+                rfidInput.focus({ preventScroll: true });
             }
         }
     }
 
-    // Dipanggil oleh kamera QR.
+    // Callback hasil pembacaan QR Code.
     window.onQrScanSuccess = function (decodedText) {
         prosesScan(decodedText, 'qrcode');
     };
 
-    // RFID reader berperilaku seperti keyboard dan mengirim Enter.
+    // Pembaca RFID bertindak seperti keyboard dan mengirim Enter.
     rfidInput.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
+        if (event.key !== 'Enter') {
+            return;
+        }
 
-            const uid = rfidInput.value.trim();
+        event.preventDefault();
 
-            if (uid) {
-                prosesScan(uid, 'rfid');
-            }
+        const uid = rfidInput.value.trim();
+
+        if (uid) {
+            prosesScan(uid, 'rfid');
         }
     });
 
-    // Mempertahankan fokus RFID, kecuali saat pengguna sedang
-    // menggunakan kontrol kamera atau toolbar.
+    // Menjaga fokus RFID tanpa mengganggu kamera dan toolbar.
     document.addEventListener('click', function (event) {
         if (
             event.target.closest('#rfidInput') ||
@@ -1223,40 +1220,73 @@ $status_sesi = isset($sesi->status)
         rfidInput.focus({ preventScroll: true });
     });
 
+    // Menjalankan kamera secara otomatis saat halaman dibuka.
     async function mulaiKamera() {
-        if (sesiStatus !== 'buka') {
-            tambahLog({
-                success: false,
-                message: 'Sesi ditutup. Scanner tidak diaktifkan.'
-            }, 'warning');
+        const reader = document.getElementById('reader');
 
+        if (scannerAktif) {
             return;
         }
 
         if (typeof Html5Qrcode === 'undefined') {
-            tambahLog({
-                success: false,
-                message: 'Library QR tidak berhasil dimuat.'
-            }, 'error');
+            logInfo('Library html5-qrcode gagal dimuat.');
+            tampilToast(
+                'Library QR tidak tersedia. Periksa koneksi internet.',
+                'error'
+            );
+            return;
+        }
 
+        if (!window.isSecureContext) {
+            logInfo('Kamera membutuhkan HTTPS atau localhost.');
+            tampilToast(
+                'Buka aplikasi melalui HTTPS atau localhost.',
+                'error'
+            );
             return;
         }
 
         try {
+            logInfo('Memeriksa perangkat kamera...');
+
+            const cameras = await Html5Qrcode.getCameras();
+
+            if (!cameras || cameras.length === 0) {
+                throw new Error(
+                    'Kamera tidak ditemukan atau izin kamera belum diberikan.'
+                );
+            }
+
+            console.log('Daftar kamera:', cameras);
+
+            const kameraBelakang = cameras.find(function (kamera) {
+                return /back|rear|environment|belakang/i.test(
+                    kamera.label || ''
+                );
+            });
+
+            const kameraDipilih = kameraBelakang || cameras[0];
+
+            reader.innerHTML = '';
             scanner = new Html5Qrcode('reader');
 
             await scanner.start(
-                { facingMode: 'environment' },
+                kameraDipilih.id,
                 {
-                    fps: 12,
+                    fps: 10,
                     qrbox: function (width, height) {
                         const sisi = Math.floor(
                             Math.min(width, height) * 0.7
                         );
 
+                        const ukuran = Math.max(
+                            120,
+                            Math.min(sisi, 300)
+                        );
+
                         return {
-                            width: Math.max(120, sisi),
-                            height: Math.max(120, sisi)
+                            width: ukuran,
+                            height: ukuran
                         };
                     },
                     aspectRatio: 1
@@ -1265,27 +1295,42 @@ $status_sesi = isset($sesi->status)
                     window.onQrScanSuccess(decodedText);
                 },
                 function () {
-                    // Error pembacaan per frame adalah normal.
+                    // Kegagalan membaca QR pada frame adalah normal.
                 }
             );
 
             scannerAktif = true;
             setScannerButtons();
-        } catch (error) {
-            console.error('Kamera gagal dimulai:', error);
 
-            tambahLog({
-                success: false,
-                message: 'Kamera gagal diaktifkan. Periksa izin kamera.'
-            }, 'error');
-
-            tampilToast(
-                'Kamera tidak dapat diakses. Pastikan izin kamera aktif.',
-                'error'
+            logInfo(
+                'Kamera aktif: ' +
+                (kameraDipilih.label || 'Kamera default')
             );
+
+            tampilToast('Kamera berhasil diaktifkan.', 'success');
+        } catch (error) {
+            console.error('Gagal mengaktifkan kamera:', error);
+
+            scannerAktif = false;
+
+            let pesan = error && error.message
+                ? error.message
+                : String(error);
+
+            if (error && error.name === 'NotAllowedError') {
+                pesan = 'Izin kamera ditolak. Izinkan kamera pada pengaturan situs.';
+            } else if (error && error.name === 'NotFoundError') {
+                pesan = 'Perangkat kamera tidak ditemukan.';
+            } else if (error && error.name === 'NotReadableError') {
+                pesan = 'Kamera sedang digunakan aplikasi lain atau tidak tersedia.';
+            }
+
+            logInfo('Kamera gagal: ' + pesan);
+            tampilToast(pesan, 'error');
         }
     }
 
+    // Layar penuh.
     window.toggleFullscreen = async function () {
         try {
             if (!document.fullscreenElement) {
@@ -1309,19 +1354,18 @@ $status_sesi = isset($sesi->status)
             ? 'Keluar Fullscreen'
             : 'Layar Penuh';
 
-        if (scannerAktif && scanner) {
-            // Kamera tetap berjalan; hanya ukuran viewport yang berubah.
+        if (scannerAktif) {
             setTimeout(setScannerButtons, 250);
         }
     });
 
+    // Zoom tampilan.
     window.ubahZoom = function (perubahan) {
         zoom = Math.max(0.7, Math.min(1.4, zoom + perubahan));
         zoom = Math.round(zoom * 10) / 10;
 
-        // Mengubah ukuran seluruh konten bisa memengaruhi video kamera.
-        // Zoom browser melalui transform hanya diterapkan ke layout.
         page.style.zoom = zoom;
+
         document.getElementById('zoomLabel').textContent =
             Math.round(zoom * 100) + '%';
     };
@@ -1329,16 +1373,18 @@ $status_sesi = isset($sesi->status)
     window.resetZoom = function () {
         zoom = 1;
         page.style.zoom = '1';
+
         document.getElementById('zoomLabel').textContent = '100%';
     };
 
-    // Mulai kamera otomatis saat halaman dibuka.
+    // Inisialisasi kamera otomatis.
     mulaiKamera();
 
-    // RFID reader biasanya mengetik UID ke field yang sedang fokus.
+    // Fokus awal untuk pembaca RFID.
     setTimeout(function () {
         rfidInput.focus({ preventScroll: true });
     }, 700);
 
 })();
 </script>
+

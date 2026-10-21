@@ -187,12 +187,12 @@ class Absensi_solat_model extends CI_Model
             return false;
         }
 
-        // Pastikan sesi masih terbuka.
-        $sesi = $this->get_sesi_by_id($sesi_id);
+        // Pastikan sesi ditemukan.
+$sesi = $this->get_sesi_by_id($sesi_id);
 
-        if (!$sesi || $sesi->status !== 'buka') {
-            return false;
-        }
+if (!$sesi) {
+    return false;
+}
 
         // Mencegah absensi ganda pada sesi yang sama.
         if ($this->sudah_absen($sesi_id, $siswa_id)) {

@@ -1167,6 +1167,13 @@ body.dark-mode #chatbot {
 
 </li>
 
+<li class="nav-item">
+    <a class="nav-link" href="<?= site_url('jadwal_solat_public') ?>">
+        <i class="fas fa-mosque mr-1"></i>
+        Jadwal Salat Dzuhur
+    </a>
+</li>
+
 
 <li class="nav-item">
 

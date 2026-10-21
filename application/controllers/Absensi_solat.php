@@ -89,8 +89,31 @@ class Absensi_solat extends CI_Controller
         $data['statistik_belum_absen'] = 0;
 
         if ($tahun_id > 0) {
-            $data['sesi'] = $this->solat->get_sesi($tahun_id);
-            $data['statistik_sesi'] = count($data['sesi']);
+           
+date_default_timezone_set('Asia/Jakarta');
+
+$data['sesi'] = $this->solat->get_sesi($tahun_id);
+
+$sekarang_tanggal = date('Y-m-d');
+$sekarang_jam = date('H:i:s');
+
+foreach ($data['sesi'] as $item) {
+    if ($item->tanggal < $sekarang_tanggal) {
+        $item->status = 'tutup';
+    } elseif ($item->tanggal > $sekarang_tanggal) {
+        $item->status = 'tutup';
+    } elseif (
+        $sekarang_jam >= $item->jam_mulai &&
+        $sekarang_jam <= $item->jam_selesai
+    ) {
+        $item->status = 'buka';
+    } else {
+        $item->status = 'tutup';
+    }
+}
+
+$data['statistik_sesi'] = count($data['sesi']);
+
 
             foreach ($data['sesi'] as $item) {
                 $stat = $this->solat->get_statistik($item->id);
@@ -205,189 +228,228 @@ class Absensi_solat extends CI_Controller
         redirect('absensi_solat');
     }
 
-    // =====================================================
-    // HALAMAN SCANNER
-    // =====================================================
-
-    public function scan($id = null)
-    {
-        if (!$this->wajib_admin()) {
-            return;
-        }
-
-        $tahun_id = $this->tahun_aktif_id();
-        
-
-        $sesi = $this->solat->get_sesi_by_id(
-            (int) $id,
-            $tahun_id
-        );
-
-        if (!$sesi) {
-            show_404();
-            return;
-        }
-
-        $data['title'] = 'Scan Absensi Salat Dzuhur';
-        $data['judul'] = 'Scan Absensi Salat Dzuhur';
-        $data['tahun_id'] = $tahun_id;
-        $data['sesi'] = $sesi;
-        $data['statistik'] = $this->solat->get_statistik($sesi->id);
-
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view('absensi_solat/scan', $data);
-        $this->load->view('templates/footer');
+    
+public function scan($id = null)
+{
+    if (!$this->wajib_admin()) {
+        return;
     }
+
+    date_default_timezone_set('Asia/Jakarta');
+
+    $tahun_id = $this->tahun_aktif_id();
+
+    $sesi = $this->solat->get_sesi_by_id(
+        (int) $id,
+        $tahun_id
+    );
+
+    if (!$sesi) {
+        show_404();
+        return;
+    }
+
+    // Tentukan status sesi berdasarkan tanggal dan jam jadwal.
+    $tanggal_sekarang = date('Y-m-d');
+    $jam_sekarang = date('H:i:s');
+
+    if (
+        $sesi->tanggal === $tanggal_sekarang &&
+        $jam_sekarang >= $sesi->jam_mulai &&
+        $jam_sekarang <= $sesi->jam_selesai
+    ) {
+        $sesi->status = 'buka';
+    } else {
+        $sesi->status = 'tutup';
+    }
+
+    $data['title'] = 'Scan Absensi Salat Dzuhur';
+    $data['judul'] = 'Scan Absensi Salat Dzuhur';
+    $data['tahun_id'] = $tahun_id;
+    $data['sesi'] = $sesi;
+    $data['statistik'] = $this->solat->get_statistik($sesi->id);
+
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar', $data);
+    $this->load->view('absensi_solat/scan', $data);
+    $this->load->view('templates/footer');
+}
+
 
     // =====================================================
     // PROSES SCAN QR CODE / RFID
     // =====================================================
 
-    public function proses_scan()
-    {
-        if (!$this->admin_diizinkan()) {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Anda tidak memiliki hak akses.'
-            ], 403);
 
-            return;
-        }
+public function proses_scan()
+{
+    date_default_timezone_set('Asia/Jakarta');
 
-        if ($this->input->method(TRUE) !== 'POST') {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Metode request tidak diizinkan.'
-            ], 405);
+    // 1. Validasi hak akses admin
+    if (!$this->admin_diizinkan()) {
+        $this->json_response([
+            'success' => false,
+            'message' => 'Anda tidak memiliki hak akses.'
+        ], 403);
+        return;
+    }
 
-            return;
-        }
+    // 2. Pastikan request menggunakan POST
+    if ($this->input->method(TRUE) !== 'POST') {
+        $this->json_response([
+            'success' => false,
+            'message' => 'Metode request tidak diizinkan.'
+        ], 405);
+        return;
+    }
 
-        $sesi_id = (int) $this->input->post('sesi_id');
-        $token = trim((string) $this->input->post('token', FALSE));
-        $metode = strtolower(
-            trim((string) $this->input->post('metode', TRUE))
-        );
+    // 3. Ambil data scan
+    $sesi_id = (int) $this->input->post('sesi_id');
+    $token   = trim((string) $this->input->post('token', FALSE));
+    $metode  = strtolower(trim(
+        (string) $this->input->post('metode', TRUE)
+    ));
 
-        if ($sesi_id <= 0 || $token === '') {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Data scan belum lengkap.'
-            ], 400);
+    if ($sesi_id <= 0 || $token === '') {
+        $this->json_response([
+            'success' => false,
+            'message' => 'Data scan belum lengkap.'
+        ], 400);
+        return;
+    }
 
-            return;
-        }
+    if (!in_array($metode, ['qrcode', 'rfid'], true)) {
+        $this->json_response([
+            'success' => false,
+            'message' => 'Metode absensi tidak valid.'
+        ], 400);
+        return;
+    }
 
-        if (!in_array($metode, ['qrcode', 'rfid'], true)) {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Metode absensi tidak valid.'
-            ], 400);
+    // 4. Pastikan tahun ajaran aktif tersedia
+    $tahun_id = $this->tahun_aktif_id();
 
-            return;
-        }
+    if ($tahun_id <= 0) {
+        $this->json_response([
+            'success' => false,
+            'message' => 'Tahun ajaran aktif belum tersedia.'
+        ], 400);
+        return;
+    }
 
-        $tahun_id = $this->tahun_aktif_id();
+    // 5. Ambil sesi sesuai tahun ajaran aktif
+    $sesi = $this->solat->get_sesi_by_id(
+        $sesi_id,
+        $tahun_id
+    );
 
-        if ($tahun_id <= 0) {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Tahun ajaran aktif belum tersedia.'
-            ], 400);
+    if (!$sesi) {
+        $this->json_response([
+            'success' => false,
+            'message' => 'Sesi absensi tidak ditemukan.'
+        ], 404);
+        return;
+    }
 
-            return;
-        }
+    // 6. Validasi tanggal dan jam absensi
+    $tanggal_sekarang = date('Y-m-d');
+    $jam_sekarang     = date('H:i:s');
 
-        $sesi = $this->solat->get_sesi_by_id(
-            $sesi_id,
-            $tahun_id
-        );
+    if ($sesi->tanggal !== $tanggal_sekarang) {
+        $this->json_response([
+            'success' => false,
+            'message' => 'Sesi absensi bukan untuk tanggal hari ini.'
+        ], 400);
+        return;
+    }
 
-        if (!$sesi) {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Sesi absensi tidak ditemukan.'
-            ], 404);
+    if (
+        $jam_sekarang < $sesi->jam_mulai ||
+        $jam_sekarang > $sesi->jam_selesai
+    ) {
+        $this->json_response([
+            'success' => false,
+            'message' => 'Di luar waktu absensi.',
+            'jam_mulai' => $sesi->jam_mulai,
+            'jam_selesai' => $sesi->jam_selesai
+        ], 400);
+        return;
+    }
 
-            return;
-        }
+    // 7. Cari siswa berdasarkan QR Code atau RFID
+    if ($metode === 'qrcode') {
+        // QR Code berisi NISN
+        $siswa = $this->solat->get_siswa_by_qr($token);
+    } else {
+        // RFID menggunakan UID kartu
+        $siswa = $this->solat->get_siswa_by_rfid($token);
+    }
 
-        if ($sesi->status !== 'buka') {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Sesi absensi sudah ditutup.'
-            ], 400);
+    if (!$siswa) {
+        $this->json_response([
+            'success' => false,
+            'message' => $metode === 'qrcode'
+                ? 'QR tidak dikenali. NISN tidak ditemukan.'
+                : 'Kartu RFID tidak dikenali.'
+        ], 404);
+        return;
+    }
 
-            return;
-        }
+    // 8. Pastikan siswa berstatus aktif
+    if (
+        !isset($siswa->status) ||
+        $siswa->status !== 'aktif'
+    ) {
+        $this->json_response([
+            'success' => false,
+            'message' => 'Siswa tidak berstatus aktif.'
+        ], 400);
+        return;
+    }
 
-        if ($sesi->tanggal !== date('Y-m-d')) {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Absensi hanya dapat dilakukan pada tanggal sesi.'
-            ], 400);
+    $siswa_id = (int) $siswa->id;
 
-            return;
-        }
+    if ($siswa_id <= 0) {
+        $this->json_response([
+            'success' => false,
+            'message' => 'ID siswa tidak valid.'
+        ], 500);
+        return;
+    }
 
-        $jam_sekarang = date('H:i:s');
+    // 9. Cegah siswa melakukan absensi dua kali
+    $absen_lama = $this->solat->sudah_absen(
+        $sesi_id,
+        $siswa_id
+    );
 
-        if (
-            $jam_sekarang < $sesi->jam_mulai
-            || $jam_sekarang > $sesi->jam_selesai
-        ) {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Saat ini di luar waktu absensi yang ditentukan.',
-                'jam_mulai' => $sesi->jam_mulai,
-                'jam_selesai' => $sesi->jam_selesai
-            ], 400);
+    if ($absen_lama) {
+        $this->json_response([
+            'success' => false,
+            'duplicate' => true,
+            'message' => $siswa->nama . ' sudah melakukan absensi.',
+            'nama' => $siswa->nama,
+            'nisn' => isset($siswa->nisn) ? $siswa->nisn : ''
+        ], 200);
+        return;
+    }
 
-            return;
-        }
+    // 10. Tentukan status kehadiran
+    $status_absen = ($jam_sekarang > $sesi->jam_mulai)
+        ? 'terlambat'
+        : 'hadir';
 
-        // QR berisi NISN. RFID menggunakan UID kartu.
-        if ($metode === 'qrcode') {
-            $siswa = $this->solat->get_siswa_by_qr($token);
-        } else {
-            $siswa = $this->solat->get_siswa_by_rfid($token);
-        }
+    // 11. Simpan absensi
+    $berhasil = $this->solat->simpan_absensi([
+        'sesi_id'      => $sesi_id,
+        'siswa_id'     => $siswa_id,
+        'waktu_absen'  => date('Y-m-d H:i:s'),
+        'metode_absen' => $metode,
+        'status'       => $status_absen
+    ]);
 
-        if (!$siswa) {
-            $this->json_response([
-                'success' => false,
-                'message' => $metode === 'qrcode'
-                    ? 'QR tidak dikenali. NISN tidak ditemukan.'
-                    : 'Kartu RFID tidak dikenali.'
-            ], 404);
-
-            return;
-        }
-
-        // Pastikan siswa aktif.
-        if (!isset($siswa->status) || $siswa->status !== 'aktif') {
-            $this->json_response([
-                'success' => false,
-                'message' => 'Siswa tidak berstatus aktif.'
-            ], 400);
-
-            return;
-        }
-
-        // Primary key siswa adalah kolom id.
-        $siswa_id = (int) $siswa->id;
-
-        if ($siswa_id <= 0) {
-            $this->json_response([
-                'success' => false,
-                'message' => 'ID siswa tidak valid.'
-            ], 500);
-
-            return;
-        }
-
-        // Cegah absensi ganda.
+    if (!$berhasil) {
+        // Periksa kemungkinan duplikasi saat request bersamaan
         $absen_lama = $this->solat->sudah_absen(
             $sesi_id,
             $siswa_id
@@ -398,63 +460,30 @@ class Absensi_solat extends CI_Controller
                 'success' => false,
                 'duplicate' => true,
                 'message' => $siswa->nama . ' sudah melakukan absensi.',
-                'nama' => $siswa->nama,
-                'nisn' => isset($siswa->nisn) ? $siswa->nisn : ''
+                'nama' => $siswa->nama
             ], 200);
-
-            return;
-        }
-
-        // Tentukan status berdasarkan jam mulai sesi.
-        $status_absen = $jam_sekarang > $sesi->jam_mulai
-            ? 'terlambat'
-            : 'hadir';
-
-        $berhasil = $this->solat->simpan_absensi([
-            'sesi_id'      => $sesi_id,
-            'siswa_id'     => $siswa_id,
-            'waktu_absen'  => date('Y-m-d H:i:s'),
-            'metode_absen' => $metode,
-            'status'       => $status_absen
-        ]);
-
-        if (!$berhasil) {
-            // Periksa ulang untuk membedakan duplikasi dari kegagalan.
-            $absen_lama = $this->solat->sudah_absen(
-                $sesi_id,
-                $siswa_id
-            );
-
-            if ($absen_lama) {
-                $this->json_response([
-                    'success' => false,
-                    'duplicate' => true,
-                    'message' => $siswa->nama . ' sudah melakukan absensi.',
-                    'nama' => $siswa->nama
-                ], 200);
-
-                return;
-            }
-
-            $this->json_response([
-                'success' => false,
-                'message' => 'Absensi gagal disimpan. Periksa log aplikasi.'
-            ], 500);
-
             return;
         }
 
         $this->json_response([
-            'success' => true,
-            'message' => 'Absensi berhasil disimpan.',
-            'nama' => $siswa->nama,
-            'nis' => isset($siswa->nis) ? $siswa->nis : '',
-            'nisn' => isset($siswa->nisn) ? $siswa->nisn : '',
-            'status' => $status_absen,
-            'metode' => $metode,
-            'waktu' => date('H:i:s')
-        ], 200);
+            'success' => false,
+            'message' => 'Absensi gagal disimpan. Periksa log aplikasi.'
+        ], 500);
+        return;
     }
+
+    // 12. Kirim respons berhasil
+    $this->json_response([
+        'success' => true,
+        'message' => 'Absensi berhasil disimpan.',
+        'nama' => $siswa->nama,
+        'nis' => isset($siswa->nis) ? $siswa->nis : '',
+        'nisn' => isset($siswa->nisn) ? $siswa->nisn : '',
+        'status' => $status_absen,
+        'metode' => $metode,
+        'waktu' => date('H:i:s')
+    ], 200);
+}
 
     // =====================================================
     // MENUTUP SESI
