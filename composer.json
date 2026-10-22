@@ -15,7 +15,8 @@
         "codeigniter4/framework": "^4.7",
         "phpoffice/phpspreadsheet": "*",
         "picqer/php-barcode-generator": "*",
-        "smalot/pdfparser": "*"
+        "smalot/pdfparser": "*",
+        "tecnickcom/tcpdf": "^7.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",

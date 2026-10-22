@@ -119,6 +119,42 @@ abstract class BaseController extends Controller
     }
 
     /**
+     * Require authenticated session or redirect to login
+     */
+    protected function requireAuth(): void
+    {
+        if (! $this->session->get('logged_in')) {
+            if ($this->request->isAJAX()) {
+                $this->response->setStatusCode(401)->setJSON(['status' => false, 'message' => 'Unauthorized'])->send();
+                exit;
+            }
+            $this->session->setFlashdata('error', 'Silakan login terlebih dahulu.');
+            header('Location: ' . base_url('auth/login'));
+            exit;
+        }
+    }
+
+    /**
+     * Require specific roles or redirect
+     *
+     * @param int[] $allowedRoles
+     */
+    protected function requireRole(array $allowedRoles): void
+    {
+        $this->requireAuth();
+        $roleId = (int) $this->session->get('role_id');
+        if (! in_array($roleId, $allowedRoles, true)) {
+            if ($this->request->isAJAX()) {
+                $this->response->setStatusCode(403)->setJSON(['status' => false, 'message' => 'Akses ditolak'])->send();
+                exit;
+            }
+            $this->session->setFlashdata('error', 'Anda tidak memiliki hak akses untuk halaman tersebut.');
+            header('Location: ' . base_url('dashboard'));
+            exit;
+        }
+    }
+
+    /**
      * JSON Response Helper for AJAX
      */
     protected function responseJson(array $data, int $statusCode = 200): ResponseInterface

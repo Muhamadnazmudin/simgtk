@@ -38,3 +38,39 @@ $routes->post('absensi_solat/import_proses', 'Absensi_solat::import_proses');
 
 // Public prayer schedule
 $routes->get('jadwal_solat_public', 'Jadwal_solat_public::index');
+
+// Explicit routes for modules (ensures case-insensitivity and sub-methods match smoothly)
+$modules = [
+    'tendik'                   => 'Tendik',
+    'buku_induk'               => 'Buku_induk',
+    'berkas_siswa'             => 'Berkas_siswa',
+    'idcard_premium'           => 'Idcard_premium',
+    'monitoring_mengajar'      => 'Monitoring_mengajar',
+    'rekap_jjm'                => 'Rekap_jjm',
+    'guru_sertifikasi'         => 'Guru_sertifikasi',
+    'jam_sekolah'              => 'Jam_sekolah',
+    'jadwal_mengajar'          => 'Jadwal_mengajar',
+    'laporan_mengajar'         => 'Laporan_mengajar',
+    'AdminLaporanPembelajaran' => 'AdminLaporanPembelajaran',
+    'adminlaporanpembelajaran' => 'AdminLaporanPembelajaran',
+    'AdminBacaan'              => 'AdminBacaan',
+    'adminbacaan'              => 'AdminBacaan',
+    'Nilairapor_admin'         => 'Nilairapor_admin',
+    'nilairapor_admin'         => 'Nilairapor_admin',
+    'Tka_admin'                => 'Tka_admin',
+    'tka_admin'                => 'Tka_admin',
+    'sptjm'                    => 'Sptjm',
+    'akun_belajar'             => 'Akun_belajar',
+    'tutorial'                 => 'Tutorial',
+    'mutasi'                   => 'Mutasi',
+    'kenaikan'                 => 'Kenaikan',
+    'siswa_keluar'             => 'Siswa_keluar',
+    'siswa_lulus'              => 'Siswa_lulus',
+    'laporan'                  => 'Laporan',
+];
+
+foreach ($modules as $slug => $controller) {
+    $routes->match(['GET', 'POST'], $slug, "{$controller}::index");
+    $routes->match(['GET', 'POST'], "{$slug}/(:segment)", "{$controller}::$1");
+    $routes->match(['GET', 'POST'], "{$slug}/(:segment)/(:any)", "{$controller}::$1/$2");
+}

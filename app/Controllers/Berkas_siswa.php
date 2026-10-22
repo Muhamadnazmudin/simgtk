@@ -31,17 +31,23 @@ class Berkas_siswa extends BaseController
         $pager = \Config\Services::pager();
         $pager->makeLinks($offset / $limit + 1, $limit, $totalRows, 'default_full');
 
+        $nomorAwal  = $totalRows > 0 ? $offset + 1 : 0;
+        $nomorAkhir = $totalRows > 0 ? min($offset + $limit, $totalRows) : 0;
+
         $data = [
-            'title'      => 'Berkas Siswa',
-            'active'     => 'berkas_siswa',
-            'siswa'      => $siswaList,
-            'kelas'      => $this->kelasModel->orderBy('nama', 'ASC')->findAll(),
-            'pagination' => $pager->links(),
-            'keyword'    => $keyword,
-            'kelas_id'   => $kelasId,
+            'title'       => 'Upload Berkas Siswa',
+            'active'      => 'berkas_siswa',
+            'siswa'       => $siswaList,
+            'kelas'       => $this->berkasModel->getKelasAktif(),
+            'pagination'  => $pager->links(),
+            'keyword'     => $keyword,
+            'kelas_id'    => $kelasId,
+            'total_rows'  => $totalRows,
+            'nomor_awal'  => $nomorAwal,
+            'nomor_akhir' => $nomorAkhir,
         ];
 
-        return $this->renderView('berkas_siswa/index', $data);
+        return $this->renderView('admin/berkas_siswa/index', $data);
     }
 
     public function detail($siswaId = null)

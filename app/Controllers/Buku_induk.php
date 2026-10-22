@@ -46,11 +46,14 @@ class Buku_induk extends BaseController
         $pager = \Config\Services::pager();
         $pager->makeLinks($offset / $limit + 1, $limit, $totalRows, 'default_full');
 
+        $kelasList = $this->kelasModel->orderBy('nama', 'ASC')->findAll();
+
         $data = [
             'title'      => 'Buku Induk Siswa',
             'active'     => 'buku_induk',
             'siswa'      => $siswaList,
-            'kelas_list' => $this->kelasModel->orderBy('nama', 'ASC')->findAll(),
+            'kelas'      => $kelasList,
+            'kelas_list' => $kelasList,
             'pagination' => $pager->links(),
             'total_rows' => $totalRows,
             'limit'      => $limit,

@@ -73,8 +73,9 @@ class BerkasSiswaModel extends Model
     public function getSiswaAktif(int $limit, int $offset, string $keyword = '', string $kelasId = ''): array
     {
         $builder = $this->db->table('siswa s')
-            ->select('s.*, k.nama AS nama_kelas')
+            ->select('s.*, k.nama AS nama_kelas, COUNT(sb.id) AS jumlah_berkas')
             ->join('kelas k', 'k.id = s.id_kelas', 'left')
+            ->join('siswa_berkas sb', 'sb.siswa_id = s.id', 'left')
             ->where('s.status', 'aktif');
 
         if (!empty($kelasId)) {
@@ -89,9 +90,21 @@ class BerkasSiswaModel extends Model
                 ->groupEnd();
         }
 
-        return $builder->orderBy('k.nama', 'ASC')
+        return $builder->groupBy('s.id, k.nama')
+            ->orderBy('k.nama', 'ASC')
             ->orderBy('s.nama', 'ASC')
             ->limit($limit, $offset)
+            ->get()
+            ->getResult();
+    }
+
+    public function getKelasAktif(): array
+    {
+        return $this->db->table('kelas k')
+            ->select('k.id, k.nama, COUNT(s.id) AS jumlah_siswa')
+            ->join('siswa s', "s.id_kelas = k.id AND s.status = 'aktif'", 'inner')
+            ->groupBy('k.id, k.nama')
+            ->orderBy('k.nama', 'ASC')
             ->get()
             ->getResult();
     }

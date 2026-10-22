@@ -50,3 +50,45 @@ if (!function_exists('get_instance')) {
         return $instance;
     }
 }
+
+if (!function_exists('is_admin')) {
+    function is_admin(): bool
+    {
+        $role = strtolower((string) session()->get('role_name'));
+        $roleId = (int) session()->get('role_id');
+        return $role === 'admin' || $roleId === 1;
+    }
+}
+
+if (!function_exists('is_logged_in')) {
+    function is_logged_in(): bool
+    {
+        return (bool) session()->get('logged_in');
+    }
+}
+
+if (!function_exists('is_kesiswaan')) {
+    function is_kesiswaan(): bool
+    {
+        $role = strtolower((string) session()->get('role_name'));
+        $roleId = (int) session()->get('role_id');
+        return $role === 'kesiswaan' || $roleId === 2;
+    }
+}
+
+if (!function_exists('only_admin')) {
+    function only_admin(): void
+    {
+        if (!is_admin()) {
+            throw new \CodeIgniter\Exceptions\HTTPException('Akses ditolak. Hanya Admin yang dapat mengakses halaman ini.', 403);
+        }
+    }
+}
+
+if (!function_exists('is_guru')) {
+    function is_guru(): bool
+    {
+        $roleId = (int) session()->get('role_id');
+        return in_array($roleId, [3, 4], true);
+    }
+}

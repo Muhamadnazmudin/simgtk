@@ -90,6 +90,15 @@ class SiswaModel extends Model
     {
         return $this->db->table('tahun_ajaran')->orderBy('id', 'DESC')->get()->getResult();
     }
+
+    public function get_by_kelas_pattern(string $pattern): array
+    {
+        return $this->select('siswa.*, kelas.nama AS nama_kelas')
+            ->join('kelas', 'kelas.id = siswa.id_kelas', 'inner')
+            ->like('kelas.nama', $pattern)
+            ->where('siswa.status', 'aktif')
+            ->findAll();
+    }
 }
 
 

@@ -70,4 +70,8 @@ class KelasModel extends Model
         return $this->orderBy('nama', 'ASC')->findAll();
     }
 
+    public function get_by_pattern(string $pattern): ?object
+    {
+        return $this->like('nama', $pattern)->first();
+    }
 }

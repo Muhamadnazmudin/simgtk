@@ -80,12 +80,12 @@
 </div>
 </form>
 <div class="mb-3 text-right">
-    <a href="<?= site_url('AdminLaporanPembelajaran/export_excel?'.$_SERVER['QUERY_STRING']) ?>"
+    <a href="<?= site_url('AdminLaporanPembelajaran/export_excel' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '')) ?>"
        class="btn btn-success btn-sm">
         <i class="fas fa-file-excel"></i> Export Excel
     </a>
 
-    <a href="<?= site_url('AdminLaporanPembelajaran/export_pdf?'.$_SERVER['QUERY_STRING']) ?>"
+    <a href="<?= site_url('AdminLaporanPembelajaran/export_pdf' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '')) ?>"
        class="btn btn-danger btn-sm">
         <i class="fas fa-file-pdf"></i> Export PDF
     </a>
