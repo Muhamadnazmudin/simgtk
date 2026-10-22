@@ -185,6 +185,27 @@ class Berkas_siswa extends BaseController
     }
 
     /**
+     * Cari lokasi file fisik berkas (mendukung root uploads/ dan public/uploads/)
+     */
+    protected function getBerkasFilePath(object $berkas): ?string
+    {
+        $candidates = [
+            FCPATH . 'uploads/berkas_siswa/' . (int) $berkas->siswa_id . '/' . $berkas->nama_file,
+            ROOTPATH . 'uploads/berkas_siswa/' . (int) $berkas->siswa_id . '/' . $berkas->nama_file,
+            FCPATH . 'uploads/berkas_siswa/' . $berkas->nama_file,
+            ROOTPATH . 'uploads/berkas_siswa/' . $berkas->nama_file,
+        ];
+
+        foreach ($candidates as $filePath) {
+            if (is_file($filePath)) {
+                return $filePath;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Lihat / preview file dalam viewer
      */
     public function lihat($id = null)
@@ -197,8 +218,8 @@ class Berkas_siswa extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Berkas tidak ditemukan.');
         }
 
-        $file = FCPATH . 'uploads/berkas_siswa/' . $berkas->siswa_id . '/' . $berkas->nama_file;
-        if (!is_file($file)) {
+        $file = $this->getBerkasFilePath($berkas);
+        if (!$file) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('File fisik tidak ditemukan.');
         }
 
@@ -233,9 +254,9 @@ class Berkas_siswa extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        $file = FCPATH . 'uploads/berkas_siswa/' . $berkas->siswa_id . '/' . $berkas->nama_file;
-        if (!is_file($file)) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        $file = $this->getBerkasFilePath($berkas);
+        if (!$file) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('File fisik tidak ditemukan.');
         }
 
         $mime = $berkas->tipe_file ?: mime_content_type($file);
@@ -259,8 +280,8 @@ class Berkas_siswa extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        $file = FCPATH . 'uploads/berkas_siswa/' . $berkas->siswa_id . '/' . $berkas->nama_file;
-        if (!is_file($file)) {
+        $file = $this->getBerkasFilePath($berkas);
+        if (!$file) {
             $this->session->setFlashdata('error', 'File berkas tidak ditemukan.');
             return redirect()->to(site_url('berkas_siswa/lihat/' . $id));
         }
@@ -343,9 +364,9 @@ class Berkas_siswa extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        $file = FCPATH . 'uploads/berkas_siswa/' . $berkas->siswa_id . '/' . $berkas->nama_file;
-        if (!is_file($file)) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        $file = $this->getBerkasFilePath($berkas);
+        if (!$file) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('File fisik tidak ditemukan.');
         }
 
         return $this->response->download($file, null)->setFileName($berkas->nama_file_asli);
@@ -364,8 +385,8 @@ class Berkas_siswa extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        $file = FCPATH . 'uploads/berkas_siswa/' . $berkas->siswa_id . '/' . $berkas->nama_file;
-        if (is_file($file)) {
+        $file = $this->getBerkasFilePath($berkas);
+        if ($file && is_file($file)) {
             @unlink($file);
         }
 

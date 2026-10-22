@@ -96,6 +96,8 @@ $modules = [
     'JadwalAbsensi'            => 'Jadwalabsensi',
     'backup'                   => 'Backup',
     'Backup'                   => 'Backup',
+    'SiswaBerkas'              => 'SiswaBerkas',
+    'siswaberkas'              => 'SiswaBerkas',
 ];
 
 foreach ($modules as $slug => $controller) {
