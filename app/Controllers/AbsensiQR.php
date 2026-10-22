@@ -119,14 +119,7 @@ class AbsensiQR extends BaseController
     public function index()
     {
         $this->requireAuth();
-
-        $data = [
-            'judul'  => 'Absensi QR',
-            'active' => 'absensi_qr',
-            'absen'  => $this->qrModel->getAllJoin(),
-        ];
-
-        return $this->renderView('absensiqr/index', $data);
+        return redirect()->to(site_url('AbsensiQRAdmin'));
     }
 
     public function simpan()
@@ -144,7 +137,7 @@ class AbsensiQR extends BaseController
 
         $this->qrModel->insert($data);
         $this->session->setFlashdata('success', 'Data absensi berhasil ditambahkan!');
-        return redirect()->to(site_url('absensiqr'));
+        return redirect()->to(site_url('AbsensiQRAdmin'));
     }
 
     public function update()
@@ -162,16 +155,18 @@ class AbsensiQR extends BaseController
 
         $this->qrModel->update($id, $data);
         $this->session->setFlashdata('success', 'Data absensi berhasil diupdate!');
-        return redirect()->to(site_url('absensiqr'));
+        return redirect()->to(site_url('AbsensiQRAdmin'));
     }
 
     public function hapus($id = null)
     {
         $this->requireAuth();
 
-        $this->qrModel->delete($id);
-        $this->session->setFlashdata('success', 'Data berhasil dihapus!');
-        return redirect()->to(site_url('absensiqr'));
+        if (!empty($id)) {
+            $this->qrModel->delete($id);
+            $this->session->setFlashdata('success', 'Data berhasil dihapus!');
+        }
+        return redirect()->to(site_url('AbsensiQRAdmin'));
     }
 
     private function formatTelat(int $totalDetik): string
