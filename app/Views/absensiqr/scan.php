@@ -1044,8 +1044,34 @@
             }
         }
 
-        // 3. TEXT-TO-SPEECH (TTS) VOICE ENGINE
+        // 3. TEXT-TO-SPEECH (TTS) VOICE ENGINE DENGAN PENGIKAT SUARA INDONESIA & NORMALISASI FONETIK
         let voiceEnabled = true;
+        let idVoice = null;
+
+        function loadIdVoice() {
+            if (!('speechSynthesis' in window)) return;
+            const voices = window.speechSynthesis.getVoices();
+            if (!voices || voices.length === 0) return;
+
+            // Prioritas 1: Bahasa Indonesia resmi (id-ID)
+            idVoice = voices.find(v => v.lang === 'id-ID' || v.lang === 'id_ID');
+
+            // Prioritas 2: Nama suara mengandung Indonesia / Gadis / Andika
+            if (!idVoice) {
+                idVoice = voices.find(v => /indonesia/i.test(v.name) || /gadis/i.test(v.name) || /andika/i.test(v.name));
+            }
+
+            // Prioritas 3: Prefix id
+            if (!idVoice) {
+                idVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('id'));
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            loadIdVoice();
+            window.speechSynthesis.onvoiceschanged = loadIdVoice;
+        }
+
         const btnVoice = document.getElementById('btnVoice');
         if (btnVoice) {
             btnVoice.addEventListener('click', function() {
@@ -1055,14 +1081,53 @@
             });
         }
 
-        function speakText(text) {
+        // Normalisasi nama agar TIDAK dieja per-huruf oleh synthesizer:
+        // 1. ALL CAPS diubah ke Title Case (huruf kapital semua selalu dieja singkatan oleh TTS)
+        // 2. 'Oct' diganti 'Okt' (karena 'Oct' sering dikira singkatan bulan October)
+        function formatPhoneticsIndo(rawText) {
+            if (!rawText) return '';
+
+            // Title Case
+            let text = rawText.toLowerCase().split(/\s+/).map(word => {
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }).join(' ');
+
+            // Penggantian fonetik agar dibaca lancar tanpa dieja
+            text = text
+                .replace(/\bOcta/gi, 'Okta')
+                .replace(/\bOct/gi, 'Okt')
+                .replace(/octa/gi, 'okta')
+                .replace(/oct/gi, 'okt')
+                .replace(/\bMuh\b\.?/gi, 'Muhammad')
+                .replace(/\bMoh\b\.?/gi, 'Muhammad')
+                .replace(/\bM\b\./gi, 'Muhammad')
+                .replace(/\bAch\b\.?/gi, 'Akhmad')
+                .replace(/['"`_]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            return text;
+        }
+
+        function speakText(rawText) {
             if (!voiceEnabled || !('speechSynthesis' in window)) return;
             try {
-                window.speechSynthesis.cancel(); // Stop any pending speech
-                const utterance = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.cancel(); // Hentikan suara sebelumnya
+
+                const spokenPhrase = formatPhoneticsIndo(rawText);
+                const utterance = new SpeechSynthesisUtterance(spokenPhrase);
+
+                if (!idVoice) {
+                    loadIdVoice();
+                }
+                if (idVoice) {
+                    utterance.voice = idVoice;
+                }
+
                 utterance.lang = 'id-ID';
-                utterance.rate = 1.15; // Slightly faster for quick turnaround
+                utterance.rate = 1.0;  // Kecepatan wajar agar artikulasi jelas
                 utterance.pitch = 1.0;
+
                 window.speechSynthesis.speak(utterance);
             } catch (e) {
                 console.error('Speech synthesis error:', e);
