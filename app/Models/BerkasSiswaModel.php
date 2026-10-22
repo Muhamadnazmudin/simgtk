@@ -74,6 +74,20 @@ class BerkasSiswaModel extends Model
             ->getRow();
     }
 
+    public function getBerkasByIdSiswa(int $id, int $siswaId): ?object
+    {
+        return $this->db->table($this->table)
+            ->where('id', $id)
+            ->where('siswa_id', $siswaId)
+            ->get()
+            ->getRow();
+    }
+
+    public function get_berkas_by_id_siswa(int $id, int $siswaId): ?object
+    {
+        return $this->getBerkasByIdSiswa($id, $siswaId);
+    }
+
     public function countSiswaAktif(string $keyword = '', string $kelasId = ''): int
     {
         $builder = $this->db->table('siswa s')

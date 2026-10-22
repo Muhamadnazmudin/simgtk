@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\BerkasSiswaModel;
+use App\Models\SyncQueueModel;
 
 class SiswaBerkas extends BaseController
 {
@@ -78,14 +79,14 @@ class SiswaBerkas extends BaseController
 
         if (!$file || !$file->isValid()) {
             $this->session->setFlashdata('error', 'Gagal mengupload berkas.');
-            return redirect()->to(site_url('siswa/berkas'));
+            return redirect()->to(site_url('SiswaBerkas'));
         }
 
         $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
         $mime = $file->getMimeType();
         if (!in_array($mime, $allowedMimes, true)) {
             $this->session->setFlashdata('error', 'Format berkas harus JPG, PNG, atau PDF.');
-            return redirect()->to(site_url('siswa/berkas'));
+            return redirect()->to(site_url('SiswaBerkas'));
         }
 
         $uploadDir = FCPATH . 'uploads/berkas_siswa/' . $siswaId . '/';
@@ -131,8 +132,126 @@ class SiswaBerkas extends BaseController
             ]);
         }
 
+        // Tandai antrean sinkronisasi
+        $syncQueue = new SyncQueueModel();
+        $syncQueue->tandai_berkas_pending($siswaId);
+
         $this->session->setFlashdata('success', 'Berkas berhasil diupload.');
-        return redirect()->to(site_url('siswa/berkas'));
+        return redirect()->to(site_url('SiswaBerkas'));
+    }
+
+    /**
+     * Lihat berkas milik siswa yang sedang login (atau admin jika ada akses)
+     */
+    public function lihat($id = null)
+    {
+        $siswaId = (int) $this->session->get('siswa_id');
+        $isAdmin = (bool) $this->session->get('logged_in');
+
+        if (!$siswaId && !$isAdmin) {
+            return redirect()->to(site_url('siswa-login'));
+        }
+
+        if (!$id) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('ID Berkas kosong');
+        }
+
+        $builder = $this->db->table('siswa_berkas')->where('id', (int) $id);
+        if (!$isAdmin) {
+            $builder->where('siswa_id', $siswaId);
+        }
+        $berkas = $builder->get()->getRow();
+
+        if (!$berkas) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Berkas tidak ditemukan');
+        }
+
+        $file = $this->getBerkasFilePath($berkas);
+        if (!$file) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('File fisik berkas tidak ditemukan di server');
+        }
+
+        $mime = $berkas->tipe_file ?: mime_content_type($file);
+        $namaFile = basename($berkas->nama_file_asli ?: $berkas->nama_file);
+
+        return $this->response
+            ->setHeader('Content-Type', $mime)
+            ->setHeader('Content-Disposition', 'inline; filename="' . $namaFile . '"')
+            ->setBody(file_get_contents($file));
+    }
+
+    /**
+     * Download berkas milik siswa yang sedang login
+     */
+    public function download($id = null)
+    {
+        $siswaId = (int) $this->session->get('siswa_id');
+        $isAdmin = (bool) $this->session->get('logged_in');
+
+        if (!$siswaId && !$isAdmin) {
+            return redirect()->to(site_url('siswa-login'));
+        }
+
+        if (!$id) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('ID Berkas kosong');
+        }
+
+        $builder = $this->db->table('siswa_berkas')->where('id', (int) $id);
+        if (!$isAdmin) {
+            $builder->where('siswa_id', $siswaId);
+        }
+        $berkas = $builder->get()->getRow();
+
+        if (!$berkas) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Berkas tidak ditemukan');
+        }
+
+        $file = $this->getBerkasFilePath($berkas);
+        if (!$file) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('File fisik berkas tidak ditemukan di server');
+        }
+
+        $namaFile = basename($berkas->nama_file_asli ?: $berkas->nama_file);
+
+        return $this->response->download($file, null)->setFileName($namaFile);
+    }
+
+    /**
+     * Hapus berkas milik siswa
+     */
+    public function hapus($id = null)
+    {
+        $siswaId = (int) $this->session->get('siswa_id');
+        if (!$siswaId) {
+            return redirect()->to(site_url('siswa-login'));
+        }
+
+        if (!$id) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('ID Berkas kosong');
+        }
+
+        $berkas = $this->db->table('siswa_berkas')
+            ->where('id', (int) $id)
+            ->where('siswa_id', $siswaId)
+            ->get()
+            ->getRow();
+
+        if (!$berkas) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Berkas tidak ditemukan');
+        }
+
+        $file = $this->getBerkasFilePath($berkas);
+        if ($file && is_file($file)) {
+            @unlink($file);
+        }
+
+        $this->db->table('siswa_berkas')->where('id', (int) $id)->delete();
+
+        $syncQueue = new SyncQueueModel();
+        $syncQueue->tandai_berkas_pending($siswaId);
+
+        $this->session->setFlashdata('success', 'Berkas berhasil dihapus dan menunggu sinkronisasi.');
+        return redirect()->to(site_url('SiswaBerkas'));
     }
 
     /**
