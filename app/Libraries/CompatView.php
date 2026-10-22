@@ -158,6 +158,10 @@ class CompatView extends View
             return $this->dbProxy ??= new CompatDbProxy();
         }
 
+        if ($key === 'solat') {
+            return model(\App\Models\AbsensiSolatModel::class);
+        }
+
         if ($key === 'input') {
             return $this->inputProxy ??= new class {
                 public function get(?string $index = null, $xssClean = false)

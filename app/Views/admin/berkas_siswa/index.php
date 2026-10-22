@@ -282,7 +282,7 @@
                             <?php foreach ($siswa as $index => $row): ?>
 
                                 <?php
-
+                                $offset = $offset ?? 0;
                                 $jumlah =
                                     (int) $row->jumlah_berkas;
 

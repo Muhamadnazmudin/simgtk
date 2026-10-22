@@ -117,7 +117,8 @@ if (!empty($sesi)) {
             <?php if (!empty($sesi_hari_ini)): ?>
                 <?php foreach ($sesi_hari_ini as $item): ?>
                     <?php
-                    $stat = $this->solat->get_statistik($item->id);
+                    $solatModel = $solat ?? ($this->solat ?? model(\App\Models\AbsensiSolatModel::class));
+                    $stat = $solatModel->get_statistik($item->id);
                     $status_buka = $item->status === 'buka';
                     ?>
                     <div class="border rounded p-3 mb-3">

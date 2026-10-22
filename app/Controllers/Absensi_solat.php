@@ -69,6 +69,7 @@ class Absensi_solat extends BaseController
         $data['title']                = 'Absensi Salat Dzuhur';
         $data['judul']                = 'Absensi Salat Dzuhur';
         $data['tahun_id']             = $tahunId;
+        $data['solat']                = $this->solat;
         $data['sesi']                 = [];
         $data['statistik_sesi']       = 0;
         $data['statistik_hadir']      = 0;

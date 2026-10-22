@@ -23,13 +23,18 @@ class Berkas_siswa extends BaseController
         $keyword = trim((string) $this->request->getGet('keyword'));
         $kelasId = trim((string) $this->request->getGet('kelas'));
         $limit   = 36;
-        $offset  = (int) $offset;
+        $page    = (int) ($this->request->getGet('page') ?: 1);
+        if ($page > 1 && (int) $offset === 0) {
+            $offset = ($page - 1) * $limit;
+        } else {
+            $offset = (int) $offset;
+        }
 
         $totalRows = $this->berkasModel->countSiswaAktif($keyword, $kelasId);
         $siswaList = $this->berkasModel->getSiswaAktif($limit, $offset, $keyword, $kelasId);
 
         $pager = \Config\Services::pager();
-        $pager->makeLinks($offset / $limit + 1, $limit, $totalRows, 'default_full');
+        $pager->makeLinks($page, $limit, $totalRows, 'default_full');
 
         $nomorAwal  = $totalRows > 0 ? $offset + 1 : 0;
         $nomorAkhir = $totalRows > 0 ? min($offset + $limit, $totalRows) : 0;
@@ -43,6 +48,7 @@ class Berkas_siswa extends BaseController
             'keyword'     => $keyword,
             'kelas_id'    => $kelasId,
             'total_rows'  => $totalRows,
+            'offset'      => $offset,
             'nomor_awal'  => $nomorAwal,
             'nomor_akhir' => $nomorAkhir,
         ];
