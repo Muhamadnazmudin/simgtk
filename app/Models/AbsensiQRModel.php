@@ -15,8 +15,59 @@ class AbsensiQRModel extends Model
 
     public function getSiswaByToken(string $token): ?object
     {
-        $token = preg_replace('/[^0-9]/', '', trim($token));
-        return $this->db->table('siswa')->where('nisn', $token)->get()->getRow();
+        $token = trim($token);
+        if (filter_var($token, FILTER_VALIDATE_URL) || strpos($token, '/') !== false) {
+            $parts = explode('/', rtrim($token, '/'));
+            $token = end($parts);
+        }
+
+        $cleanDigits = preg_replace('/[^0-9]/', '', $token);
+
+        if (!empty($cleanDigits)) {
+            // 1. Cari berdasarkan NISN
+            $siswa = $this->db->table('siswa s')
+                ->select('s.*, k.nama AS nama_kelas')
+                ->join('kelas k', 'k.id = s.id_kelas', 'left')
+                ->where('s.nisn', $cleanDigits)
+                ->get()
+                ->getRow();
+            if ($siswa) {
+                return $siswa;
+            }
+
+            // 2. Cari berdasarkan NIS
+            $siswa = $this->db->table('siswa s')
+                ->select('s.*, k.nama AS nama_kelas')
+                ->join('kelas k', 'k.id = s.id_kelas', 'left')
+                ->where('s.nis', $cleanDigits)
+                ->get()
+                ->getRow();
+            if ($siswa) {
+                return $siswa;
+            }
+
+            // 3. Cari berdasarkan ID siswa jika numeric
+            $siswa = $this->db->table('siswa s')
+                ->select('s.*, k.nama AS nama_kelas')
+                ->join('kelas k', 'k.id = s.id_kelas', 'left')
+                ->where('s.id', (int) $cleanDigits)
+                ->get()
+                ->getRow();
+            if ($siswa) {
+                return $siswa;
+            }
+        }
+
+        // 4. Fallback pencocokan string langsung
+        return $this->db->table('siswa s')
+            ->select('s.*, k.nama AS nama_kelas')
+            ->join('kelas k', 'k.id = s.id_kelas', 'left')
+            ->groupStart()
+                ->where('s.nisn', $token)
+                ->orWhere('s.nis', $token)
+            ->groupEnd()
+            ->get()
+            ->getRow();
     }
 
     public function getAbsenHariIni(string $nis, string $tanggal): ?object

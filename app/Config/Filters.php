@@ -60,6 +60,10 @@ class Filters extends BaseFilters
                 'except' => [
                     'api/*',
                     'test_api.php',
+                    'AbsensiQR/proses_scan',
+                    'absensiqr/proses_scan',
+                    'AbsensiQR/recent_scans',
+                    'absensiqr/recent_scans',
                 ]
             ],
         ],
