@@ -32,4 +32,49 @@ class BacaanModel extends Model
             ->orderBy('judul', 'ASC')
             ->findAll();
     }
+
+    public function getById(int $id): ?object
+    {
+        return $this->where('id', $id)
+            ->where('status', 'aktif')
+            ->first();
+    }
+
+    public function getFiltered(int $limit, int $offset, ?string $kelas = null, ?string $mapel = null): array
+    {
+        $builder = $this->where('status', 'aktif');
+        if (!empty($kelas)) {
+            $builder->where('kelas', $kelas);
+        }
+        if (!empty($mapel)) {
+            $builder->where('mapel', $mapel);
+        }
+        return $builder->orderBy('created_at', 'DESC')
+            ->findAll($limit, $offset);
+    }
+
+    public function countFiltered(?string $kelas = null, ?string $mapel = null): int
+    {
+        $builder = $this->where('status', 'aktif');
+        if (!empty($kelas)) {
+            $builder->where('kelas', $kelas);
+        }
+        if (!empty($mapel)) {
+            $builder->where('mapel', $mapel);
+        }
+        return $builder->countAllResults();
+    }
+
+    public function getMapelUnik(): array
+    {
+        return $this->db->table($this->table)
+            ->select('mapel')
+            ->where('mapel IS NOT NULL')
+            ->where('mapel !=', '')
+            ->groupBy('mapel')
+            ->orderBy('mapel', 'ASC')
+            ->get()
+            ->getResult();
+    }
 }
+

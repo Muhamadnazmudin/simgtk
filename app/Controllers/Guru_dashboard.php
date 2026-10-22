@@ -49,12 +49,23 @@ class Guru_dashboard extends BaseController
 
         // Get teacher schedule today
         $jadwal = $this->db->table('jadwal_mengajar j')
-            ->select('j.*, m.nama as mapel_nama, k.nama as kelas_nama, j.id as jadwal_id')
-            ->join('mapel m', 'm.id = j.mapel_id', 'left')
-            ->join('kelas k', 'k.id = j.kelas_id', 'left')
+            ->select('
+                j.id_jadwal AS jadwal_id,
+                j.hari,
+                k.nama AS nama_kelas,
+                m.nama_mapel,
+                js1.nama_jam AS jam_awal,
+                js1.jam_mulai AS jam_mulai,
+                js2.nama_jam AS jam_akhir,
+                js2.jam_selesai AS jam_selesai
+            ')
+            ->join('kelas k', 'k.id = j.rombel_id', 'left')
+            ->join('mapel m', 'm.id_mapel = j.mapel_id', 'left')
+            ->join('jam_sekolah js1', 'js1.id_jam = j.jam_mulai_id', 'left')
+            ->join('jam_sekolah js2', 'js2.id_jam = j.jam_selesai_id', 'left')
             ->where('j.guru_id', $guruId)
             ->where('j.hari', $hari)
-            ->orderBy('j.jam_mulai', 'ASC')
+            ->orderBy('js1.urutan', 'ASC')
             ->get()
             ->getResult();
 

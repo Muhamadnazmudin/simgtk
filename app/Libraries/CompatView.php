@@ -48,26 +48,113 @@ class CompatResultProxy
 }
 
 /**
- * DB Proxy to provide backward compatibility for CI3 $this->db->get_where(), ->get(), etc.
+ * DB Proxy to provide backward compatibility for CI3 $this->db->get_where(), ->get(), ->select(), ->from(), etc.
  */
 class CompatDbProxy
 {
     protected $conn;
+    protected $table = null;
+    protected $pendingSelect = null;
+    protected $pendingJoins = [];
+    protected $pendingWhere = [];
+    protected $pendingOrderBy = [];
+    protected $builder = null;
 
     public function __construct()
     {
         $this->conn = \Config\Database::connect();
     }
 
-    public function get_where(string $table, array $where = [], ?int $limit = null, ?int $offset = null)
+    protected function initBuilder(string $table)
     {
-        $res = $this->conn->table($table)->getWhere($where, $limit, $offset);
+        $this->table = $table;
+        $this->builder = $this->conn->table($table);
+        if ($this->pendingSelect !== null) {
+            $this->builder->select($this->pendingSelect);
+            $this->pendingSelect = null;
+        }
+        foreach ($this->pendingJoins as $j) {
+            $this->builder->join($j[0], $j[1], $j[2] ?? 'left', $j[3] ?? null);
+        }
+        $this->pendingJoins = [];
+        foreach ($this->pendingWhere as $w) {
+            $this->builder->where($w[0], $w[1] ?? null, $w[2] ?? null);
+        }
+        $this->pendingWhere = [];
+        foreach ($this->pendingOrderBy as $o) {
+            $this->builder->orderBy($o[0], $o[1] ?? 'ASC', $o[2] ?? null);
+        }
+        $this->pendingOrderBy = [];
+        return $this->builder;
+    }
+
+    public function select($select = '*', ?bool $escape = null)
+    {
+        if ($this->builder !== null) {
+            $this->builder->select($select, $escape);
+        } else {
+            $this->pendingSelect = $select;
+        }
+        return $this;
+    }
+
+    public function from(string $table)
+    {
+        $this->initBuilder($table);
+        return $this;
+    }
+
+    public function join(string $table, string $cond, string $type = 'left', ?bool $escape = null)
+    {
+        if ($this->builder !== null) {
+            $this->builder->join($table, $cond, $type, $escape);
+        } else {
+            $this->pendingJoins[] = [$table, $cond, $type, $escape];
+        }
+        return $this;
+    }
+
+    public function where($key, $value = null, ?bool $escape = null)
+    {
+        if ($this->builder !== null) {
+            $this->builder->where($key, $value, $escape);
+        } else {
+            $this->pendingWhere[] = [$key, $value, $escape];
+        }
+        return $this;
+    }
+
+    public function order_by(string $orderBy, string $direction = '', ?bool $escape = null)
+    {
+        if ($this->builder !== null) {
+            $this->builder->orderBy($orderBy, $direction, $escape);
+        } else {
+            $this->pendingOrderBy[] = [$orderBy, $direction, $escape];
+        }
+        return $this;
+    }
+
+    public function get(?string $table = null, ?int $limit = null, ?int $offset = null)
+    {
+        if ($table !== null) {
+            $this->initBuilder($table);
+        }
+        if ($this->builder === null) {
+            if ($this->table !== null) {
+                $this->initBuilder($this->table);
+            } else {
+                throw new \RuntimeException("Table not specified in CompatDbProxy");
+            }
+        }
+        $res = $this->builder->get($limit, $offset ?? 0);
+        $this->builder = null;
+        $this->table = null;
         return new CompatResultProxy($res);
     }
 
-    public function get(string $table, ?int $limit = null, ?int $offset = null)
+    public function get_where(string $table, array $where = [], ?int $limit = null, ?int $offset = null)
     {
-        $res = $this->conn->table($table)->get($limit, $offset);
+        $res = $this->conn->table($table)->getWhere($where, $limit, $offset ?? 0);
         return new CompatResultProxy($res);
     }
 
@@ -84,6 +171,10 @@ class CompatDbProxy
 
     public function __call($name, $arguments)
     {
+        if ($this->builder !== null && method_exists($this->builder, $name)) {
+            $res = $this->builder->$name(...$arguments);
+            return $res === $this->builder ? $this : $res;
+        }
         return $this->conn->$name(...$arguments);
     }
 

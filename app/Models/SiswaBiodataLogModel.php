@@ -113,4 +113,35 @@ class SiswaBiodataLogModel extends Model
 
         return $builder->countAllResults();
     }
+
+    public function save_change($siswa_id, $field_name, $field_label, $old_value, $new_value, $changed_by)
+    {
+        $existing = $this->db->table($this->table)
+            ->where('siswa_id', $siswa_id)
+            ->where('field_name', $field_name)
+            ->get()
+            ->getRow();
+
+        if ($existing) {
+            return $this->db->table($this->table)
+                ->where('id', $existing->id)
+                ->update([
+                    'old_value'  => $old_value,
+                    'new_value'  => $new_value,
+                    'changed_by' => $changed_by,
+                    'changed_at' => date('Y-m-d H:i:s'),
+                ]);
+        }
+
+        return $this->db->table($this->table)->insert([
+            'siswa_id'    => $siswa_id,
+            'field_name'  => $field_name,
+            'field_label' => $field_label,
+            'old_value'   => $old_value,
+            'new_value'   => $new_value,
+            'changed_by'  => $changed_by,
+            'changed_at'  => date('Y-m-d H:i:s'),
+        ]);
+    }
 }
+

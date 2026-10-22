@@ -98,6 +98,22 @@ $modules = [
     'Backup'                   => 'Backup',
     'SiswaBerkas'              => 'SiswaBerkas',
     'siswaberkas'              => 'SiswaBerkas',
+    'SiswaDashboard'           => 'SiswaDashboard',
+    'siswadashboard'           => 'SiswaDashboard',
+    'SiswaJadwal'              => 'SiswaJadwal',
+    'siswajadwal'              => 'SiswaJadwal',
+    'SiswaLaporanPembelajaran' => 'SiswaLaporanPembelajaran',
+    'siswalaporanpembelajaran' => 'SiswaLaporanPembelajaran',
+    'Nilairapor_siswa'         => 'Nilairapor_siswa',
+    'nilairapor_siswa'         => 'Nilairapor_siswa',
+    'SiswaBacaan'              => 'SiswaBacaan',
+    'siswabacaan'              => 'SiswaBacaan',
+    'SiswaTutorial'            => 'SiswaTutorial',
+    'siswatutorial'            => 'SiswaTutorial',
+    'SiswaAkunBelajar'         => 'SiswaAkunBelajar',
+    'siswaakunbelajar'         => 'SiswaAkunBelajar',
+    'Idcard'                   => 'Idcard',
+    'idcard'                   => 'Idcard',
 ];
 
 foreach ($modules as $slug => $controller) {
