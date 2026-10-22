@@ -103,6 +103,14 @@ class CompatView extends View
     protected ?object $sessionProxy  = null;
     protected ?object $dbProxy       = null;
 
+    public function render(string $view, ?array $options = null, ?bool $saveData = null): string
+    {
+        if ($options !== null && is_array($options)) {
+            $this->setData($options);
+        }
+        return parent::render($view, $options, $saveData);
+    }
+
     public function __get(string $key)
     {
         if ($key === 'security') {
@@ -148,6 +156,33 @@ class CompatView extends View
 
         if ($key === 'db') {
             return $this->dbProxy ??= new CompatDbProxy();
+        }
+
+        if ($key === 'input') {
+            return $this->inputProxy ??= new class {
+                public function get(?string $index = null, $xssClean = false)
+                {
+                    $req = service('request');
+                    return $index === null ? $req->getGet() : $req->getGet($index);
+                }
+
+                public function post(?string $index = null, $xssClean = false)
+                {
+                    $req = service('request');
+                    return $index === null ? $req->getPost() : $req->getPost($index);
+                }
+
+                public function get_post(?string $index = null, $xssClean = false)
+                {
+                    $req = service('request');
+                    return $req->getPostGet($index);
+                }
+
+                public function server(string $index)
+                {
+                    return service('request')->getServer($index);
+                }
+            };
         }
 
         // Return from view data if defined

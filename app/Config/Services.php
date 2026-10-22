@@ -33,4 +33,9 @@ class Services extends BaseService
             AppServices::get('logger')
         );
     }
+
+    public static function compatView(bool $getShared = true)
+    {
+        return static::renderer(null, null, $getShared);
+    }
 }

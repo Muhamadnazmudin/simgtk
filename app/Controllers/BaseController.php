@@ -48,6 +48,11 @@ abstract class BaseController extends Controller
     protected ?array $user = null;
 
     /**
+     * Compatibility View renderer
+     */
+    protected \App\Libraries\CompatView $compatView;
+
+    /**
      * @param CLIRequest|IncomingRequest $request
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
@@ -55,9 +60,10 @@ abstract class BaseController extends Controller
         // Load helpers before parent init
         parent::initController($request, $response, $logger);
 
-        // Preload database and session
+        // Preload database, session, and compatView
         $this->db = \Config\Database::connect();
         $this->session = service('session');
+        $this->compatView = service('compatView');
 
         if ($this->session->get('logged_in')) {
             $this->user = [
