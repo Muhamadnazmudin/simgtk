@@ -25,6 +25,11 @@ class BerkasSiswaModel extends Model
         ];
     }
 
+    public function jenis_berkas(): array
+    {
+        return $this->jenisBerkas();
+    }
+
     public function generateAccessToken(): string
     {
         return bin2hex(random_bytes(32));
@@ -42,12 +47,31 @@ class BerkasSiswaModel extends Model
             ->getRow();
     }
 
+    public function get_siswa_by_id(int $id): ?object
+    {
+        return $this->getSiswaById($id);
+    }
+
     public function getBerkasSiswa(int $siswaId): array
     {
         return $this->db->table($this->table)
             ->where('siswa_id', $siswaId)
             ->get()
             ->getResult();
+    }
+
+    public function get_berkas_siswa(int $siswaId): array
+    {
+        return $this->getBerkasSiswa($siswaId);
+    }
+
+    public function get_berkas(int $siswaId, string $jenis): ?object
+    {
+        return $this->db->table($this->table)
+            ->where('siswa_id', $siswaId)
+            ->where('jenis_berkas', $jenis)
+            ->get()
+            ->getRow();
     }
 
     public function countSiswaAktif(string $keyword = '', string $kelasId = ''): int
