@@ -21,7 +21,7 @@ class Berkas_siswa extends BaseController
      */
     public function index($offset = 0)
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $keyword = trim((string) $this->request->getGet('keyword'));
         $kelasId = trim((string) $this->request->getGet('kelas'));
@@ -68,7 +68,7 @@ class Berkas_siswa extends BaseController
      */
     public function kelola($siswaId = null)
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $siswaId = (int) $siswaId;
         $siswa = $this->berkasModel->getSiswaById($siswaId);
@@ -107,7 +107,7 @@ class Berkas_siswa extends BaseController
      */
     public function upload($siswaId = null)
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $siswaId = (int) ($siswaId ?: $this->request->getPost('siswa_id'));
         $siswa = $this->berkasModel->getSiswaById($siswaId);
@@ -214,7 +214,7 @@ class Berkas_siswa extends BaseController
      */
     public function lihat($id = null)
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $id = (int) $id;
         $berkas = $this->db->table('siswa_berkas')->where('id', $id)->get()->getRow();
@@ -250,7 +250,7 @@ class Berkas_siswa extends BaseController
      */
     public function preview($id = null)
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $id = (int) $id;
         $berkas = $this->db->table('siswa_berkas')->where('id', $id)->get()->getRow();
@@ -276,7 +276,7 @@ class Berkas_siswa extends BaseController
      */
     public function rotate($id = null)
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $id = (int) $id;
         $berkas = $this->db->table('siswa_berkas')->where('id', $id)->get()->getRow();
@@ -360,7 +360,7 @@ class Berkas_siswa extends BaseController
      */
     public function download($id = null)
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $id = (int) $id;
         $berkas = $this->db->table('siswa_berkas')->where('id', $id)->get()->getRow();
@@ -381,7 +381,7 @@ class Berkas_siswa extends BaseController
      */
     public function hapus($id = null)
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $id = (int) $id;
         $berkas = $this->db->table('siswa_berkas')->where('id', $id)->get()->getRow();

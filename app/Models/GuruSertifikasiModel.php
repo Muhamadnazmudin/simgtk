@@ -47,4 +47,14 @@ class GuruSertifikasiModel extends Model
             ->where('guru_id', $guruId)
             ->countAllResults() > 0;
     }
+
+    public function get_by_guru(int $guruId): array
+    {
+        return $this->getByGuru($guruId);
+    }
+
+    public function owned_by(int $sertifikasiId, int $guruId): bool
+    {
+        return $this->ownedBy($sertifikasiId, $guruId);
+    }
 }

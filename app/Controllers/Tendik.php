@@ -42,7 +42,7 @@ class Tendik extends BaseController
 
     public function index($offset = 0)
     {
-        $this->requireRole([1]);
+        $this->requireRole([1, 5]);
 
         $search  = trim((string) $this->request->getGet('search'));
         $perPage = 10;
@@ -95,7 +95,7 @@ class Tendik extends BaseController
 
     public function add()
     {
-        $this->requireRole([1]);
+        $this->requireRole([1, 5]);
 
         $data = [
             'title'  => 'Tambah Tendik',
@@ -125,7 +125,7 @@ class Tendik extends BaseController
 
     public function edit($id = null)
     {
-        $this->requireRole([1]);
+        $this->requireRole([1, 5]);
 
         $id = (int) $id;
         $tendik = $this->tendikModel->find($id);
@@ -162,7 +162,7 @@ class Tendik extends BaseController
 
     public function delete($id = null)
     {
-        $this->requireRole([1]);
+        $this->requireRole([1, 5]);
 
         $id = (int) $id;
         if ($id > 0) {
@@ -175,7 +175,7 @@ class Tendik extends BaseController
 
     public function export_excel()
     {
-        $this->requireRole([1]);
+        $this->requireRole([1, 5]);
 
         $data = $this->tendikModel->getAll(10000, 0);
 
@@ -211,7 +211,7 @@ class Tendik extends BaseController
 
     public function import_excel()
     {
-        $this->requireRole([1]);
+        $this->requireRole([1, 5]);
 
         $file = $this->request->getFile('file');
         if (!$file || !$file->isValid()) {

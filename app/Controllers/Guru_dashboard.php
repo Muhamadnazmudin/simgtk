@@ -30,7 +30,7 @@ class Guru_dashboard extends BaseController
         // Check holiday
         $today = date('Y-m-d');
         $libur = $this->db->table('hari_libur')
-            ->where('tanggal', $today)
+            ->where('start', $today)
             ->get()
             ->getRow();
 

@@ -16,7 +16,7 @@ class Akun_belajar extends BaseController
 
     public function index()
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $nama    = trim((string) $this->request->getGet('nama'));
         $kelasId = $this->request->getGet('kelas');
@@ -41,7 +41,7 @@ class Akun_belajar extends BaseController
 
     public function import()
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $data = [
             'title'  => 'Import Akun BelajarID',
@@ -53,7 +53,7 @@ class Akun_belajar extends BaseController
 
     public function import_process()
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $file = $this->request->getFile('file');
         if (!$file || !$file->isValid()) {
@@ -126,7 +126,7 @@ class Akun_belajar extends BaseController
 
     public function simpan()
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $data = [
             'nisn'             => trim((string) $this->request->getPost('nisn')),
@@ -142,7 +142,7 @@ class Akun_belajar extends BaseController
 
     public function hapus($nisn = null)
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         if ($nisn) {
             $this->akunModel->deleteByNisn((string) $nisn);
@@ -154,7 +154,7 @@ class Akun_belajar extends BaseController
 
     public function reset_subscribe()
     {
-        $this->requireRole([1, 2]);
+        $this->requireRole([1, 2, 5]);
 
         $nisn = trim((string) $this->request->getPost('nisn'));
         if (!$nisn) {

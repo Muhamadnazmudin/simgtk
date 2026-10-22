@@ -38,12 +38,17 @@ class Dashboard extends BaseController
         if ($this->session->get('logged_in')) {
             $role = strtolower((string) $this->session->get('role_name'));
 
-            // Teachers go to Guru Dashboard
-            if ($role === 'guru') {
+            // Teachers and Wakakur go to Guru Dashboard
+            if ($role === 'guru' || $role === 'wakakur') {
                 return redirect()->to('/guru_dashboard');
             }
 
-            $allowed = ['admin', 'kesiswaan', 'operator', 'bpbk'];
+            // BPBK goes to BPBK Dashboard
+            if ($role === 'bpbk') {
+                return redirect()->to('/bpbk');
+            }
+
+            $allowed = ['admin', 'kesiswaan', 'operator'];
             if (!in_array($role, $allowed, true)) {
                 return $this->response->setStatusCode(403)->setBody(
                     view('errors/html/error_403', ['message' => 'Akses ditolak'])

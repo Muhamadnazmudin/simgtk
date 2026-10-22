@@ -43,4 +43,9 @@ class LaporanPembelajaranSiswaModel extends Model
 
         return $builder->orderBy('l.id', 'DESC')->get()->getResult();
     }
+
+    public function get_all(array $filter = []): array
+    {
+        return $this->getAll($filter);
+    }
 }
