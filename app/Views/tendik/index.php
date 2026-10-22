@@ -1778,12 +1778,15 @@ body.dark-mode .tendik-section-title {
          PAGINATION
     ====================================================== -->
 
-    <?php if (!empty($pagination)): ?>
+    <?php if (!empty($pagination) || (isset($total) && $total > 0)): ?>
 
-        <div class="tendik-pagination">
-
-            <?= $pagination; ?>
-
+        <div class="d-flex justify-content-between align-items-center flex-wrap mt-3 px-2">
+            <div class="text-muted small mb-2 mb-md-0">
+                Menampilkan <strong><?= count($tendik); ?></strong> dari total <strong><?= number_format($total ?? count($tendik)); ?></strong> tendik
+            </div>
+            <div class="tendik-pagination">
+                <?= $pagination; ?>
+            </div>
         </div>
 
     <?php endif; ?>

@@ -25,21 +25,33 @@ class Mutasi extends BaseController
         $this->requireAuth();
 
         $tahunId = $this->tahunAktifId();
-        $offset  = (int) $offset;
         $perPage = 15;
+
+        $page = (int) ($this->request->getGet('page') ?: 0);
+        if ($page > 0) {
+            $offset = ($page - 1) * $perPage;
+        } elseif ((int) $offset > 0) {
+            $offset = (int) $offset;
+            $page   = (int) floor($offset / $perPage) + 1;
+        } else {
+            $page   = 1;
+            $offset = 0;
+        }
 
         $totalRows = $this->mutasiModel->countByYear($tahunId);
         $mutasi    = $this->mutasiModel->getAll($perPage, $offset, $tahunId);
 
         $pager = \Config\Services::pager();
-        $pager->makeLinks($offset / $perPage + 1, $perPage, $totalRows, 'default_full');
+        $paginationHtml = $pager->makeLinks($page, $perPage, $totalRows, 'bootstrap_pagination');
 
         $data = [
             'title'      => 'Data Mutasi Siswa',
             'active'     => 'mutasi',
             'offset'     => $offset,
+            'page'       => $page,
+            'total'      => $totalRows,
             'mutasi'     => $mutasi,
-            'pagination' => $pager->links(),
+            'pagination' => $paginationHtml,
             'siswa'      => $this->mutasiModel->getSiswaAktif(),
             'kelas'      => $this->mutasiModel->getKelasList(),
             'tahun'      => $this->mutasiModel->getTahunList(),

@@ -1759,12 +1759,15 @@ body.dark-mode .guru-section-title {
          PAGINATION
     ====================================================== -->
 
-    <?php if (!empty($pagination)): ?>
+    <?php if (!empty($pagination) || (isset($total) && $total > 0)): ?>
 
-        <div class="guru-pagination">
-
-            <?= $pagination; ?>
-
+        <div class="d-flex justify-content-between align-items-center flex-wrap mt-3 px-2">
+            <div class="text-muted small mb-2 mb-md-0">
+                Menampilkan <strong><?= count($guru); ?></strong> dari total <strong><?= number_format($total ?? count($guru)); ?></strong> guru
+            </div>
+            <div class="guru-pagination">
+                <?= $pagination; ?>
+            </div>
         </div>
 
     <?php endif; ?>

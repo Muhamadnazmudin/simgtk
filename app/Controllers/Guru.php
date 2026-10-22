@@ -53,12 +53,23 @@ class Guru extends BaseController
 
     public function index($offset = 0)
     {
-        $search = trim((string) $this->request->getGet('search'));
-        $pager = service('pager');
+        $search  = trim((string) $this->request->getGet('search'));
+        $pager   = service('pager');
         $perPage = 10;
-        $total = $this->guruModel->count_all($search);
+        $total   = $this->guruModel->count_all($search);
 
-        $guru = $this->guruModel->get_all($perPage, (int) $offset, $search);
+        $page = (int) ($this->request->getGet('page') ?: 0);
+        if ($page > 0) {
+            $offset = ($page - 1) * $perPage;
+        } elseif ((int) $offset > 0) {
+            $offset = (int) $offset;
+            $page   = (int) floor($offset / $perPage) + 1;
+        } else {
+            $page   = 1;
+            $offset = 0;
+        }
+
+        $guru = $this->guruModel->get_all($perPage, $offset, $search);
 
         // Teacher statistics
         $statistik = $this->db->table('guru')
@@ -76,8 +87,10 @@ class Guru extends BaseController
             'title'        => 'Data Guru',
             'active'       => 'guru',
             'guru'         => $guru,
-            'pagination'   => $pager->makeLinks((int) $offset / $perPage + 1, $perPage, $total),
-            'start'        => (int) $offset,
+            'pagination'   => $pager->makeLinks($page, $perPage, $total, 'bootstrap_pagination'),
+            'start'        => $offset,
+            'page'         => $page,
+            'total'        => $total,
             'search'       => $search,
             'total_guru'   => (int) ($statistik->total_guru ?? 0),
             'guru_pppk'    => (int) ($statistik->guru_pppk ?? 0),

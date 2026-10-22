@@ -26,18 +26,22 @@ class Berkas_siswa extends BaseController
         $keyword = trim((string) $this->request->getGet('keyword'));
         $kelasId = trim((string) $this->request->getGet('kelas'));
         $limit   = 36;
-        $page    = (int) ($this->request->getGet('page') ?: 1);
-        if ($page > 1 && (int) $offset === 0) {
+        $page    = (int) ($this->request->getGet('page') ?: 0);
+        if ($page > 0) {
             $offset = ($page - 1) * $limit;
-        } else {
+        } elseif ((int) $offset > 0) {
             $offset = (int) $offset;
+            $page   = (int) floor($offset / $limit) + 1;
+        } else {
+            $page   = 1;
+            $offset = 0;
         }
 
         $totalRows = $this->berkasModel->countSiswaAktif($keyword, $kelasId);
         $siswaList = $this->berkasModel->getSiswaAktif($limit, $offset, $keyword, $kelasId);
 
         $pager = \Config\Services::pager();
-        $pager->makeLinks($page, $limit, $totalRows, 'default_full');
+        $paginationHtml = $pager->makeLinks($page, $limit, $totalRows, 'bootstrap_pagination');
 
         $nomorAwal  = $totalRows > 0 ? $offset + 1 : 0;
         $nomorAkhir = $totalRows > 0 ? min($offset + $limit, $totalRows) : 0;
@@ -47,7 +51,7 @@ class Berkas_siswa extends BaseController
             'active'      => 'berkas_siswa',
             'siswa'       => $siswaList,
             'kelas'       => $this->berkasModel->getKelasAktif(),
-            'pagination'  => $pager->links(),
+            'pagination'  => $paginationHtml,
             'keyword'     => $keyword,
             'kelas_id'    => $kelasId,
             'total_rows'  => $totalRows,

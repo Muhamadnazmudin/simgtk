@@ -360,7 +360,14 @@ $isViewOnly = in_array($role, ['operator', 'bpbk']);
      PAGINATION
 ========================================================= -->
 
-<?= $pagination ?>
+<div class="d-flex justify-content-between align-items-center flex-wrap mt-3 px-2">
+    <div class="text-muted small mb-2 mb-md-0">
+        Menampilkan <strong><?= count($siswa); ?></strong> dari total <strong><?= number_format($total ?? count($siswa)); ?></strong> siswa aktif
+    </div>
+    <div class="pagination-container m-0">
+        <?= $pagination; ?>
+    </div>
+</div>
 
 
 <!-- =========================================================

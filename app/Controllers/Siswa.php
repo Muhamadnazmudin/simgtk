@@ -62,18 +62,31 @@ class Siswa extends BaseController
         $totalBuilder = clone $builder;
         $total = $totalBuilder->countAllResults(false);
 
+        $page = (int) ($this->request->getGet('page') ?: 0);
+        if ($page > 0) {
+            $offset = ($page - 1) * $limit;
+        } elseif ((int) $offset > 0) {
+            $offset = (int) $offset;
+            $page   = (int) floor($offset / $limit) + 1;
+        } else {
+            $page   = 1;
+            $offset = 0;
+        }
+
         $builder->orderBy('siswa.id', 'ASC');
-        $builder->limit($limit, (int) $offset);
+        $builder->limit($limit, $offset);
         $siswaList = $builder->get()->getResult();
 
         $data = [
             'title'      => 'Data Siswa Aktif',
             'active'     => 'siswa',
             'siswa'      => $siswaList,
-            'pagination' => $pager->makeLinks((int) $offset / $limit + 1, $limit, $total),
+            'pagination' => $pager->makeLinks($page, $limit, $total, 'bootstrap_pagination'),
             'kelas'      => $this->siswaModel->get_kelas_list(),
             'tahun'      => $this->siswaModel->get_tahun_list(),
-            'start'      => (int) $offset,
+            'start'      => $offset,
+            'page'       => $page,
+            'total'      => $total,
             'kelas_id'   => $kelasId,
             'search'     => $search,
             'limit'      => $limit,

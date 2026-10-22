@@ -24,9 +24,19 @@ class Buku_induk extends BaseController
         $this->requireRole([1, 2, 3, 4, 5]);
 
         $limit   = (int) ($this->request->getGet('limit') ?: 20);
-        $offset  = (int) $offset;
         $kelas   = $this->request->getGet('kelas');
         $search  = trim((string) $this->request->getGet('search'));
+
+        $page = (int) ($this->request->getGet('page') ?: 0);
+        if ($page > 0) {
+            $offset = ($page - 1) * $limit;
+        } elseif ((int) $offset > 0) {
+            $offset = (int) $offset;
+            $page   = (int) floor($offset / $limit) + 1;
+        } else {
+            $page   = 1;
+            $offset = 0;
+        }
 
         $builder = $this->db->table('siswa s')
             ->select('s.*, k.nama AS nama_kelas, ta.tahun AS tahun_ajaran')
@@ -50,7 +60,7 @@ class Buku_induk extends BaseController
         $siswaList = $builder->orderBy('s.nama', 'ASC')->limit($limit, $offset)->get()->getResult();
 
         $pager = \Config\Services::pager();
-        $pager->makeLinks($offset / $limit + 1, $limit, $totalRows, 'default_full');
+        $paginationHtml = $pager->makeLinks($page, $limit, $totalRows, 'bootstrap_pagination');
 
         $kelasList = $this->kelasModel->orderBy('nama', 'ASC')->findAll();
 
@@ -60,10 +70,11 @@ class Buku_induk extends BaseController
             'siswa'      => $siswaList,
             'kelas'      => $kelasList,
             'kelas_list' => $kelasList,
-            'pagination' => $pager->links(),
+            'pagination' => $paginationHtml,
             'total_rows' => $totalRows,
             'limit'      => $limit,
             'offset'     => $offset,
+            'page'       => $page,
             'filter'     => ['kelas' => $kelas, 'search' => $search],
         ];
 

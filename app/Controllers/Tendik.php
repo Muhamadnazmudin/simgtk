@@ -45,14 +45,24 @@ class Tendik extends BaseController
         $this->requireRole([1]);
 
         $search  = trim((string) $this->request->getGet('search'));
-        $offset  = (int) $offset;
         $perPage = 10;
-
         $totalRows = $this->tendikModel->countSearch($search);
+
+        $page = (int) ($this->request->getGet('page') ?: 0);
+        if ($page > 0) {
+            $offset = ($page - 1) * $perPage;
+        } elseif ((int) $offset > 0) {
+            $offset = (int) $offset;
+            $page   = (int) floor($offset / $perPage) + 1;
+        } else {
+            $page   = 1;
+            $offset = 0;
+        }
+
         $tendik    = $this->tendikModel->getAll($perPage, $offset, $search);
 
         $pager = \Config\Services::pager();
-        $pager->makeLinks($offset / $perPage + 1, $perPage, $totalRows, 'default_full');
+        $paginationHtml = $pager->makeLinks($page, $perPage, $totalRows, 'bootstrap_pagination');
 
         // Statistik
         $statistik = $this->db->table('tendik')
@@ -69,8 +79,10 @@ class Tendik extends BaseController
             'title'          => 'Data Tendik',
             'active'         => 'tendik',
             'tendik'         => $tendik,
-            'pagination'     => $pager->links(),
+            'pagination'     => $paginationHtml,
             'start'          => $offset,
+            'page'           => $page,
+            'total'          => $totalRows,
             'search'         => $search,
             'total_tendik'   => (int) ($statistik->total_tendik ?? 0),
             'tendik_pppk'    => (int) ($statistik->tendik_pppk ?? 0),

@@ -29,11 +29,22 @@ class Kelas extends BaseController
 
     public function index($offset = 0)
     {
-        $pager = service('pager');
+        $pager   = service('pager');
         $perPage = 15;
-        $total = $this->kelasModel->countAllResults();
+        $total   = $this->kelasModel->countAllResults();
 
-        $kelas = $this->kelasModel->get_all($perPage, (int) $offset);
+        $page = (int) ($this->request->getGet('page') ?: 0);
+        if ($page > 0) {
+            $offset = ($page - 1) * $perPage;
+        } elseif ((int) $offset > 0) {
+            $offset = (int) $offset;
+            $page   = (int) floor($offset / $perPage) + 1;
+        } else {
+            $page   = 1;
+            $offset = 0;
+        }
+
+        $kelas = $this->kelasModel->get_all($perPage, $offset);
 
         // Count active students in each class
         foreach ($kelas as &$k) {
@@ -47,10 +58,12 @@ class Kelas extends BaseController
             'title'      => 'Data Kelas',
             'active'     => 'kelas',
             'kelas'      => $kelas,
-            'pagination' => $pager->makeLinks((int) $offset / $perPage + 1, $perPage, $total),
+            'pagination' => $pager->makeLinks($page, $perPage, $total, 'bootstrap_pagination'),
             'guru'       => $this->kelasModel->get_guru_list(),
             'siswa'      => $this->db->table('siswa')->orderBy('nama', 'ASC')->get()->getResult(),
-            'start'      => (int) $offset,
+            'start'      => $offset,
+            'page'       => $page,
+            'total'      => $total,
         ];
 
         return $this->renderView('kelas/index', $data);

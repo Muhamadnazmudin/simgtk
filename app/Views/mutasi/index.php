@@ -184,7 +184,14 @@
   </tbody>
 </table>
 
-<?= $pagination ?>
+<div class="d-flex justify-content-between align-items-center flex-wrap mt-3 px-2">
+    <div class="text-muted small mb-2 mb-md-0">
+        Menampilkan <strong><?= count($mutasi); ?></strong> dari total <strong><?= number_format($total ?? count($mutasi)); ?></strong> data mutasi
+    </div>
+    <div class="pagination-container m-0">
+        <?= $pagination; ?>
+    </div>
+</div>
 
 <!-- =================== MODAL TAMBAH MUTASI =================== -->
 <div class="modal fade" id="addModal">

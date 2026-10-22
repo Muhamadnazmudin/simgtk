@@ -96,3 +96,105 @@ body.dark-mode .swal-text {
 	background: #666;
 	border-radius: 20px;
 }
+
+/* ======================================================
+   PAGINATION (MODERN STYLES FOR LIGHT & DARK MODE)
+====================================================== */
+.pagination {
+	display: inline-flex !important;
+	align-items: center;
+	gap: 5px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.pagination .page-item {
+	margin: 0;
+}
+
+.pagination .page-item .page-link {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 34px;
+	height: 34px;
+	padding: 0 10px;
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: #4e73df;
+	background-color: #ffffff;
+	border: 1px solid #d1d3e2;
+	border-radius: 0.45rem !important;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	text-decoration: none;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pagination .page-item .page-link:hover {
+	color: #224abe;
+	background-color: #f1f3f9;
+	border-color: #bac8f3;
+	transform: translateY(-1px);
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.pagination .page-item.active .page-link {
+	color: #ffffff !important;
+	background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+	border-color: #224abe !important;
+	box-shadow: 0 3px 8px rgba(78, 115, 223, 0.35);
+	cursor: default;
+}
+
+.pagination .page-item.disabled .page-link {
+	color: #b7b9cc !important;
+	background-color: #f8f9fc !important;
+	border-color: #eaecf4 !important;
+	cursor: not-allowed;
+	box-shadow: none !important;
+	transform: none !important;
+	opacity: 0.7;
+}
+
+/* Dark Mode Pagination */
+body.dark-mode .pagination .page-item .page-link {
+	color: #cbd3ea;
+	background-color: #2b2b3c !important;
+	border-color: #404058 !important;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-mode .pagination .page-item .page-link:hover {
+	color: #ffffff;
+	background-color: #3b3b52 !important;
+	border-color: #585878 !important;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-mode .pagination .page-item.active .page-link {
+	color: #ffffff !important;
+	background: linear-gradient(135deg, #4e73df 0%, #3258c7 100%) !important;
+	border-color: #4e73df !important;
+	box-shadow: 0 3px 10px rgba(78, 115, 223, 0.5);
+}
+
+body.dark-mode .pagination .page-item.disabled .page-link {
+	color: #5c5c77 !important;
+	background-color: #222232 !important;
+	border-color: #323246 !important;
+	opacity: 0.5;
+}
+
+/* Pagination Containers */
+.pagination-container,
+.guru-pagination,
+.tendik-pagination {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	margin-top: 1.25rem;
+	margin-bottom: 0.5rem;
+}

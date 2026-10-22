@@ -22,21 +22,33 @@ class Izin extends BaseController
     {
         $this->requireAuth();
 
-        $offset  = (int) $offset;
         $perPage = 10;
-
         $totalRows = $this->izinModel->countAllResults();
+
+        $page = (int) ($this->request->getGet('page') ?: 0);
+        if ($page > 0) {
+            $offset = ($page - 1) * $perPage;
+        } elseif ((int) $offset > 0) {
+            $offset = (int) $offset;
+            $page   = (int) floor($offset / $perPage) + 1;
+        } else {
+            $page   = 1;
+            $offset = 0;
+        }
+
         $izin = $this->izinModel->orderBy('id', 'DESC')->findAll($perPage, $offset);
 
         $pager = \Config\Services::pager();
-        $pager->makeLinks($offset / $perPage + 1, $perPage, $totalRows, 'default_full');
+        $paginationHtml = $pager->makeLinks($page, $perPage, $totalRows, 'bootstrap_pagination');
 
         $data = [
             'active'     => 'izin',
             'title'      => 'Monitoring Izin Keluar',
             'izin'       => $izin,
-            'pagination' => $pager->links(),
+            'pagination' => $paginationHtml,
             'start'      => $offset,
+            'page'       => $page,
+            'total'      => $totalRows,
         ];
 
         return $this->renderView('izin/index', $data);

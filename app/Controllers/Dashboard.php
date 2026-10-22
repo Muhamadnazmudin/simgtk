@@ -60,7 +60,7 @@ class Dashboard extends BaseController
             $data['jumlah_guru']        = $this->db->table('guru')->countAllResults();
             $data['jumlah_tendik']      = $this->db->table('tendik')->countAllResults();
             $data['jumlah_siswa_aktif'] = $this->db->table('siswa')->where('status', 'aktif')->countAllResults();
-            $data['jumlah_rombel']      = $this->db->table('kelas')->countAllResults();
+            $data['jumlah_rombel']      = $this->db->table('kelas')->where('is_active', 1)->countAllResults();
 
             $data['lulus'] = $this->db->table('siswa')
                 ->select('tahun_ajaran.tahun, COUNT(siswa.id) AS jumlah')
@@ -114,6 +114,7 @@ class Dashboard extends BaseController
 
         foreach ($regex as $k => $r) {
             $count = $this->db->table('kelas')
+                ->where('is_active', 1)
                 ->where("nama REGEXP '$r'")
                 ->countAllResults();
             $out[$k] = $count;

@@ -133,19 +133,31 @@ class Buku_tamu extends BaseController
     public function daftar_hari_ini($offset = 0)
     {
         $limit  = 10;
-        $offset = (int) $offset;
-
         $totalRows = $this->bukuTamuModel->countHariIni();
+
+        $page = (int) ($this->request->getGet('page') ?: 0);
+        if ($page > 0) {
+            $offset = ($page - 1) * $limit;
+        } elseif ((int) $offset > 0) {
+            $offset = (int) $offset;
+            $page   = (int) floor($offset / $limit) + 1;
+        } else {
+            $page   = 1;
+            $offset = 0;
+        }
+
         $list      = $this->bukuTamuModel->getHariIni($limit, $offset);
 
         $pager = \Config\Services::pager();
-        $pager->makeLinks($offset / $limit + 1, $limit, $totalRows, 'default_full');
+        $paginationHtml = $pager->makeLinks($page, $limit, $totalRows, 'bootstrap_pagination');
 
         $data = [
             'title'      => 'Buku Tamu Hari Ini',
             'list'       => $list,
-            'pagination' => $pager->links(),
+            'pagination' => $paginationHtml,
             'start'      => $offset,
+            'page'       => $page,
+            'total'      => $totalRows,
         ];
 
         return $this->compatView->render('buku_tamu/daftar_hari_ini', $data);
