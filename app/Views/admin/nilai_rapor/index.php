@@ -5,22 +5,20 @@
     </h4>
 
     <!-- Flash Message -->
-    <?php if ($this->session->flashdata('error')): ?>
+    <?php if (session()->getFlashdata('error')): ?>
         <div class="alert alert-danger">
-            <?= $this->session->flashdata('error') ?>
+            <?= session()->getFlashdata('error') ?>
         </div>
     <?php endif; ?>
 
-    <?php if ($this->session->flashdata('success')): ?>
+    <?php if (session()->getFlashdata('success')): ?>
         <div class="alert alert-success">
-            <?= $this->session->flashdata('success') ?>
+            <?= session()->getFlashdata('success') ?>
         </div>
     <?php endif; ?>
 
     <form method="post" action="<?= site_url('Nilairapor_admin/simpan') ?>">
-        <input type="hidden"
-           name="<?= $this->security->get_csrf_token_name(); ?>"
-           value="<?= $this->security->get_csrf_hash(); ?>">
+        <?= csrf_field() ?>
 
         <div class="row">
             <!-- Siswa -->
@@ -30,8 +28,8 @@
                     <select name="siswa_id" class="form-control" required>
                         <option value="">-- Pilih Siswa --</option>
                         <?php foreach ($siswa as $s): ?>
-                            <option value="<?= $s->id_siswa ?>">
-                                <?= $s->nama_siswa ?>
+                            <option value="<?= esc($s->id ?? $s->id_siswa) ?>">
+                                <?= esc($s->nama ?? $s->nama_siswa) ?> (<?= esc($s->nisn) ?>)
                             </option>
                         <?php endforeach ?>
                     </select>

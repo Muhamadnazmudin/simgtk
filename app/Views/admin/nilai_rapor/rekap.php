@@ -1,5 +1,7 @@
 <?php
-$isOperator = ($this->session->userdata('role_name') == 'operator');
+$isOperator = (session()->get('role_name') === 'operator');
+$currentKelas = $kelas_id ?? service('request')->getGet('kelas') ?? '';
+$currentPage = (int) ($page ?? 1);
 ?>
 
 <style>
@@ -367,18 +369,20 @@ $isOperator = ($this->session->userdata('role_name') == 'operator');
 
                             </option>
 
-                            <?php foreach($kelas as $k): ?>
+                            <?php if (!empty($kelas)): ?>
+                                <?php foreach($kelas as $k): ?>
 
-                                <option
-                                    value="<?= $k->id ?>"
-                                    <?= $this->input->get('kelas')==$k->id?'selected':'' ?>
-                                >
+                                    <option
+                                        value="<?= esc($k->id) ?>"
+                                        <?= ($currentKelas == $k->id) ? 'selected' : '' ?>
+                                    >
 
-                                    <?= $k->nama ?>
+                                        <?= esc($k->nama) ?>
 
-                                </option>
+                                    </option>
 
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
 
                         </select>
 
@@ -445,7 +449,7 @@ $isOperator = ($this->session->userdata('role_name') == 'operator');
 
     <div class="toolbar-right">
 
-    <a href="<?= site_url('Nilairapor_admin/export_rekap_excel?kelas='.$this->input->get('kelas')) ?>"
+    <a href="<?= site_url('Nilairapor_admin/export_rekap_excel?kelas=' . esc($currentKelas)) ?>"
        class="btn btn-success btn-sm">
         <i class="fas fa-file-excel"></i>
         Export Excel
@@ -571,7 +575,7 @@ $isOperator = ($this->session->userdata('role_name') == 'operator');
 
 <?php
 
-$no = (($page - 1) * 100) + 1;
+$no = (($currentPage - 1) * 100) + 1;
 
 foreach($rekap as $r):
 
@@ -714,12 +718,10 @@ foreach($rekap as $r):
     <div class="modal-dialog">
 
         <form action="<?= site_url('Nilairapor_admin/hapus_nilai') ?>" method="post">
-<input type="hidden"
-       name="<?= $this->security->get_csrf_token_name(); ?>"
-       value="<?= $this->security->get_csrf_hash(); ?>">
+            <?= csrf_field() ?>
             <input type="hidden"
                    name="kelas_id"
-                   value="<?= $this->input->get('kelas') ?>">
+                   value="<?= esc($currentKelas) ?>">
 
             <div class="modal-content">
 

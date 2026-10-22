@@ -129,4 +129,30 @@ class NilaiRaporModel extends Model
 
         return $builder->orderBy('m.nama_mapel', 'ASC')->get()->getResult();
     }
+
+    public function hapusNilai(int $kelasId, int $mapelId, string $semester, int $tahunId): int
+    {
+        $builder = $this->db->table('nilai_rapor nr')
+            ->select('nr.id_nilai')
+            ->join('siswa_tahun st', 'st.siswa_id = nr.siswa_id AND st.tahun_id = nr.tahun_id')
+            ->where('nr.tahun_id', $tahunId)
+            ->where('st.kelas_id', $kelasId)
+            ->where('st.status', 'aktif')
+            ->where('nr.mapel_id', $mapelId);
+
+        if ($semester !== 'all' && is_numeric($semester)) {
+            $builder->where('nr.semester', (int) $semester);
+        }
+
+        $rows = $builder->get()->getResult();
+        if (empty($rows)) {
+            return 0;
+        }
+
+        $ids = array_column($rows, 'id_nilai');
+        $this->db->table('nilai_rapor')->whereIn('id_nilai', $ids)->delete();
+
+        return count($ids);
+    }
 }
+

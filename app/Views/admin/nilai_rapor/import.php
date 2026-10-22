@@ -13,20 +13,20 @@
         </a>
     </div>
 
-    <?php if ($this->session->flashdata('error')): ?>
+    <?php if (session()->getFlashdata('error')): ?>
         <div class="alert alert-danger alert-dismissible fade show">
             <i class="fas fa-times-circle"></i>
-            <?= $this->session->flashdata('error') ?>
+            <?= session()->getFlashdata('error') ?>
             <button type="button" class="close" data-dismiss="alert">
                 <span>&times;</span>
             </button>
         </div>
     <?php endif; ?>
 
-    <?php if ($this->session->flashdata('success')): ?>
+    <?php if (session()->getFlashdata('success')): ?>
         <div class="alert alert-success alert-dismissible fade show">
             <i class="fas fa-check-circle"></i>
-            <?= $this->session->flashdata('success') ?>
+            <?= session()->getFlashdata('success') ?>
             <button type="button" class="close" data-dismiss="alert">
                 <span>&times;</span>
             </button>
@@ -51,9 +51,7 @@
                         action="<?= site_url('Nilairapor_admin/import_proses_lebar') ?>"
                         enctype="multipart/form-data">
 
-                        <input type="hidden"
-                            name="<?= $this->security->get_csrf_token_name(); ?>"
-                            value="<?= $this->security->get_csrf_hash(); ?>">
+                        <?= csrf_field() ?>
 
                         <div class="form-group">
 

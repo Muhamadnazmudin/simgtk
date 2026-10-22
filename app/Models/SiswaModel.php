@@ -14,7 +14,7 @@ class SiswaModel extends Model
         'nisn',
         'nik',
         'nama',
-        'jenis_kelamin',
+        'jk',
         'tempat_lahir',
         'tanggal_lahir',
         'agama',
