@@ -236,7 +236,49 @@ class Izin extends BaseController
     {
         $this->requireAuth();
         $data = ['active' => 'izin', 'title' => 'Scan RFID Izin'];
-        return $this->renderView('izin/rfid', $data);
+        return $this->renderView('izin/rfid_scan', $data);
+    }
+
+    public function laporan()
+    {
+        $this->requireAuth();
+
+        $dari   = $this->request->getGet('dari') ?: date('Y-m-01');
+        $sampai = $this->request->getGet('sampai') ?: date('Y-m-d');
+        $kelas  = $this->request->getGet('kelas') ?: null;
+        $status = $this->request->getGet('status') ?: null;
+
+        $builder = $this->db->table('izin_keluar ik')
+            ->select('ik.*, DATE(ik.jam_keluar) AS tanggal, COALESCE(s.nama, ik.nama) AS nama_siswa, s.nisn, COALESCE(k.nama, ik.kelas_nama) AS nama_kelas, gm.nama AS nama_guru_mapel, gp.nama AS nama_guru_piket')
+            ->join('siswa s', 's.id = ik.siswa_id', 'left')
+            ->join('kelas k', 'k.id = ik.kelas_id', 'left')
+            ->join('guru gm', 'gm.id = ik.id_guru_mapel', 'left')
+            ->join('guru gp', 'gp.id = ik.id_piket', 'left')
+            ->where('ik.jam_keluar >=', $dari . ' 00:00:00')
+            ->where('ik.jam_keluar <=', $sampai . ' 23:59:59');
+
+        if (!empty($kelas)) {
+            $builder->where('ik.kelas_id', $kelas);
+        }
+
+        if (!empty($status)) {
+            $builder->where('ik.status', $status);
+        }
+
+        $list = $builder->orderBy('ik.id', 'DESC')->get()->getResult();
+
+        $data = [
+            'active'     => 'izin_laporan',
+            'title'      => 'Laporan Izin Keluar Siswa',
+            'list'       => $list,
+            'kelas'      => $this->db->table('kelas')->where('is_active', 1)->orderBy('nama', 'ASC')->get()->getResult(),
+            'dari'       => $dari,
+            'sampai'     => $sampai,
+            'filter_kls' => $kelas,
+            'filter_st'  => $status,
+        ];
+
+        return $this->renderView('izin/laporan', $data);
     }
 
     public function rfid_process()

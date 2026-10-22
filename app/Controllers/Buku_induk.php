@@ -3,14 +3,20 @@
 namespace App\Controllers;
 
 use App\Models\KelasModel;
+use App\Models\NilaiRaporModel;
+use App\Models\AbsensiQRModel;
 
 class Buku_induk extends BaseController
 {
     protected KelasModel $kelasModel;
+    protected NilaiRaporModel $nilaiModel;
+    protected AbsensiQRModel $absensiQrModel;
 
     public function __construct()
     {
-        $this->kelasModel = new KelasModel();
+        $this->kelasModel     = new KelasModel();
+        $this->nilaiModel     = new NilaiRaporModel();
+        $this->absensiQrModel = new AbsensiQRModel();
     }
 
     public function index($offset = 0)
@@ -68,6 +74,7 @@ class Buku_induk extends BaseController
     {
         $this->requireRole([1, 2, 3, 4, 5]);
 
+        $id = (int) $id;
         $siswa = $this->db->table('siswa s')
             ->select('s.*, k.nama AS nama_kelas, ta.tahun AS tahun_ajaran')
             ->join('kelas k', 'k.id = s.id_kelas', 'left')
@@ -80,10 +87,72 @@ class Buku_induk extends BaseController
             return redirect()->to(site_url('buku_induk'));
         }
 
+        // 1. Dokumen Berkas
+        $berkas = $this->db->table('siswa_berkas')
+            ->where('siswa_id', $id)
+            ->orderBy('jenis_berkas', 'ASC')
+            ->get()
+            ->getResult();
+
+        // 2. Nilai Rapor
+        $rapor = $this->nilaiModel->rekapBySiswaKelas($id);
+
+        // 3. Kehadiran
+        $riwayat = $this->db->table('siswa_tahun st')
+            ->select('st.tahun_id, ta.tahun')
+            ->join('tahun_ajaran ta', 'ta.id = st.tahun_id')
+            ->where('st.siswa_id', $id)
+            ->orderBy('ta.id', 'ASC')
+            ->get()
+            ->getResult();
+
+        $kehadiran = [];
+        $kelasStr = strtoupper((string) ($siswa->nama_kelas ?? ''));
+        if (strpos($kelasStr, 'XII') !== false) {
+            $semesterTerakhir = 6;
+        } elseif (strpos($kelasStr, 'XI') !== false) {
+            $semesterTerakhir = 4;
+        } else {
+            $semesterTerakhir = 2;
+        }
+
+        $jumlahRiwayat = count($riwayat);
+        $semesterNo = $semesterTerakhir - ($jumlahRiwayat * 2) + 1;
+        if ($semesterNo < 1) {
+            $semesterNo = 1;
+        }
+
+        foreach ($riwayat as $r) {
+            $ganjil = $this->absensiQrModel->getRekapSemester((string) ($siswa->nis ?? ''), $r->tahun, 1);
+            $kehadiran[] = (object) [
+                'tahun_ajaran' => $r->tahun,
+                'semester'     => $semesterNo++,
+                'hadir'        => (int) ($ganjil->hadir ?? 0),
+                'sakit'        => (int) ($ganjil->sakit ?? 0),
+                'izin'         => (int) ($ganjil->izin ?? 0),
+                'alpha'        => (int) ($ganjil->alpha ?? 0),
+                'terlambat'    => (int) ($ganjil->terlambat ?? 0),
+            ];
+
+            $genap = $this->absensiQrModel->getRekapSemester((string) ($siswa->nis ?? ''), $r->tahun, 2);
+            $kehadiran[] = (object) [
+                'tahun_ajaran' => $r->tahun,
+                'semester'     => $semesterNo++,
+                'hadir'        => (int) ($genap->hadir ?? 0),
+                'sakit'        => (int) ($genap->sakit ?? 0),
+                'izin'         => (int) ($genap->izin ?? 0),
+                'alpha'        => (int) ($genap->alpha ?? 0),
+                'terlambat'    => (int) ($genap->terlambat ?? 0),
+            ];
+        }
+
         $data = [
-            'title'  => 'Detail Buku Induk - ' . $siswa->nama,
-            'active' => 'buku_induk',
-            'siswa'  => $siswa,
+            'title'     => 'Detail Buku Induk - ' . $siswa->nama,
+            'active'    => 'buku_induk',
+            'siswa'     => $siswa,
+            'rapor'     => $rapor,
+            'berkas'    => $berkas,
+            'kehadiran' => $kehadiran,
         ];
 
         return $this->renderView('buku_induk/detail', $data);

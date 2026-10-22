@@ -38,24 +38,52 @@ class NilaiRaporModel extends Model
     public function rekapBySiswaKelas(int $siswaId): array
     {
         $siswa = $this->db->table('siswa')->select('id_kelas')->where('id', $siswaId)->get()->getRow();
-        $kelasId = $siswa ? $siswa->id_kelas : 0;
+        $kelasId = $siswa ? (int) $siswa->id_kelas : 0;
 
-        return $this->db->table('nilai_rapor nr')
+        $builder = $this->db->table('nilai_rapor nr')
             ->select('
                 m.nama_mapel,
                 MAX(CASE WHEN nr.semester = 1 AND nr.siswa_id = ' . (int) $siswaId . ' THEN nr.nilai_angka END) AS smt1,
                 MAX(CASE WHEN nr.semester = 2 AND nr.siswa_id = ' . (int) $siswaId . ' THEN nr.nilai_angka END) AS smt2,
                 MAX(CASE WHEN nr.semester = 3 AND nr.siswa_id = ' . (int) $siswaId . ' THEN nr.nilai_angka END) AS smt3,
                 MAX(CASE WHEN nr.semester = 4 AND nr.siswa_id = ' . (int) $siswaId . ' THEN nr.nilai_angka END) AS smt4,
-                MAX(CASE WHEN nr.semester = 5 AND nr.siswa_id = ' . (int) $siswaId . ' THEN nr.nilai_angka END) AS smt5
+                MAX(CASE WHEN nr.semester = 5 AND nr.siswa_id = ' . (int) $siswaId . ' THEN nr.nilai_angka END) AS smt5,
+                MAX(CASE WHEN nr.semester = 6 AND nr.siswa_id = ' . (int) $siswaId . ' THEN nr.nilai_angka END) AS smt6
             ')
             ->join('mapel m', 'm.id_mapel = nr.mapel_id')
-            ->join('siswa s', 's.id = nr.siswa_id')
-            ->where('s.id_kelas', $kelasId)
-            ->groupBy('m.id_mapel')
+            ->join('siswa s', 's.id = nr.siswa_id');
+
+        if ($kelasId > 0) {
+            $builder->where('s.id_kelas', $kelasId);
+        } else {
+            $builder->where('nr.siswa_id', $siswaId);
+        }
+
+        $res = $builder->groupBy('m.id_mapel')
             ->orderBy('m.nama_mapel', 'ASC')
             ->get()
             ->getResult();
+
+        if (empty($res)) {
+            $res = $this->db->table('nilai_rapor nr')
+                ->select('
+                    m.nama_mapel,
+                    MAX(CASE WHEN nr.semester = 1 THEN nr.nilai_angka END) AS smt1,
+                    MAX(CASE WHEN nr.semester = 2 THEN nr.nilai_angka END) AS smt2,
+                    MAX(CASE WHEN nr.semester = 3 THEN nr.nilai_angka END) AS smt3,
+                    MAX(CASE WHEN nr.semester = 4 THEN nr.nilai_angka END) AS smt4,
+                    MAX(CASE WHEN nr.semester = 5 THEN nr.nilai_angka END) AS smt5,
+                    MAX(CASE WHEN nr.semester = 6 THEN nr.nilai_angka END) AS smt6
+                ')
+                ->join('mapel m', 'm.id_mapel = nr.mapel_id')
+                ->where('nr.siswa_id', $siswaId)
+                ->groupBy('m.id_mapel')
+                ->orderBy('m.nama_mapel', 'ASC')
+                ->get()
+                ->getResult();
+        }
+
+        return $res;
     }
 
     public function rekapSiswa(?int $kelasId, int $tahunId, int $limit = 100, int $offset = 0): array

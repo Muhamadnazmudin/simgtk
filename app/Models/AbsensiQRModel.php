@@ -39,4 +39,36 @@ class AbsensiQRModel extends Model
             ->get()
             ->getResult();
     }
+
+    public function getRekapSemester(string $nis, string $tahunAjaran, int $semester): object
+    {
+        $parts = explode('/', $tahunAjaran);
+        $thAwal = $parts[0] ?? date('Y');
+
+        if ($semester === 1) {
+            $tgl1 = $thAwal . '-07-01';
+            $tgl2 = $thAwal . '-12-31';
+        } else {
+            $thAkhir = $parts[1] ?? (string) ((int) $thAwal + 1);
+            $tgl1 = $thAkhir . '-01-01';
+            $tgl2 = $thAkhir . '-06-30';
+        }
+
+        $row = $this->db->table($this->table)
+            ->select('
+                SUM(CASE WHEN kehadiran = "H" THEN 1 ELSE 0 END) AS hadir,
+                SUM(CASE WHEN kehadiran = "S" THEN 1 ELSE 0 END) AS sakit,
+                SUM(CASE WHEN kehadiran = "I" THEN 1 ELSE 0 END) AS izin,
+                SUM(CASE WHEN kehadiran = "A" THEN 1 ELSE 0 END) AS alpha,
+                SUM(CASE WHEN status = "Terlambat" THEN 1 ELSE 0 END) AS terlambat
+            ')
+            ->where('nis', $nis)
+            ->where('tanggal >=', $tgl1)
+            ->where('tanggal <=', $tgl2)
+            ->get()
+            ->getRow();
+
+        return $row ?? (object) ['hadir' => 0, 'sakit' => 0, 'izin' => 0, 'alpha' => 0, 'terlambat' => 0];
+    }
 }
+

@@ -39,6 +39,21 @@ $routes->post('absensi_solat/import_proses', 'Absensi_solat::import_proses');
 // Public prayer schedule
 $routes->get('jadwal_solat_public', 'Jadwal_solat_public::index');
 
+// Absensi sub-namespace routes
+$routes->match(['GET', 'POST'], 'Absensi/Absensi', '\App\Controllers\Absensi\Absensi::index');
+$routes->match(['GET', 'POST'], 'Absensi/Absensi/(:segment)', '\App\Controllers\Absensi\Absensi::$1');
+$routes->match(['GET', 'POST'], 'Absensi/Absensi/(:segment)/(:any)', '\App\Controllers\Absensi\Absensi::$1/$2');
+$routes->match(['GET', 'POST'], 'absensi/absensi', '\App\Controllers\Absensi\Absensi::index');
+$routes->match(['GET', 'POST'], 'absensi/absensi/(:segment)', '\App\Controllers\Absensi\Absensi::$1');
+$routes->match(['GET', 'POST'], 'absensi/absensi/(:segment)/(:any)', '\App\Controllers\Absensi\Absensi::$1/$2');
+
+$routes->match(['GET', 'POST'], 'Absensi/Laporan', '\App\Controllers\Absensi\Laporan::index');
+$routes->match(['GET', 'POST'], 'Absensi/Laporan/(:segment)', '\App\Controllers\Absensi\Laporan::$1');
+$routes->match(['GET', 'POST'], 'Absensi/Laporan/(:segment)/(:any)', '\App\Controllers\Absensi\Laporan::$1/$2');
+$routes->match(['GET', 'POST'], 'absensi/laporan', '\App\Controllers\Absensi\Laporan::index');
+$routes->match(['GET', 'POST'], 'absensi/laporan/(:segment)', '\App\Controllers\Absensi\Laporan::$1');
+$routes->match(['GET', 'POST'], 'absensi/laporan/(:segment)/(:any)', '\App\Controllers\Absensi\Laporan::$1/$2');
+
 // Explicit routes for modules (ensures case-insensitivity and sub-methods match smoothly)
 $modules = [
     'tendik'                   => 'Tendik',
@@ -67,6 +82,20 @@ $modules = [
     'siswa_keluar'             => 'Siswa_keluar',
     'siswa_lulus'              => 'Siswa_lulus',
     'laporan'                  => 'Laporan',
+    'AbsensiQRAdmin'           => 'AbsensiQRAdmin',
+    'absensiqradmin'           => 'AbsensiQRAdmin',
+    'izin'                     => 'Izin',
+    'Izin'                     => 'Izin',
+    'verval'                   => 'Verval',
+    'Verval'                   => 'Verval',
+    'riwayat_biodata'          => 'Riwayat_biodata',
+    'Riwayat_biodata'          => 'Riwayat_biodata',
+    'Sync_google'              => 'Sync_google',
+    'sync_google'              => 'Sync_google',
+    'jadwalabsensi'            => 'Jadwalabsensi',
+    'JadwalAbsensi'            => 'Jadwalabsensi',
+    'backup'                   => 'Backup',
+    'Backup'                   => 'Backup',
 ];
 
 foreach ($modules as $slug => $controller) {

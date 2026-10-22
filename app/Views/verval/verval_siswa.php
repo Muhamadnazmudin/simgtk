@@ -96,10 +96,10 @@
 
                        <td class="text-center">
 
-    <?php $qs = $_SERVER['QUERY_STRING']; ?>
+    <?php $qs = $_SERVER['QUERY_STRING'] ?? ''; ?>
 
     <!-- VALID -->
-    <a href="<?= site_url('verval/valid/'.$s->id.'?'.$qs) ?>"
+    <a href="<?= site_url('verval/valid/'.$s->id . ($qs ? '?' . $qs : '')) ?>"
        class="btn btn-success btn-sm"
        title="Valid">
 
@@ -175,7 +175,7 @@
     <!-- ID SISWA (INI WAJIB) -->
     <input type="hidden" name="id_siswa" id="id_siswa">
     <input type="hidden" name="redirect_url"
-           value="<?= current_url().'?'.$_SERVER['QUERY_STRING'] ?>">
+           value="<?= current_url() . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '') ?>">
 
     <div class="modal-content">
         <div class="modal-header">

@@ -31,12 +31,19 @@ class Absensi_solat extends BaseController
 
     private function adminDiizinkan(): bool
     {
+        $roleId = (int) $this->session->get('role_id');
         return $this->session->get('logged_in') === true
-            && (int) $this->session->get('role_id') === 1;
+            && in_array($roleId, [1, 2, 3, 4, 5], true);
     }
 
     private function wajibAdmin()
     {
+        if (!$this->session->get('logged_in')) {
+            $this->session->setFlashdata('error', 'Silakan login terlebih dahulu.');
+            header('Location: ' . base_url('auth/login'));
+            exit;
+        }
+
         if (!$this->adminDiizinkan()) {
             return $this->response->setStatusCode(403)->setBody(
                 view('errors/html/error_403', [
