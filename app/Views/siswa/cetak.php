@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 if (!function_exists('v')) {
     function v($value, $default='-')
     {
-        return ($value === '' || $value === null) ? $default : htmlspecialchars($value);
+        return ($value === '' || $value === null) ? $default : htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
     }
 }
 
@@ -13,41 +13,64 @@ if (!function_exists('v')) {
 // ========================================
 
 $logo = '';
-
-if (!empty($sekolah->logo)) {
-
-    $file = FCPATH . 'uploads/logo/' . $sekolah->logo;
-
-    if (is_file($file)) {
-        $logo = $file;
-    }
-
+$logoPath = '';
+if (!empty($sekolah->logo) && is_file(FCPATH . 'uploads/logo/' . $sekolah->logo)) {
+    $logoPath = FCPATH . 'uploads/logo/' . $sekolah->logo;
+} elseif (is_file(FCPATH . 'uploads/logo/logo.png')) {
+    $logoPath = FCPATH . 'uploads/logo/logo.png';
 }
 
-// fallback
-if ($logo == '') {
-
-    $default = FCPATH . 'uploads/logo/logo.png';
-
-    if (is_file($default)) {
-        $logo = $default;
+if ($logoPath !== '') {
+    $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+    $dataImg = @file_get_contents($logoPath);
+    if ($dataImg !== false) {
+        $logo = 'data:image/' . $type . ';base64,' . base64_encode($dataImg);
     }
-
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>Biodata Peserta Didik</title>
+<title>Biodata Peserta Didik - <?= esc($siswa->nama ?? 'Siswa') ?></title>
 <style>
 body{
-    font-family: dejavusans, sans-serif;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     font-size: 9.5pt;
     color: #222222;
     line-height: 1.5;
     margin: 0;
     padding: 0;
+}
+
+@media screen {
+    body {
+        background: #f0f2f5;
+        padding: 20px 0;
+    }
+    .print-sheet {
+        max-width: 210mm;
+        margin: 0 auto;
+        background: #ffffff;
+        padding: 15mm 20mm;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-radius: 4px;
+    }
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    body {
+        background: #ffffff;
+        margin: 0;
+        padding: 0;
+    }
+    .print-sheet {
+        padding: 0;
+        box-shadow: none;
+    }
 }
 
 table{
@@ -254,8 +277,18 @@ TANDA TANGAN & FOOTER
     padding-top: 5px;
 }
 </style>
-</head>
 <body>
+
+<div class="no-print" style="margin: 0 auto 20px auto; max-width: 210mm; text-align: center; background: #ffffff; padding: 12px; border-radius: 6px; border: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.06); font-family: sans-serif;">
+    <button onclick="window.print()" style="cursor: pointer; background: #0d6efd; color: #fff; border: none; padding: 8px 20px; border-radius: 4px; font-weight: 600; font-size: 14px; margin-right: 10px;">
+        🖨️ Cetak / Simpan PDF
+    </button>
+    <button onclick="window.close()" style="cursor: pointer; background: #6c757d; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px;">
+        ✖ Tutup
+    </button>
+</div>
+
+<div class="print-sheet">
 
 <!-- KOP SURAT -->
 <table class="kop">
@@ -452,6 +485,14 @@ Kuningan, <?= date('d F Y') ?> <br>
 <td align="right" width="50%">Tanggal Cetak : <?= date('d-m-Y H:i') ?></td>
 </tr>
 </table>
+
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        window.print();
+    });
+</script>
 
 </body>
 </html>

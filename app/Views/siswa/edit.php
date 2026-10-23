@@ -161,8 +161,6 @@ $penghasilan = [
                     required
                     value="<?= set_value('nis',$siswa->nis); ?>">
 
-                <?= form_error('nis','<small class="text-danger">','</small>'); ?>
-
             </div>
 
             <div class="form-group col-md-3">

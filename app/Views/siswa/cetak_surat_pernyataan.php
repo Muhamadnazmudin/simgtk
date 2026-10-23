@@ -79,10 +79,31 @@ p {
 .nama-ttd {
     padding-top: 40px;
 }
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+    }
+}
 </style>
+<title>Surat Pernyataan - <?= esc($siswa->nama) ?></title>
 </head>
 
 <body>
+
+<div class="no-print" style="margin: 15px auto; max-width: 165mm; text-align: center; background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.06); font-family: sans-serif;">
+    <button onclick="window.print()" style="cursor: pointer; background: #0d6efd; color: #fff; border: none; padding: 8px 20px; border-radius: 4px; font-weight: 600; font-size: 14px; margin-right: 10px;">
+        🖨️ Cetak / Simpan PDF
+    </button>
+    <button onclick="window.close()" style="cursor: pointer; background: #6c757d; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-size: 14px;">
+        ✖ Tutup
+    </button>
+</div>
+
 <div class="container">
 
 <div class="title">
@@ -169,5 +190,13 @@ Demikian surat pernyataan ini kami buat sebagai dasar sekolah melakukan proses v
 </div>
 
 </div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        window.print();
+    });
+</script>
+
 </body>
 </html>
+

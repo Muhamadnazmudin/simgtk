@@ -140,6 +140,8 @@ $modules = [
     'Guru_sertifikasi_guru'    => 'Guru_sertifikasi_guru',
     'WakakurLaporanPembelajaran' => 'WakakurLaporanPembelajaran',
     'wakakurlaporanpembelajaran' => 'WakakurLaporanPembelajaran',
+    'siswa'                      => 'Siswa',
+    'Siswa'                      => 'Siswa',
 ];
 
 foreach ($modules as $slug => $controller) {

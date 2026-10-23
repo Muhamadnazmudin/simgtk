@@ -23,7 +23,8 @@ class Siswa extends BaseController
         $this->siswaModel = new SiswaModel();
 
         // Check login except public methods like cetak
-        $method = $this->request->getUri()->getSegment(2);
+        $segments = $this->request->getUri()->getSegments();
+        $method = $segments[1] ?? ($segments[0] ?? '');
         if (!in_array($method, ['cetak', 'surat_pernyataan'], true)) {
             if (!$this->session->get('logged_in')) {
                 header('Location: ' . base_url('auth/login'));
@@ -232,4 +233,53 @@ class Siswa extends BaseController
         $this->db->table('siswa')->where('id', (int) $id)->delete();
         return redirect()->to('/siswa')->with('success', 'Data siswa berhasil dihapus.');
     }
+
+    public function surat_pernyataan($id = null)
+    {
+        helper('tanggal');
+
+        $siswa = $this->db->table('siswa')
+            ->select('siswa.*, kelas.nama AS nama_kelas, tahun_ajaran.tahun AS tahun_ajaran')
+            ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
+            ->join('tahun_ajaran', 'tahun_ajaran.id = siswa.tahun_id', 'left')
+            ->where('siswa.id', (int) $id)
+            ->get()
+            ->getRow();
+
+        if (!$siswa) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Siswa tidak ditemukan.');
+        }
+
+        $data = [
+            'siswa' => $siswa,
+        ];
+
+        return view('siswa/cetak_surat_pernyataan', $data);
+    }
+
+    public function cetak($id = null)
+    {
+        $siswa = $this->db->table('siswa')
+            ->select('siswa.*, kelas.nama AS nama_kelas, tahun_ajaran.tahun AS tahun_ajaran')
+            ->join('kelas', 'kelas.id = siswa.id_kelas', 'left')
+            ->join('tahun_ajaran', 'tahun_ajaran.id = siswa.tahun_id', 'left')
+            ->where('siswa.id', (int) $id)
+            ->get()
+            ->getRow();
+
+        if (!$siswa) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Siswa tidak ditemukan.');
+        }
+
+        $sekolah = $this->db->table('sekolah')->get()->getRow();
+
+        $data = [
+            'siswa'   => $siswa,
+            'sekolah' => $sekolah,
+        ];
+
+        return view('siswa/cetak', $data);
+    }
 }
+
+

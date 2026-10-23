@@ -92,3 +92,25 @@ if (!function_exists('is_guru')) {
         return in_array($roleId, [3, 4], true);
     }
 }
+
+if (!function_exists('form_error')) {
+    function form_error(string $field = '', string $prefix = '', string $suffix = ''): string
+    {
+        $error = '';
+        if (function_exists('validation_show_error')) {
+            $err = validation_show_error($field);
+            if (!empty($err)) {
+                $error = strip_tags($err);
+            }
+        }
+        if (empty($error)) {
+            $session = session();
+            $errors = $session->getFlashdata('errors') ?? $session->get('errors');
+            if (is_array($errors) && !empty($errors[$field])) {
+                $error = $errors[$field];
+            }
+        }
+        return !empty($error) ? $prefix . $error . $suffix : '';
+    }
+}
+
